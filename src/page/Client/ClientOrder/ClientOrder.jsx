@@ -175,9 +175,9 @@ const ClientOrder = () => {
   return (
     <Container>
       <Headers>
-        <ArrowLeftOutlined style={{ fontSize: '20px', cursor: 'pointer' }} onClick={() => navigate(`/menu/${params.tableId}`)} />
-        <Titles level={4}>GIỎ HÀNG</Titles>
-        <ArrowRightOutlined  style={{ fontSize: '20px', cursor: 'pointer' }} onClick={() => navigate(`/orderitem/${params.tableId}`)} />
+        <ArrowLeftOutlined style={{ fontSize: '20px', cursor: 'pointer', left:"10px" }} onClick={() => navigate(`/menu/${params.tableId}`)} />
+        <Titles level={4} style={{margin:"0"}}>GIỎ HÀNG</Titles>
+        <ArrowRightOutlined  style={{ fontSize: '20px', cursor: 'pointer', right:"10px" }} onClick={() => navigate(`/orderitem/${params.tableId}`)} />
       </Headers>
 
       <ListContainer >

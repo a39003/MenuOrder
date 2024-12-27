@@ -7,13 +7,23 @@ export const Headers = styled.div`
   padding: 20px;
   border-bottom: 1px solid #f0f0f0; 
   border-radius: 8px;
+  justify-content: center;
+  position: relative;
 
   @media (max-width: 768px) {
-    padding: 15px;  
+    padding: 15px;
+    .image-style {
+    max-width: 200px;
+    border-radius: 8px;
+  }  
   }
 
   @media (max-width: 480px) {
-    padding: 10px;  
+    padding: 10px; 
+    .image-style {
+    max-width: 150px;
+    border-radius: 5px;
+  } 
   }
 `;
 

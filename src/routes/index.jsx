@@ -1,6 +1,5 @@
 import Account from "../page/Account/Account";
 import Bill from "../page/Bill/Bill";
-import ClientBill from "../page/Client/CilentBill/ClientBill";
 import ClientDish from "../page/Client/ClientDish/ClienDish";
 import ClientOrder from "../page/Client/ClientOrder/ClientOrder";
 import ClientOrderItem from "../page/Client/ClientOrderItem/ClientOrderItem";
@@ -67,11 +66,7 @@ export const routes = [
         page: ClientOrderItem,
 
     },
-    {
-        path:'/orderbill/:tableId',
-        page: ClientBill,
 
-    },
 
 
 ]

@@ -9,6 +9,8 @@ export const Headers = styled.div`
     padding: 20px;
     border-bottom: 1px solid #f0f0f0;
     border-radius: 8px;
+    justify-content: center;
+    position: relative;
     @media (max-width: 768px) {
         padding: 10px;
     }
@@ -24,7 +26,7 @@ export const Titles = styled.div`
     }
 `;
 
-// Status Button
+
 export const StatusButton = styled.div`
     padding: 4px 12px;
     border-radius: 12px;
@@ -36,28 +38,28 @@ export const StatusButton = styled.div`
     }
 `;
 
-// Footer button section (aligned horizontally in the center with equal spacing on both sides)
+
 export const FooterButton = styled.div`
     position: fixed;
     margin-top: 16px;
     bottom: 0;
     left: 0;
     display: flex;
-    justify-content: center; /* Center buttons horizontally */
-    align-items: center; /* Vertically align items */
-    width: 100%; /* Ensure full width */
+    justify-content: center;
+    align-items: center; 
+    width: 100%; 
     padding: 10px 20px;
-    gap: 10px; /* Add space between buttons */
-    padding-left: 20px; /* Adds padding on the left */
-    padding-right: 20px; /* Adds padding on the right */
-    box-sizing: border-box; /* Ensures padding doesn't affect the width */
+    gap: 10px; 
+    padding-left: 20px; 
+    padding-right: 20px; 
+    box-sizing: border-box;
     @media (max-width: 768px) {
         padding: 10px 15px;
         gap: 8px; /* Adjust gap for mobile */
     }
 `;
 
-// General button style (used for both order and payment buttons)
+
 export const ButtonStyle = styled(Button)`
     background: #E5E5E5;
     color: #000;
@@ -72,19 +74,16 @@ export const ButtonStyle = styled(Button)`
     }
 `;
 
-// Order button (using the general button style)
+
 export const ButtonOrder = styled(ButtonStyle)`
-    /* You can add specific styles for the Order button here if needed */
 `;
 
-// Payment button (using the general button style)
+
 export const ButtonPayment = styled(ButtonStyle)`
-    /* You can add specific styles for the Payment button here if needed */
 `;
 
-// Supporting button (using the general button style)
+
 export const ButtonSupport = styled(ButtonStyle)`
-    /* You can add specific styles for the Support button here if needed */
 `;
 
 export const ContainerModal = styled.div`
@@ -105,30 +104,30 @@ export const StyledTable = styled(Table)`
 
   .ant-table-tbody > tr > td {
     text-align: center;
-    padding: 8px 10px;  // Ensure cells have enough padding for readability
+    padding: 8px 10px;  
   }
 
   @media (max-width: 768px) {
-    font-size: 12px;  // Smaller font size on mobile
+    font-size: 12px;  
     .ant-table-thead > tr > th {
-      font-size: 12px;  // Ensure header font size is also adjusted
+      font-size: 12px;  
     }
     
     .ant-table-tbody > tr > td {
-      font-size: 12px;  // Adjust cell font size
-      padding: 6px 8px;  // Reduce padding to make more space on mobile
+      font-size: 12px;  
+      padding: 6px 8px; 
     }
   }
 
   @media (max-width: 480px) {
-    font-size: 10px;  // Even smaller font size for very small screens (e.g., phones)
+    font-size: 10px;  
     .ant-table-thead > tr > th {
       font-size: 10px;
     }
     
     .ant-table-tbody > tr > td {
       font-size: 10px;
-      padding: 4px 6px;  // Further reduce padding on small screens
+      padding: 4px 6px; 
     }
   }
 `;

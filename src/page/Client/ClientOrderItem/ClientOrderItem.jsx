@@ -162,10 +162,10 @@ const ClientOrderItem = () => {
     >
       <Headers>
         <ArrowLeftOutlined
-          style={{ fontSize: "20px", cursor: "pointer" }}
+          style={{ fontSize: "20px", cursor: "pointer",  position:"absolute", left:"10px" }}
           onClick={() => navigate(`/order/${params.tableId}`)}
         />
-        <Titles level={4} style={{marginLeft:"90px"}}>ĐƠN HÀNG</Titles>
+        <Titles level={4} style={{margin:"0"}}>ĐƠN HÀNG</Titles>
       </Headers>
 
       <List

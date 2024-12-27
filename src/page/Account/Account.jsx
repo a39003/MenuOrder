@@ -53,7 +53,7 @@ const Account = () => {
                       label="Email"
                       name="password"
                     >
-                      <Input type="email" placeholder="Admin12@gmail.com" readOnly  />
+                      <Input type="email" placeholder="admin@gmail.com" readOnly  />
                     </Form.Item>
                     </Form>
                     <ButtonComponent

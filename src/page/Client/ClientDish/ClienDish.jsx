@@ -76,10 +76,10 @@ const ClienDish = () => {
     >
       <Headers>
         <ArrowLeftOutlined
-          style={{ fontSize: "20px", cursor: "pointer" }}
+          style={{ fontSize: "20px", cursor: "pointer", position:"absolute", left:"10px" }}
           onClick={() => navigate(`/tables/${tableId}`)}
         />
-        <Titles level={4} style={{marginLeft:"80px"}}>DANH SÁCH MÓN ĂN</Titles>
+        <Titles level={4} style={{margin:"0"}}>DANH SÁCH MÓN ĂN</Titles>
       </Headers>
 
       <div
@@ -89,12 +89,11 @@ const ClienDish = () => {
         display: "flex",
         scrollSnapType: "x mandatory",
         scrollBehavior: "smooth",
-        WebkitOverflowScrolling: "touch", // Tối ưu vuốt trên iOS
-        msOverflowStyle: "none", // Ẩn thanh cuộn trên IE/Edge
-        scrollbarWidth: "none", // Ẩn thanh cuộn trên Firefox
+        WebkitOverflowScrolling: "touch", 
+        msOverflowStyle: "none", 
+        scrollbarWidth: "none", 
       }}
     >
-      {/* Ẩn thanh cuộn trên Chrome/Safari */}
       <style>
         {`
           div::-webkit-scrollbar {

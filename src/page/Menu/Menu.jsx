@@ -189,7 +189,7 @@ const Menu = () => {
             key:"menuDescription",
         },
         {
-          title: 'Tùy chọn',
+          title: 'Thao tác',
           dataIndex: 'action',
           key:'action',
           render: (text, record) => renderAction(record)

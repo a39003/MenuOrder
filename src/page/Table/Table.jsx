@@ -181,7 +181,7 @@ const Tabled = () => {
       key: 'tableDescription'
     },
     {
-      title: 'Tùy chọn',
+      title: 'Thao tác',
       dataIndex: 'action',
       key: 'action',
       render: (text, record) => renderAction(record)

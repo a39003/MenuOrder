@@ -26,8 +26,7 @@ const ClientTable = () => {
   return (
     <div style={{ margin: '0 auto', backgroundColor: '#FFF', maxWidth: '100%' }}>
 
-      <Headers>
-        <MenuOutlined style={{ fontSize: '20px', marginLeft: '1px' }} />
+      <Headers style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
         <Titles level={4}>TLU QUÁN</Titles>
       </Headers>
 
