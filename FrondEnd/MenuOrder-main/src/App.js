@@ -1,5 +1,5 @@
 import React, { Fragment, } from 'react'
-import {BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import {BrowserRouter as Router, Navigate, Routes, Route } from 'react-router-dom'
 import { routes } from './routes'
 import Default from './costormer/Components/Default/Default';
 
@@ -19,6 +19,9 @@ function App() {
               } />
             )
           })}
+          <Route path="/index.html" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Router>
     </div>
