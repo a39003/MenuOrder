@@ -1,107 +1,17 @@
-import React from 'react';
-import { Typography, Image, Row, Col, message } from 'antd';
-import { MenuOutlined } from '@ant-design/icons';
-import logo from "../../../config/ngon.jpeg";
-import logo1 from "../../../config/dep.jpg";
-import { useNavigate, useParams } from "react-router-dom";
-import { Headers, Titles, Contents, ContentMain1, Footer, Cartd } from './style';
+import React,{useState}from"react";
+import{Input,message}from"antd";
+import{ArrowRightOutlined,UserOutlined}from"@ant-design/icons";
+import{useNavigate,useParams}from"react-router-dom";
+import hero from"../../../config/ngon.jpeg";
+import promo from"../../../config/dep.jpg";
+import{Cartd,ContentMain1,Contents,Footer,GuestForm,Headers,Page,Promo,Titles}from"./style";
 
-const { Text } = Typography;
-
-const ClientTable = () => {
-  const navigate = useNavigate();
-  const params = useParams();
-
-  const handleCreateOrder = async () => {
-    await fetch(`http://localhost:8080/${params.tableId}/menus`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data?.length > 0) {
-          message.success("Tạo order thành công");
-          navigate(`/menu/${params.tableId}`);
-        }
-      });
-  };
-
-  return (
-    <div style={{ margin: '0 auto', backgroundColor: '#FFF', maxWidth: '100%' }}>
-
-      <Headers style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
-        <Titles level={4}>TLU QUÁN</Titles>
-      </Headers>
-
-
-      <Contents>
-        <ContentMain1>
-          <div
-            style={{
-              borderRadius: '15px',
-              overflow: 'hidden',
-              marginBottom: '20px',
-              textAlign: 'center',
-            }}
-          >
-            <Image
-              src={logo}
-              alt="Food"
-              preview={false}
-              style={{ borderRadius: '15px', width: '100%' }}
-            />
-          </div>
-
-          <Titles level={3} style={{ fontSize: '22px', margin: '0', fontWeight: 'bold' }}>
-            TLU QUÁN
-          </Titles>
-          <Text type="secondary" style={{ fontSize: '14px', lineHeight: '22px' }}>
-            Monday - Sunday <br />
-            6PM - 12PM
-          </Text>
-        </ContentMain1>
-
-        {/* Promotion Section */}
-        <Row
-          style={{
-            backgroundColor: '#F1EFEF',
-            borderRadius: '25px',
-            padding: '15px',
-            textAlign: 'center',
-            margin: '10px 0',
-          }}
-          gutter={[16, 16]}
-        >
-          <Col xs={24} md={12}>
-            <Text style={{ fontSize: '16px', fontWeight: 'bold' }}>
-              Giảm ngay{' '}
-              <span style={{ color: '#FF0000', fontSize: '20px', fontWeight: 'bold' }}>20%</span>
-            </Text>
-          </Col>
-          <Col xs={24} md={12}>
-            <Text type="secondary" style={{ fontSize: '14px' }}>
-              CHO KHÁCH ĐẶT BÀN ONLINE
-            </Text>
-          </Col>
-          <Col xs={24}>
-            <Image
-              src={logo1}
-              alt="Promotion"
-              preview={false}
-              style={{ borderRadius: '10px', width: '100%' }}
-            />
-          </Col>
-        </Row>
-      </Contents>
-
- 
-      <Cartd onClick={handleCreateOrder} style={{ textAlign: 'center', margin: '20px 0' }}>
-        <p style={{ fontSize: '12px', fontWeight: 'bold' }}>Order Now</p>
-      </Cartd>
-
-      <Footer style={{ textAlign: 'center', fontSize: '14px', marginTop: '20px' }}>
-        Địa Chỉ: Nghiêm Xuân Yên - Đại Kim - Hoàng Mai - Hà Nội <br />
-        SDT: 012345678
-      </Footer>
-    </div>
-  );
-};
-
-export default ClientTable;
+const ClientTable=()=>{const navigate=useNavigate();const{tableId}=useParams();const[customerName,setCustomerName]=useState("");
+ const handleCreateOrder=async()=>{if(!customerName.trim()){message.warning("Vui lòng nhập tên của bạn trước khi xem thực đơn");return}try{const res=await fetch(`http://localhost:8080/${tableId}/menus?customerName=${encodeURIComponent(customerName.trim())}`);const data=await res.json();if(!res.ok)throw new Error(data?.message);if(data?.length>0){sessionStorage.setItem(`customer-${tableId}`,customerName.trim());message.success(`Chào ${customerName.trim()}, bàn đã sẵn sàng`);navigate(`/menu/${tableId}`)}}catch(error){message.error(error.message||"Không thể tải thực đơn. Vui lòng thử lại.")}};
+ return <Page><Headers><Titles>TLU Quán · Bàn {tableId}</Titles></Headers><Contents>
+  <ContentMain1><img src={hero} alt="Không gian ẩm thực"/><div className="hero-copy"><span>Chào mừng bạn</span><h1>Ăn ngon, vui trọn khoảnh khắc.</h1><p>Mở cửa mỗi ngày · 18:00 — 24:00</p></div></ContentMain1>
+  <Promo><div><span className="eyebrow">ƯU ĐÃI HÔM NAY</span><div className="discount">Giảm ngay 20%</div><div className="description">Dành cho khách đặt bàn online. Hãy hỏi nhân viên để biết thêm chi tiết.</div></div><img src={promo} alt="Ưu đãi tại TLU Quán"/></Promo>
+  <GuestForm><div><span>Thông tin khách hàng</span><strong>Bạn tên gì?</strong><small>Tên của bạn sẽ xuất hiện trên hóa đơn và giúp nhân viên phục vụ chính xác hơn.</small></div><Input size="large" maxLength={100} prefix={<UserOutlined/>} placeholder="Nhập tên của bạn" value={customerName} onChange={event=>setCustomerName(event.target.value)} onPressEnter={handleCreateOrder}/></GuestForm>
+  <Cartd onClick={handleCreateOrder}>Khám phá thực đơn &nbsp;<ArrowRightOutlined/></Cartd>
+  <Footer>Địa chỉ: Nghiêm Xuân Yêm, Đại Kim, Hoàng Mai, Hà Nội<br/>Hotline: 0123 456 789</Footer>
+ </Contents></Page>};export default ClientTable;

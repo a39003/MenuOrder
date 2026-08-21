@@ -10,6 +10,7 @@ import java.util.List;
 public class OrderResponseDTO {
     private Long orderId;
     private String tableName;
+    private String customerName;
     private String orderStatus;
     private LocalDateTime orderTime;
     private List<OrderItemResponseDTO> orderItemResponseDTO;

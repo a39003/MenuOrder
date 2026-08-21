@@ -6,6 +6,7 @@ import lombok.Data;
 public class OrderItemResponseDTO {
     private long orderItemId;
     private String dishName;
+    private String thumbnail;
     private int dishQuantity;
     private int customPrice;
     private String dishNote;

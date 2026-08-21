@@ -24,6 +24,9 @@ public class Order {
     @Column(name = "orderTime")
     private LocalDateTime orderTime;
 
+    @Column(name = "customerName", length = 100)
+    private String customerName;
+
     @Column(name = "status")
     private Short status;
 

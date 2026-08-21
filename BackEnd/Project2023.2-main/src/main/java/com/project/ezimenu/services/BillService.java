@@ -1,6 +1,7 @@
 package com.project.ezimenu.services;
 
 import com.project.ezimenu.dtos.BillDTO.BillResponseDTO;
+import com.project.ezimenu.dtos.BillDTO.PaidBillResponseDTO;
 import com.project.ezimenu.dtos.BillItemDTO.BillItemResponseDTO;
 import com.project.ezimenu.entities.Bill;
 import com.project.ezimenu.entities.BillItem;
@@ -14,7 +15,9 @@ import com.project.ezimenu.repositories.OrderRepository;
 import com.project.ezimenu.services.interfaces.IBillService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,10 +34,61 @@ public class BillService implements IBillService {
     private BillItemRepository billItemRepository;
     @Autowired
     private ModelMapper modelMapper;
+
+    @Transactional(readOnly = true)
+    public List<PaidBillResponseDTO> getPaidBills(LocalDate from, LocalDate to, String search) {
+        LocalDate startDate = from == null ? LocalDate.of(2000, 1, 1) : from;
+        LocalDate endDate = to == null ? LocalDate.now() : to;
+        String keyword = search == null ? "" : search.trim().toLowerCase();
+
+        return billRepository.findAllByOrderByBillDateTimeDesc().stream()
+                .filter(this::isPaidBill)
+                .filter(bill -> bill.getBillDateTime() != null)
+                .filter(bill -> !bill.getBillDateTime().toLocalDate().isBefore(startDate))
+                .filter(bill -> !bill.getBillDateTime().toLocalDate().isAfter(endDate))
+                .map(this::toPaidBillResponse)
+                .filter(bill -> keyword.isEmpty()
+                        || String.valueOf(bill.getBillId()).contains(keyword)
+                        || String.valueOf(bill.getOrderId()).contains(keyword)
+                        || (bill.getCustomerName() != null && bill.getCustomerName().toLowerCase().contains(keyword))
+                        || bill.getTableName().toLowerCase().contains(keyword))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PaidBillResponseDTO getPaidBill(Long billId) throws NotFoundException {
+        Bill bill = billRepository.findById(billId)
+                .filter(this::isPaidBill)
+                .orElseThrow(() -> new NotFoundException("Không thể tìm thấy hóa đơn đã thanh toán có id: " + billId));
+        return toPaidBillResponse(bill);
+    }
+
+    private boolean isPaidBill(Bill bill) {
+        return bill.getOrder() != null && "Đã thanh toán".equalsIgnoreCase(bill.getOrder().getOrderStatus());
+    }
+
+    private PaidBillResponseDTO toPaidBillResponse(Bill bill) {
+        PaidBillResponseDTO response = new PaidBillResponseDTO();
+        response.setBillId(bill.getBillId());
+        response.setOrderId(bill.getOrder().getOrderId());
+        response.setTableId(bill.getOrder().getTable().getTableId());
+        response.setTableName(bill.getOrder().getTable().getTableName());
+        response.setCustomerName(bill.getOrder().getCustomerName());
+        response.setTotalAmount(bill.getTotalAmount());
+        response.setPaidAt(bill.getBillDateTime());
+        response.setTotalItems(bill.getBillItems().stream().mapToInt(BillItem::getBillItemQuantity).sum());
+        response.setItems(bill.getBillItems().stream()
+                .map(item -> modelMapper.map(item, BillItemResponseDTO.class))
+                .toList());
+        return response;
+    }
+
     public BillResponseDTO getBill(Long orderId) throws NotFoundException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Không thể tìm thấy đơn hàng có id: " + orderId));
         BillResponseDTO billResponseDTO = modelMapper.map(order.getBill(), BillResponseDTO.class);
+        billResponseDTO.setCustomerName(order.getCustomerName());
+        billResponseDTO.setTableName(order.getTable().getTableName());
         List<BillItemResponseDTO> billItemResponseDTOS = order.getBill().getBillItems().stream()
                 .map(billItem -> modelMapper.map(billItem, BillItemResponseDTO.class))
                 .collect(Collectors.toList());

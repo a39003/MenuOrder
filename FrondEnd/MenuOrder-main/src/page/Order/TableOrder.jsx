@@ -152,7 +152,7 @@ const TableOrder = ({ table, setStatus }) => {
     <Tables>
       <TableCar>
         <TableHeader>
-          {table?.tableName} <Status>{table?.tableStatus}</Status>
+          <span>{table?.tableName}<small style={{display:"block",fontSize:11,fontWeight:600,color:"#a98f81",marginTop:3}}>Khách: {order?.customerName || "Chưa nhập tên"}</small></span> <Status>{table?.tableStatus}</Status>
         </TableHeader>
         <TableBody>
           <TimeSection>
@@ -178,6 +178,8 @@ const TableOrder = ({ table, setStatus }) => {
                 setIsOpen={setIsBillDialogOpen}
                 setBill={setBill}
                 onBillDeleted={handleBillDeleted}
+                customerName={order?.customerName}
+                tableName={table?.tableName}
               >
                 Xem bill
               </Bill>

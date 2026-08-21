@@ -1,50 +1,44 @@
-import { Button, Upload } from "antd"
+import { Button, Input, Upload } from "antd";
 import styled from "styled-components";
 
-export const ButtonDish = styled(Button) `
-    margin: 0 5px;
-    padding: 8px 15px;
-    background-color: #d35400;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    &:hover {
-        background-color: #e67e22;
-    }
-`
+export const ButtonDish = styled(Button)`
+  height: 42px; padding: 0 18px; margin: 0 5px; border: 0; border-radius: 12px;
+  color: #fff; background: #d96b2b; font-weight: 700; box-shadow: 0 8px 20px rgba(217,107,43,.2);
+  &:hover { color: #fff !important; background: #b9501f !important; }
+`;
+export const DishSearch = styled(Input.Search)`
+  width: min(460px, 100%);
+  margin: 0 5px;
+  vertical-align: middle;
 
+  .ant-input,
+  .ant-input-affix-wrapper {
+    height: 42px;
+    padding-top: 0;
+    padding-bottom: 0;
+    font-size: 15px;
+  }
+
+  .ant-input-group-addon,
+  .ant-input-search-button {
+    height: 42px !important;
+  }
+
+  .ant-input-search-button {
+    width: 58px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+`;
 export const LoadFile = styled(Upload)`
-& .ant-upload.ant-upload-select.ant-upload-select-picture-card {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-}
-& .ant-upload-list-item-info {
-    display: none
-}
-@ant-upload-list-item{
-    display: none
-}`
-
-export const Conter = styled.div`
-
-`
-
+  .ant-upload-select { width: 88px !important; height: 88px !important; border-radius: 18px !important; }
+`;
+export const Conter = styled.main`
+  min-height: calc(100vh - 72px) !important; padding: 42px 24px !important; background: #fffaf4 !important;
+  h1 { margin: 0 0 20px; color: #2a1912; font-size: clamp(25px,4vw,36px); letter-spacing: -.04em; text-transform: none; }
+`;
 export const Tablecontainer = styled.div`
-    margin-top: 20px
-    padding: 0 10px;
-    width: 100%;
-    max-width: 1150px;
-    @media (max-width: 1024px) {
-    .table-container {
-        width: 90%; 
-        }
-    }
-
-    @media (max-width: 768px) {
-    .table-container {
-        width: 100%; 
-    }
-    }
-`
+  width: min(1180px, 100%); margin: 28px auto 0; overflow-x: auto; border: 1px solid #eee4dc;
+  border-radius: 20px; background: #fff; box-shadow: 0 14px 40px rgba(60,34,20,.08);
+`;

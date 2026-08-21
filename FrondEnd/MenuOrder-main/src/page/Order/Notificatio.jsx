@@ -1,102 +1,18 @@
-import React, { useEffect, useState } from "react";
-import Modald from "../../costormer/Components/Modal/Modal";
-import { Badge, Button, Form } from "antd";
-import { BellOutlined } from "@ant-design/icons";
-import { convertToTime } from "../../costormer/Time/time";
+import React,{useEffect,useState} from "react";
+import {Modal,message} from "antd";
+import {BellOutlined,CustomerServiceOutlined,InboxOutlined} from "@ant-design/icons";
+import {convertToTime} from "../../costormer/Time/time";
+import {AdminIconButton,NotificationItem,NotificationList} from "./style";
 
-const Notificatio = ({ children, tableId, setStatus }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [notifications, setNotionfications] = useState([]);
-
-
-  useEffect(() => {
-    if (!tableId || !isModalOpen) return; 
-    
-    const fetchNotifications = async () => {
-      try {
-        const response = await fetch(`http://localhost:8080/admin/notifications/tables/${tableId}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        const data = await response.json();
-        console.log("Notifications data:", data); 
-        setNotionfications(data || []);
-      } catch (err) {
-        console.error("Failed to fetch notifications:", err);
-      }
-    };
-
-    fetchNotifications();
-  }, [isModalOpen, tableId]); 
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleDeteleAll = async () => {
-    try {
-      await fetch(`http://localhost:8080/admin/notifications/tables/${tableId}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-      setNotionfications([]);
-      setIsModalOpen(false);
-      setStatus(true);
-    } catch (err) {
-      console.error("Failed to delete notifications:", err);
-    }
-  };
-
-  return (
-    <div>
-      <BellOutlined onClick={() => setIsModalOpen(true)} style={{ cursor: "pointer" }} />
-      <Modald
-        title="Thông báo"
-        open={isModalOpen}
-        onCancel={handleCancel}
-        onOk={handleDeteleAll}
-        okText="Xác Nhận"
-        cancelText="Hủy"
-        width={700}
-      >
-        <Form name="basic" autoComplete="off">
-          <table style={{width:"100%", borderCollapse:"collapse"}}>
-            <thead>
-              <tr>
-                <th style={{ padding: "10px 20px", textAlign: "left", borderBottom: "2px solid #ddd", backgroundColor: "#f4f4f4",fontWeight: "bold",}}>STT</th>
-                <th style={{ padding: "10px 20px", textAlign: "left", borderBottom: "2px solid #ddd", backgroundColor: "#f4f4f4",fontWeight: "bold",}}>Yêu cầu</th>
-                <th style={{ padding: "10px 20px", textAlign: "left", borderBottom: "2px solid #ddd", backgroundColor: "#f4f4f4",fontWeight: "bold",}}>Thời gian</th>
-              </tr>
-            </thead>
-            <tbody>
-              {notifications && notifications.length > 0 ? (
-                notifications.map((notification, index) => (
-                  <tr key={index}>
-                    <td style={{  padding: "10px 20px",
-                      borderBottom: "1px solid #ddd",}}>{index + 1}</td>
-                    <td style={{  padding: "10px 20px",
-                      borderBottom: "1px solid #ddd",}}>{notification?.text || "Không có nội dung"}</td>
-                    <td style={{  padding: "10px 20px",
-                      borderBottom: "1px solid #ddd",}}>{convertToTime(notification?.notificationTime) || "N/A"}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="3">Không có thông báo</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </Form>
-      </Modald>
-    </div>
-  );
+const Notificatio=({tableId,setStatus})=>{
+ const [open,setOpen]=useState(false);const [notifications,setNotifications]=useState([]);const [loading,setLoading]=useState(false);
+ useEffect(()=>{if(!tableId||!open)return;setLoading(true);fetch(`http://localhost:8080/admin/notifications/tables/${tableId}`,{headers:{"Content-Type":"application/json",Authorization:`Bearer ${localStorage.getItem("token")}`}}).then(res=>res.json()).then(data=>setNotifications(Array.isArray(data)?data:[])).catch(()=>message.error("Không thể tải thông báo")).finally(()=>setLoading(false))},[open,tableId]);
+ const clearAll=async()=>{try{await fetch(`http://localhost:8080/admin/notifications/tables/${tableId}`,{method:"DELETE",headers:{"Content-Type":"application/json",Authorization:`Bearer ${localStorage.getItem("token")}`}});setNotifications([]);setStatus(true);setOpen(false);message.success("Đã xử lý tất cả thông báo")}catch{message.error("Không thể xử lý thông báo")}};
+ return <>
+  <AdminIconButton aria-label="Xem thông báo" onClick={()=>setOpen(true)}><BellOutlined/></AdminIconButton>
+  <Modal title={`Yêu cầu từ bàn ${tableId}`} open={open} onCancel={()=>setOpen(false)} onOk={clearAll} okText="Đánh dấu đã xử lý" cancelText="Đóng" width={620} confirmLoading={loading}>
+   <NotificationList>{notifications.length?notifications.map((item,index)=><NotificationItem key={item.notificationId||index}><div className="notice-icon"><CustomerServiceOutlined/></div><div><strong>{item?.text||"Khách cần hỗ trợ"}</strong><span>Yêu cầu số {index+1}</span></div><span className="time">{convertToTime(item?.notificationTime)||"Vừa xong"}</span></NotificationItem>):<div style={{padding:"50px 20px",textAlign:"center",color:"#9b8173"}}><InboxOutlined style={{display:"block",fontSize:34,marginBottom:10}}/>Không có yêu cầu mới</div>}</NotificationList>
+  </Modal>
+ </>;
 };
-
 export default Notificatio;

@@ -1,13 +1,12 @@
 import React from "react"
-import Foor from "../Foor/Foor"
 import Header from "../Header/Header"
 
 
 const Default = ({children}) => {
     return(
-        <div>          
+        <div className="admin-shell">          
             <Header/>
-            {children}
+            <main className="admin-content">{children}</main>
         </div>
     )
 }

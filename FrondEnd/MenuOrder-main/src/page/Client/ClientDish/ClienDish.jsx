@@ -1,156 +1,98 @@
-import React, { useEffect, useState } from "react";
-import { Badge, Button, Tabs } from "antd";
-import { ShoppingCartOutlined, ArrowLeftOutlined, PlusOutlined } from "@ant-design/icons";
+import React, { useEffect, useMemo, useState } from "react";
+import { Badge, Input } from "antd";
+import { ArrowLeftOutlined, SearchOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
-import { Cart, Headers, Titles } from "./style";
+import {
+  Cart, Categories, CategoryButton, DishGrid, EmptyState, HeaderInner,
+  Headers, Hero, IconButton, Page, SearchBox, SectionHead, Shell, Titles,
+} from "./style";
 import DishComponent from "./DishComponent";
 
-const { TabPane } = Tabs;
-
-const ClienDish = () => {
+const ClientDish = () => {
   const navigate = useNavigate();
   const { tableId } = useParams();
   const [menus, setMenus] = useState([]);
   const [allDishes, setAllDishes] = useState([]);
-  const [dishes, setDishes] = useState([]);
-  const [menuId, setMenuId] = useState(0);
+  const [menuId, setMenuId] = useState("0");
   const [orderId, setOrderId] = useState(0);
   const [cartCount, setCartCount] = useState(0);
+  const [search, setSearch] = useState("");
+  const [customerName, setCustomerName] = useState(sessionStorage.getItem(`customer-${tableId}`) || "");
 
   useEffect(() => {
     fetch("http://localhost:8080/menus")
       .then((res) => res.json())
       .then((data) => {
-        if (data && data.length > 0) {
+        if (Array.isArray(data)) {
           setMenus(data);
-          setAllDishes(data.flatMap(menu => menu.dishResponseDTO)); 
-          setDishes(data.flatMap(menu => menu.dishResponseDTO)); 
-          setMenuId(data[0]?.menuId || 0);
+          setAllDishes(data.flatMap((menu) => menu.dishResponseDTO || []));
         }
       })
       .catch((error) => console.error("Error fetching menus:", error));
   }, []);
 
   useEffect(() => {
-    if (tableId) {
-      fetch(`http://localhost:8080/orders/tables/${tableId}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data) {
-            setOrderId(data.orderId || 0);
-            const totalItems = data.orderItemResponseDTO?.reduce(
-              (sum, item) => sum + item.dishQuantity,
-              0
-            ) || 0;
-            setCartCount(totalItems); 
-          }
-        })
-        .catch((error) => console.error("Error fetching orders:", error));
-    }
+    if (!tableId) return;
+    fetch(`http://localhost:8080/orders/tables/${tableId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setOrderId(data?.orderId || 0);
+        setCustomerName(data?.customerName || "");
+        setCartCount((data?.orderItemResponseDTO || []).reduce((sum, item) => sum + item.dishQuantity, 0));
+      })
+      .catch((error) => console.error("Error fetching orders:", error));
   }, [tableId]);
 
-  const handleMenuChange = (key) => {
-    setMenuId(Number(key));
-    if (key === "0") {
-      setDishes(allDishes);
-    } else {
-      const selectedMenu = menus.find((menu) => menu.menuId.toString() === key);
-      if (selectedMenu) {
-        setDishes(selectedMenu.dishResponseDTO || []); 
-      }
-    }
-  };
-
-  const handleAddToCart = (quantity) => {
-    setCartCount((prevCount) => prevCount + quantity); 
-  };
+  const dishes = useMemo(() => {
+    const source = menuId === "0"
+      ? allDishes
+      : menus.find((menu) => String(menu.menuId) === menuId)?.dishResponseDTO || [];
+    const keyword = search.trim().toLocaleLowerCase("vi");
+    return keyword ? source.filter((dish) => dish.dishName?.toLocaleLowerCase("vi").includes(keyword)) : source;
+  }, [allDishes, menuId, menus, search]);
 
   return (
-    <div
-      style={{
-        padding: "10px",
-        background: "#f5f5f5",
-        maxWidth: "100%",
-        margin: "0 auto",
-      }}
-    >
+    <Page>
       <Headers>
-        <ArrowLeftOutlined
-          style={{ fontSize: "20px", cursor: "pointer", position:"absolute", left:"10px" }}
-          onClick={() => navigate(`/tables/${tableId}`)}
-        />
-        <Titles level={4} style={{margin:"0"}}>DANH SÁCH MÓN ĂN</Titles>
+        <HeaderInner>
+          <IconButton aria-label="Quay lại" onClick={() => navigate(`/tables/${tableId}`)}><ArrowLeftOutlined /></IconButton>
+          <Titles>TLU Quán<span>{customerName || "Khách hàng"} · Bàn số {tableId}</span></Titles>
+          <div />
+        </HeaderInner>
       </Headers>
 
-      <div
-      style={{
-        overflowX: "auto",
-        whiteSpace: "nowrap",
-        display: "flex",
-        scrollSnapType: "x mandatory",
-        scrollBehavior: "smooth",
-        WebkitOverflowScrolling: "touch", 
-        msOverflowStyle: "none", 
-        scrollbarWidth: "none", 
-      }}
-    >
-      <style>
-        {`
-          div::-webkit-scrollbar {
-            display: none;
-          }
-        `}
-      </style>
-      <Tabs
-        defaultActiveKey={menuId?.toString()}
-        centered
-        tabBarStyle={{
-          background: "#fff",
-          borderRadius: "5px",
-          marginBottom: "10px",
-          padding: "0",
-        }}
-        onChange={handleMenuChange}
-        style={{
-          flexShrink: 0,
-          minWidth: "100%", // Đảm bảo Tabs chiếm đủ chiều rộng
-        }}
-        tabPosition="top"
-      >
-        <TabPane key="0" tab="All" />
-        {menus.map((menu) => (
-          <TabPane key={menu.menuId} tab={menu.menuTitle}></TabPane>
-        ))}
-      </Tabs>
-    </div>
+      <Shell>
+        <Hero>
+          <p>Hôm nay ăn gì?</p>
+          <h1>Món ngon vừa nấu, chọn nhanh tại bàn.</h1>
+          <small>Khám phá thực đơn và thêm món bạn yêu thích vào giỏ.</small>
+        </Hero>
 
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          justifyContent: "center",
-        }}
-      >
-        {dishes.map((dish) => (
-          <DishComponent
-            dish={dish}
-            orderId={orderId}
-            handleAddToCart={handleAddToCart}
-          />
-        ))}
-      </div>
+        <SearchBox>
+          <Input prefix={<SearchOutlined style={{ color: "#b08b74", marginRight: 8 }} />} value={search} onChange={(event) => setSearch(event.target.value)} allowClear placeholder="Tìm món bạn muốn..." />
+        </SearchBox>
+
+        <Categories aria-label="Danh mục món ăn">
+          <CategoryButton $active={menuId === "0"} onClick={() => setMenuId("0")}>Tất cả</CategoryButton>
+          {menus.map((menu) => (
+            <CategoryButton key={menu.menuId} $active={menuId === String(menu.menuId)} onClick={() => setMenuId(String(menu.menuId))}>
+              {menu.menuTitle}
+            </CategoryButton>
+          ))}
+        </Categories>
+
+        <SectionHead><h2>Thực đơn</h2><span>{dishes.length} món</span></SectionHead>
+        <DishGrid>
+          {dishes.map((dish) => <DishComponent key={dish.dishId} dish={dish} orderId={orderId} handleAddToCart={(quantity) => setCartCount((count) => count + quantity)} />)}
+          {!dishes.length && <EmptyState>Không tìm thấy món phù hợp. Hãy thử một từ khóa khác nhé.</EmptyState>}
+        </DishGrid>
+      </Shell>
 
       <Cart onClick={() => navigate(`/order/${tableId}`)}>
-        <Badge
-          count={cartCount}
-          style={{ backgroundColor: "red" }}
-        >
-          <ShoppingCartOutlined style={{ fontSize: "18px", color: "black" }} />
-        </Badge>
+        <Badge count={cartCount} overflowCount={99}><ShoppingCartOutlined style={{ color: "#fff", fontSize: 21 }} /></Badge>
       </Cart>
-    </div>
+    </Page>
   );
 };
 
-export default ClienDish;
+export default ClientDish;

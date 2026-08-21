@@ -39,6 +39,11 @@ public class TableController {
         TableResponseDTO table = tableService.getTableById(tableId);
         return ResponseEntity.ok(table);
     }
+    @RequestMapping(path = "/tables/{tableId}", method = RequestMethod.GET)
+    public ResponseEntity<?> getPublicTableById(@PathVariable Long tableId) throws NotFoundException {
+        TableResponseDTO table = tableService.getTableById(tableId);
+        return ResponseEntity.ok(table);
+    }
     @RequestMapping(path = "/admin/tables/status", method = RequestMethod.GET)
     public ResponseEntity<?> getTablesByStatus(@RequestParam("status") String status) throws NotFoundException {
         List<TableResponseDTO> tables = tableService.getTablesByStatus(status);

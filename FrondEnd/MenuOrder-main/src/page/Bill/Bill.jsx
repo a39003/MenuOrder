@@ -8,7 +8,7 @@ import { convertToTime } from "../../costormer/Time/time";
 
 const { Title } = Typography;
 
-const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, onBillDeleted, table, setStatus }) => {
+const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, onBillDeleted, table, setStatus, customerName, tableName }) => {
   const navigate = useNavigate();
   
   const handleDeleteBill = async () => {
@@ -221,6 +221,9 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
           <Typography.Text style={{ display: "block", textAlign: "center" }}>
             Địa Chỉ: Nghiêm Xuân Yên - Đại Kim - Hoàng Mai - Hà Nội <br />
             SDT: 012345678
+          </Typography.Text>
+          <Typography.Text style={{ display: "block", textAlign: "center", margin: "10px 0 16px", fontWeight: 700 }}>
+            Khách hàng: {customerName || bill?.customerName || "Khách hàng"} · Bàn: {tableName || bill?.tableName || tableId}
           </Typography.Text>
 
           <Table

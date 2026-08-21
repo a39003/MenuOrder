@@ -7,6 +7,7 @@
 -- Phiên bản máy phục vụ: 10.4.27-MariaDB
 -- Phiên bản PHP: 8.2.0
 
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -153,10 +154,11 @@ INSERT INTO `menus` (`menu_id`, `menu_title`, `status`, `menu_description`) VALU
 --
 
 CREATE TABLE `notifications` (
-  `notification_id` bigint(20) NOT NULL,
+  `notification_id` bigint(20) NOT NULL AUTO_INCREMENT,
   `notification_time` datetime DEFAULT NULL,
   `text` varchar(255) DEFAULT NULL,
-  `table_id` bigint(20) DEFAULT NULL
+  `table_id` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`notification_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface IMenuService {
     List<MenuResponseDTO> getAllMenus();
-    List<MenuResponseDTO> getAllMenusAndCreateOrder(Long tableId) throws NotFoundException;
+    List<MenuResponseDTO> getAllMenusAndCreateOrder(Long tableId, String customerName) throws NotFoundException;
     MenuResponseDTO getMenuById(Long menuId) throws NotFoundException;
     Menu addMenu(MenuRequestDTO menuRequestDTO) throws BadRequestException;
     Menu updateMenu(Long menuId, MenuRequestDTO menuRequestDTO) throws NotFoundException, BadRequestException;

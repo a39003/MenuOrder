@@ -1,5 +1,4 @@
 import Account from "../page/Account/Account";
-import Bill from "../page/Bill/Bill";
 import ClientDish from "../page/Client/ClientDish/ClienDish";
 import ClientOrder from "../page/Client/ClientOrder/ClientOrder";
 import ClientOrderItem from "../page/Client/ClientOrderItem/ClientOrderItem";
@@ -9,8 +8,11 @@ import Login from "../page/Login/Login";
 import Menu from "../page/Menu/Menu";
 import Order from "../page/Order/Order";
 import Table from "../page/Table/Table";
+import Dashboard from "../page/Dashboard/Dashboard";
+import PaidBills from "../page/PaidBills/PaidBills";
 
 export const routes = [
+    { path:'/admin/dashboard', page: Dashboard, isShowHeader: true },
     {
         path:'/login',
         page: Login,
@@ -43,9 +45,10 @@ export const routes = [
     },
     {
         path:'/admin/bill',
-        page: Bill,
+        page: PaidBills,
         isShowHeader: true
     },
+    { path:'/admin/bills', page: PaidBills, isShowHeader: true },
     {
         path:'/tables/:tableId',
         page: ClientTable,

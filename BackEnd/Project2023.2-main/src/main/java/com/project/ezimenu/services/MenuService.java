@@ -52,7 +52,7 @@ public class MenuService implements IMenuService {
                 })
                 .collect(Collectors.toList());
     }
-    public List<MenuResponseDTO> getAllMenusAndCreateOrder(Long tableId) throws NotFoundException {
+    public List<MenuResponseDTO> getAllMenusAndCreateOrder(Long tableId, String customerName) throws NotFoundException {
         Table table = tableRepository.findById(tableId)
                 .orElseThrow(() -> new NotFoundException("Không thể tìm thấy bàn với id: " + tableId));
         // Tạo order mới nếu bàn trống
@@ -62,8 +62,15 @@ public class MenuService implements IMenuService {
             Order newOrder = new Order();
             newOrder.setTable(table);
             newOrder.setOrderStatus("Đang order");
+            newOrder.setCustomerName(customerName);
             tableRepository.save(table);
             orderRepository.save(newOrder);
+        } else if (table.getOrders() != null && !table.getOrders().isEmpty()) {
+            Order currentOrder = table.getOrders().get(table.getOrders().size() - 1);
+            if (currentOrder.getCustomerName() == null || currentOrder.getCustomerName().isBlank()) {
+                currentOrder.setCustomerName(customerName);
+                orderRepository.save(currentOrder);
+            }
         }
         List<Menu> menus = menuRepository.findByStatus(Constants.ENTITY_STATUS.ACTIVE);
         return menus.stream()

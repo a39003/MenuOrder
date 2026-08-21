@@ -1,227 +1,30 @@
-import React, { useEffect, useState } from "react";
-import Modald from "../../costormer/Components/Modal/Modal";
-import { Button, Form, InputNumber, Modal, Table } from "antd";
-import { EyeOutlined } from "@ant-design/icons";
-import InpuComponent from "../../costormer/Components/InputComponent/InputComponent";
+import React,{useEffect,useState} from "react";
+import {Button,InputNumber,Modal,Table,message} from "antd";
+import {CheckOutlined,EyeOutlined,MinusOutlined,PlusOutlined} from "@ant-design/icons";
+import {AdminIconButton,OrderModalHead,OrderStatusTag,QuantityControl} from "./style";
 
-const ListDish = ({ tableId }) => {
-  const [visible, setVisible] = useState(false);
-  const [orders, setOrders] = useState({ orderItemResponseDTO: [] });
-
-  const fetchOrders = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/admin/orders/tables/${tableId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      const data = await response.json();
-      setOrders(data || { orderItemResponseDTO: [] });
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchOrders();
-    const intervalId = setInterval(fetchOrders, 5000);
-    return () => clearInterval(intervalId);
-  }, [tableId]);
-
-
-
-
-  const handleUpdateStatus = async (id) => {
-    try {
-
-      const itemToUpdate = orders.orderItemResponseDTO.find(
-        (item) => item.orderItemId === id
-      );
-  
-      if (!itemToUpdate) return;
-  
-
-      const updatedStatus =
-        itemToUpdate.dishStatus === "Đang ra món" ? "Đã ra món" : "Đang ra món";
-  
-
-      const response = await fetch(
-        `http://localhost:8080/admin/orders/${orders.orderId}/items/${id}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ dishStatus: updatedStatus }),
-        }
-      );
-  
-      const updatedData = await response.json();
-
-      setOrders((prevOrders) => {
-        const updatedItems = prevOrders.orderItemResponseDTO.map((item) =>
-          item.orderItemId === id
-            ? { ...item, dishStatus: updatedStatus } 
-            : item
-        );
-        return { ...prevOrders, orderItemResponseDTO: updatedItems };
-      });
-    } catch (error) {
-      console.error("Error updating order item status:", error);
-    }
-  };
-  
-
-
-
-  
-
-  const handleUpdateQuantity = async (id, newQuantity) => {
-    if (newQuantity <= 0) return;
-
-    try {
-      const response = await fetch(
-        `http://localhost:8080/admin/orders/${orders.orderId}/items/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ dishQuantity: newQuantity }),
-        }
-      );
-      const updatedOrderItem = await response.json();
-      updateOrderItem(updatedOrderItem);
-    } catch (error) {
-      console.error("Error updating order item quantity:", error);
-    }
-  };
-  const handleNoteChange = (e) => {
-    setOrders((prev) => ({ ...prev, dishNote: e.target.value }));
-  };
-
-  const updateOrderItem = (updatedOrderItem) => {
-    setOrders((prevOrders) => {
-      const updatedOrderItems = prevOrders.orderItemResponseDTO.map((item) =>
-        item.orderItemId === updatedOrderItem.orderItemId
-          ? { ...item, ...updatedOrderItem }
-          : item
-      );
-      return { ...prevOrders, orderItemResponseDTO: updatedOrderItems };
-    });
-  };
-
-  const columns = [
-    {
-      title: "Món ăn",
-      dataIndex: "dishName",
-      key: "dishName",
-    },
-    {
-      title: "Số lượng",
-      dataIndex: "dishQuantity",
-      key: "dishQuantity",
-      render: (text, record) => (
-        <div style={{ display: "flex", alignItems: "center" }} >
-          <Button
-            onClick={() => handleUpdateQuantity(record.orderItemId, record.dishQuantity - 1)}
-            disabled={record.dishQuantity <= 1 || record.dishStatus === "Đã ra món"}
-            style={{ marginRight: 8 }}
-          >
-            -
-          </Button>
-          <InputNumber
-            min={1}
-            value={record.dishQuantity}
-            onChange={(value) => handleUpdateQuantity(record.orderItemId, value)}
-            style={{ width: "60px", marginRight: 8 }}
-            disabled={record.dishStatus === "Đã ra món"}
-          />
-          <Button
-            onClick={() => handleUpdateQuantity(record.orderItemId, record.dishQuantity + 1)}
-            disabled={record.dishStatus === "Đã ra món"}
-          >
-            +
-          </Button>
-        </div>
-      ),
-    },
-    {
-      title: "Giá",
-      dataIndex: "customPrice",
-      key: "customPrice",
-      render: (price) => `${price.toLocaleString()} đ`,
-    },
-    {
-      title: "Ghi chú",
-      dataIndex: "dishNote",
-      key: "dishNote",
-    },
-    {
-      title: "Trạng thái",
-      dataIndex: "dishStatus",
-      key: "dishStatus",
-    },
-    {
-      title: "Ra món",
-      key: "action",
-      render: (_, record) => {
-        const isSelecting = record.dishStatus !== "Đang ra món" && record.dishStatus !== "Đã ra món";
-        const isPreparing = record.dishStatus === "Đang ra món";
-        const isServed = record.dishStatus === "Đã ra món";
-
-        return (
-          <Button
-            type="primary"
-            disabled={isSelecting || isServed}
-            onClick={() => handleUpdateStatus(record.orderItemId)}
-          >
-            {isPreparing ? "Ra món" : isServed ? "Đã ra món" : "Đang chọn món"}
-          </Button>
-        );
-      },
-    },
-  ];
-
-  return (
-    <div>
-      <EyeOutlined
-        style={{ cursor: "pointer", fontSize: "20px" }}
-        onClick={() => setVisible(!visible)}
-      />
-      <Modal
-        title="Chi tiết đơn hàng"
-        open={visible}
-        onCancel={() => setVisible(false)}
-        cancelText="Đóng"
-        footer={null}
-        width={1000}
-      >
-        <Form name="basic" autoComplete="off">
-          <Table
-            dataSource={orders.orderItemResponseDTO}
-            columns={columns}
-            pagination={false}
-            size="small"
-            rowKey="orderItemId"
-          />
-
-          <Form.Item style={{ textAlign: 'right', marginTop: '20px' }}>
-          <Button onClick={() => setVisible(false)} type="primary" htmlType="submit">
-            Đóng
-          </Button>
-        </Form.Item>
-        </Form>
-      </Modal>
-    </div>
-  );
+const ListDish=({tableId})=>{
+ const [visible,setVisible]=useState(false);const [orders,setOrders]=useState({orderItemResponseDTO:[]});
+ const fetchOrders=async()=>{try{const response=await fetch(`http://localhost:8080/admin/orders/tables/${tableId}`,{headers:{"Content-Type":"application/json",Authorization:`Bearer ${localStorage.getItem("token")}`}});const data=await response.json();setOrders(data||{orderItemResponseDTO:[]})}catch{if(visible)message.error("Không thể tải chi tiết đơn")}};
+ useEffect(()=>{fetchOrders();const timer=setInterval(fetchOrders,5000);return()=>clearInterval(timer)},[tableId]);
+ const updateStatus=async(id)=>{const item=orders.orderItemResponseDTO.find(entry=>entry.orderItemId===id);if(!item)return;const dishStatus=item.dishStatus==="Đang ra món"?"Đã ra món":"Đang ra món";try{const response=await fetch(`http://localhost:8080/admin/orders/${orders.orderId}/items/${id}/status`,{method:"PUT",headers:{"Content-Type":"application/json",Authorization:`Bearer ${localStorage.getItem("token")}`},body:JSON.stringify({dishStatus})});if(!response.ok)throw new Error();setOrders(old=>({...old,orderItemResponseDTO:old.orderItemResponseDTO.map(entry=>entry.orderItemId===id?{...entry,dishStatus}:entry)}));message.success("Đã cập nhật trạng thái món")}catch{message.error("Không thể cập nhật trạng thái")}};
+ const updateQuantity=async(id,quantity)=>{if(quantity<=0)return;try{const response=await fetch(`http://localhost:8080/admin/orders/${orders.orderId}/items/${id}`,{method:"PUT",headers:{"Content-Type":"application/json",Authorization:`Bearer ${localStorage.getItem("token")}`},body:JSON.stringify({dishQuantity:quantity})});const updated=await response.json();setOrders(old=>({...old,orderItemResponseDTO:old.orderItemResponseDTO.map(item=>item.orderItemId===updated.orderItemId?{...item,...updated}:item)}))}catch{message.error("Không thể cập nhật số lượng")}};
+ const items=orders.orderItemResponseDTO||[];
+ const columns=[
+  {title:"Món ăn",dataIndex:"dishName",key:"dishName",render:(value,record)=><div style={{display:"flex",alignItems:"center",gap:12}}>{record.thumbnail?<img src={record.thumbnail} alt={value} style={{width:52,height:52,objectFit:"cover",borderRadius:12,border:"1px solid #eee1d8"}}/>:<span style={{width:52,height:52,display:"grid",placeItems:"center",borderRadius:12,background:"#fff0e5",color:"#c65b27",fontWeight:900}}>{value?.trim()?.charAt(0)?.toUpperCase()||"M"}</span>}<strong>{value}</strong></div>},
+  {title:"Số lượng",key:"quantity",render:(_,record)=>{const locked=record.dishStatus==="Đã ra món";return <QuantityControl><Button icon={<MinusOutlined/>} disabled={locked||record.dishQuantity<=1} onClick={()=>updateQuantity(record.orderItemId,record.dishQuantity-1)}/><InputNumber controls={false} min={1} disabled={locked} value={record.dishQuantity} onChange={value=>updateQuantity(record.orderItemId,value)}/><Button icon={<PlusOutlined/>} disabled={locked} onClick={()=>updateQuantity(record.orderItemId,record.dishQuantity+1)}/></QuantityControl>}},
+  {title:"Giá",dataIndex:"customPrice",key:"price",render:value=><strong style={{color:"#c65b27"}}>{Number(value||0).toLocaleString("vi-VN")}đ</strong>},
+  {title:"Ghi chú",dataIndex:"dishNote",key:"note",render:value=><span style={{color:value?"#594238":"#b5a69e"}}>{value||"Không có"}</span>},
+  {title:"Trạng thái",dataIndex:"dishStatus",key:"status",render:value=><OrderStatusTag $done={value==="Đã ra món"}>{value}</OrderStatusTag>},
+  {title:"Thao tác",key:"action",render:(_,record)=>{const preparing=record.dishStatus==="Đang ra món";const served=record.dishStatus==="Đã ra món";return <Button type="primary" icon={<CheckOutlined/>} disabled={!preparing||served} onClick={()=>updateStatus(record.orderItemId)}>{served?"Đã phục vụ":preparing?"Xác nhận ra món":"Chờ khách chốt"}</Button>}}
+ ];
+ return <>
+  <AdminIconButton aria-label="Xem món khách đặt" onClick={()=>setVisible(true)}><EyeOutlined/></AdminIconButton>
+  <Modal title="Chi tiết món khách đặt" open={visible} onCancel={()=>setVisible(false)} footer={null} width={1050}>
+   <OrderModalHead><div><h3>Bàn {tableId} · {orders.customerName || "Khách hàng"}</h3><span className="sub">Theo dõi và cập nhật món theo thời gian thực</span></div><span className="count">{items.reduce((sum,item)=>sum+Number(item.dishQuantity||0),0)} món</span></OrderModalHead>
+   <Table dataSource={items} columns={columns} pagination={false} rowKey="orderItemId" scroll={{x:820}} locale={{emptyText:"Chưa có món nào trong đơn"}}/>
+   <div style={{textAlign:"right",marginTop:18}}><Button onClick={()=>setVisible(false)}>Đóng</Button></div>
+  </Modal>
+ </>;
 };
-
 export default ListDish;

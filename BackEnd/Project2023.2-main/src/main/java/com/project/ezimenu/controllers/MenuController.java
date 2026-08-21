@@ -30,8 +30,12 @@ public class MenuController {
         return ResponseEntity.ok(menus);
     }
     @GetMapping("/{tableId}/menus")
-    public ResponseEntity<?> getAllMenusAndCreateOrder(@PathVariable Long tableId) throws NotFoundException {
-        List<MenuResponseDTO> menus = menuService.getAllMenusAndCreateOrder(tableId);
+    public ResponseEntity<?> getAllMenusAndCreateOrder(@PathVariable Long tableId,
+                                                        @RequestParam String customerName) throws NotFoundException, BadRequestException {
+        if (customerName == null || customerName.trim().isEmpty()) {
+            throw new BadRequestException("Vui lòng nhập tên khách hàng!");
+        }
+        List<MenuResponseDTO> menus = menuService.getAllMenusAndCreateOrder(tableId, customerName.trim());
 
         if(menus.isEmpty()){
             throw new NotFoundException("Hiện không có menu nào!");

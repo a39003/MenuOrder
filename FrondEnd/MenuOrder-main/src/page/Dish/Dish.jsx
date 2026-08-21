@@ -1,14 +1,16 @@
-import { ButtonDish, Conter, LoadFile, Tablecontainer } from "./style"
+import { ButtonDish, Conter, DishSearch, LoadFile, Tablecontainer } from "./style"
 import React, { useEffect, useState } from "react";
 import Modald from "../../costormer/Components/Modal/Modal";
-import { DeleteOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons"
-import { Button, Form, Input, message, Select, Space, Table } from "antd";
+import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons"
+import { Button, Form, message, Select, Space, Table } from "antd";
 import Foor from "../../costormer/Components/Foor/Foor";
 import InpuComponent from "../../costormer/Components/InputComponent/InputComponent";
+import { useNavigate } from "react-router-dom";
 
-const { Search } = Input;
 
 const Dish = ({ dish }) => {
+
+  const navigate = useNavigate();
 
   const [rowSelected, setRowSelected] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -304,6 +306,26 @@ const Dish = ({ dish }) => {
       key: "dishName",
     },
     {
+      title: "Danh mục",
+      key: "menuTitle",
+      render: (_, record) => {
+        const menu = menus.find((item) => Number(item.menuId) === Number(record.menuId));
+        return (
+          <span style={{
+            display: "inline-flex",
+            padding: "6px 10px",
+            borderRadius: "999px",
+            background: "#fff0e5",
+            color: "#b65325",
+            fontWeight: 700,
+            fontSize: "12px",
+          }}>
+            {record.menuTitle || record.menuName || menu?.menuTitle || "Chưa phân loại"}
+          </span>
+        );
+      },
+    },
+    {
       title: "Giá",
       dataIndex: "dishPrice",
       key: "dishPrice",
@@ -339,7 +361,14 @@ const Dish = ({ dish }) => {
       <Conter style={{ textAlign: 'center', padding: '20px', backgroundColor: "#f3e2d3" }}>
         <h1>DANH SÁCH MÓN ĂN</h1>
         <div style={{ margin: '10px' }}>
-          <Search
+          <ButtonDish
+            icon={<ArrowLeftOutlined />}
+            onClick={() => navigate('/admin/menu')}
+            style={{ background: "#2a1912" }}
+          >
+            Quay lại quản lý menu
+          </ButtonDish>
+          <DishSearch
           placeholder="Tìm kiếm món ăn..."
           onSearch={handleSearch}
             enterButton={
@@ -347,7 +376,6 @@ const Dish = ({ dish }) => {
                 <SearchOutlined />
               </Button>
                 }
-          style={{ width: 300}}
         />
           <ButtonDish onClick={() => setIsModalOpen(true)}>Thêm mới</ButtonDish>
         </div>

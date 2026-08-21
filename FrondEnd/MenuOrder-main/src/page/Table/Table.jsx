@@ -2,11 +2,12 @@ import { ButtonGruoup, Conter, Tablecontainer  } from "./style"
 import React, { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Modald from "../../costormer/Components/Modal/Modal";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons"
-import { Button, Form, Input, message, Space, Table } from "antd";
+import { DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons"
+import { Button, Form, Input, message, Modal, Space, Table } from "antd";
 import Foor from "../../costormer/Components/Foor/Foor";
 
 import InpuComponent from "../../costormer/Components/InputComponent/InputComponent";
+import { QRCodeCanvas } from "qrcode.react";
 
 
 const Tabled = () => {
@@ -15,6 +16,7 @@ const Tabled = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenMoadl, setIsOpenModal] = useState(false)
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+  const [qrTable, setQrTable] = useState(null);
 
   const [table, setTables] = useState([]);
   const [status, setStatus] = useState(true);
@@ -167,6 +169,17 @@ const Tabled = () => {
 
   const [form] = Form.useForm();
 
+  const getTableUrl = (tableId) => `${window.location.origin}/tables/${tableId}`;
+
+  const handleDownloadQr = () => {
+    const canvas = document.getElementById("table-qr-canvas");
+    if (!canvas || !qrTable) return;
+    const link = document.createElement("a");
+    link.download = `QR-${qrTable.tableName || `ban-${qrTable.tableId}`}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  };
+
 
 
   const columns = [
@@ -179,6 +192,24 @@ const Tabled = () => {
       title: 'Mô tả',
       dataIndex: 'tableDescription',
       key: 'tableDescription'
+    },
+    {
+      title: 'Mã QR',
+      key: 'qrCode',
+      align: 'center',
+      render: (_, record) => (
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            setQrTable(record);
+          }}
+          style={{ width: 58, height: 58, display: 'grid', placeItems: 'center', margin: '0 auto', padding: 5, border: '1px solid #eadfd7', borderRadius: 12, background: '#fff', cursor: 'pointer' }}
+          aria-label={`Xem mã QR ${record.tableName}`}
+        >
+          <QRCodeCanvas value={getTableUrl(record.tableId)} size={46} marginSize={0} />
+        </button>
+      ),
     },
     {
       title: 'Thao tác',
@@ -217,6 +248,29 @@ const Tabled = () => {
             style={{ overflowX: 'auto' }}
           />
         </Tablecontainer>
+        <Modal
+          title={`Mã QR · ${qrTable?.tableName || ''}`}
+          open={Boolean(qrTable)}
+          onCancel={() => setQrTable(null)}
+          footer={null}
+          centered
+          width={420}
+        >
+          {qrTable && (
+            <div style={{ textAlign: 'center', padding: '8px 0 4px' }}>
+              <div style={{ width: 260, margin: '0 auto 20px', padding: 22, border: '1px solid #eee1d8', borderRadius: 24, background: '#fffaf4' }}>
+                <QRCodeCanvas id="table-qr-canvas" value={getTableUrl(qrTable.tableId)} size={216} marginSize={2} level="H" />
+              </div>
+              <h3 style={{ margin: '0 0 5px', fontSize: 20 }}>{qrTable.tableName}</h3>
+              <p style={{ margin: '0 0 18px', color: '#91786a' }}>
+                Khách quét mã để mở thực đơn và gọi món tại bàn.
+              </p>
+              <Button type="primary" icon={<DownloadOutlined />} onClick={handleDownloadQr}>
+                Tải mã QR
+              </Button>
+            </div>
+          )}
+        </Modal>
         <Modald title="Thêm bàn" open={isModalOpen} setStatus={setStatus} onCancel={handleCancel} footer={null}>
           <Form
             name="basic"

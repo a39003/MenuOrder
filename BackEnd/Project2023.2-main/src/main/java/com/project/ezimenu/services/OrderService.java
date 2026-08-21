@@ -43,6 +43,7 @@ public class OrderService implements IOrderService {
                             .map(orderItem -> {
                                 OrderItemResponseDTO orderItemResponseDTO = modelMapper.map(orderItem, OrderItemResponseDTO.class);
                                 orderItemResponseDTO.setDishName(orderItem.getDish().getDishName());
+                                orderItemResponseDTO.setThumbnail(orderItem.getDish().getThumbnail());
                                 orderItemResponseDTO.setCustomPrice((orderItem.getCustomPrice() == 0) ? orderItem.getDish().getDishPrice() : orderItem.getCustomPrice());
                                 return orderItemResponseDTO;
                             })
@@ -66,6 +67,7 @@ public class OrderService implements IOrderService {
                 .map(orderItem -> {
                     OrderItemResponseDTO orderItemResponseDTO = modelMapper.map(orderItem, OrderItemResponseDTO.class);
                     orderItemResponseDTO.setDishName(orderItem.getDish().getDishName());
+                    orderItemResponseDTO.setThumbnail(orderItem.getDish().getThumbnail());
                     orderItemResponseDTO.setCustomPrice((orderItem.getCustomPrice() == 0) ? orderItem.getDish().getDishPrice() : orderItem.getCustomPrice());
                     return orderItemResponseDTO;
                 })
@@ -84,6 +86,7 @@ public class OrderService implements IOrderService {
                 .map(orderItem -> {
                     OrderItemResponseDTO orderItemResponseDTO = modelMapper.map(orderItem, OrderItemResponseDTO.class);
                     orderItemResponseDTO.setDishName(orderItem.getDish().getDishName());
+                    orderItemResponseDTO.setThumbnail(orderItem.getDish().getThumbnail());
                     orderItemResponseDTO.setCustomPrice((orderItem.getCustomPrice() == 0) ? orderItem.getDish().getDishPrice() : orderItem.getCustomPrice());
                     return orderItemResponseDTO;
                 })
@@ -156,6 +159,7 @@ public class OrderService implements IOrderService {
                 .map(orderItem -> {
                     OrderItemResponseDTO orderItemResponseDTO = modelMapper.map(orderItem, OrderItemResponseDTO.class);
                     orderItemResponseDTO.setDishName(orderItem.getDish().getDishName());
+                    orderItemResponseDTO.setThumbnail(orderItem.getDish().getThumbnail());
                     orderItemResponseDTO.setCustomPrice((orderItem.getCustomPrice() == 0) ? orderItem.getDish().getDishPrice() : orderItem.getCustomPrice());
                     return orderItemResponseDTO;
                 })
