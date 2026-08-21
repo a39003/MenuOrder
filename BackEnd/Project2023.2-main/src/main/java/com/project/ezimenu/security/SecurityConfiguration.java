@@ -136,55 +136,59 @@ public class SecurityConfiguration {
 
         http
 
-            // Không lưu session vì dùng JWT
-            .sessionManagement(session ->
-                    session.sessionCreationPolicy(
-                            SessionCreationPolicy.STATELESS
-                    )
-            )
+                // JWT => không dùng session
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        )
+                )
 
 
-            // Tắt CSRF cho REST API
-            .csrf(csrf ->
-                    csrf.disable()
-            )
+                // REST API không dùng CSRF
+                .csrf(csrf ->
+                        csrf.disable()
+                )
 
 
-            // Bật CORS
-            .cors(cors ->
-                    cors.configurationSource(
-                            corsConfigurationSource()
-                    )
-            )
+                // Enable CORS
+                .cors(cors ->
+                        cors.configurationSource(
+                                corsConfigurationSource()
+                        )
+                )
 
 
-            // Phân quyền API
-            .authorizeHttpRequests(auth -> auth
-
-                    // API public
-                    .requestMatchers(
-                            "/orders/**",
-                            "/auth/**"
-                    )
-                    .permitAll()
+                .authorizeHttpRequests(auth -> auth
 
 
-                    // API admin
-                    .requestMatchers("/admin/**")
-                    .hasRole("ADMIN")
+                        // Public API
+                        .requestMatchers(
+                                "/auth/**",
+                                "/dishes/**",
+                                "/tables/**",
+                                "/orders/**"
+                        )
+                        .permitAll()
 
 
-                    // Các API còn lại yêu cầu JWT
-                    .anyRequest()
-                    .authenticated()
-            )
+                        // Admin API
+                        .requestMatchers(
+                                "/admin/**"
+                        )
+                        .hasRole("ADMIN")
 
 
-            // JWT Filter chạy trước filter login mặc định
-            .addFilterBefore(
-                    jwtTokenValidator(),
-                    UsernamePasswordAuthenticationFilter.class
-            );
+                        // Các API khác cần login
+                        .anyRequest()
+                        .authenticated()
+                )
+
+
+                // JWT filter
+                .addFilterBefore(
+                        jwtTokenValidator(),
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
 
         return http.build();
@@ -196,66 +200,58 @@ public class SecurityConfiguration {
     public CorsConfigurationSource corsConfigurationSource() {
 
 
-        return new CorsConfigurationSource() {
+        return request -> {
 
 
-            @Override
-            public CorsConfiguration getCorsConfiguration(
-                    HttpServletRequest request
-            ) {
+            CorsConfiguration cfg =
+                    new CorsConfiguration();
 
 
-                CorsConfiguration cfg =
-                        new CorsConfiguration();
+            List<String> origins =
+                    Arrays.asList(
+                            allowedOrigins.split(",")
+                    );
 
 
-                // Lấy origin từ application.properties
-                List<String> origins =
-                        Arrays.asList(
-                                allowedOrigins.split(",")
-                        );
+            cfg.setAllowedOrigins(origins);
 
 
-                cfg.setAllowedOrigins(origins);
+            cfg.setAllowedMethods(
+                    Arrays.asList(
+                            "GET",
+                            "POST",
+                            "PUT",
+                            "DELETE",
+                            "PATCH",
+                            "OPTIONS"
+                    )
+            );
 
 
-                cfg.setAllowedMethods(
-                        Arrays.asList(
-                                "GET",
-                                "POST",
-                                "PUT",
-                                "DELETE",
-                                "PATCH",
-                                "OPTIONS"
-                        )
-                );
+            cfg.setAllowedHeaders(
+                    Arrays.asList(
+                            "Authorization",
+                            "Content-Type",
+                            "Accept",
+                            "Origin"
+                    )
+            );
 
 
-                cfg.setAllowedHeaders(
-                        Arrays.asList(
-                                "Authorization",
-                                "Content-Type",
-                                "Accept",
-                                "Origin"
-                        )
-                );
+            cfg.setExposedHeaders(
+                    List.of(
+                            "Authorization"
+                    )
+            );
 
 
-                cfg.setExposedHeaders(
-                        List.of(
-                                "Authorization"
-                        )
-                );
+            cfg.setAllowCredentials(true);
 
 
-                cfg.setAllowCredentials(true);
+            cfg.setMaxAge(3600L);
 
 
-                cfg.setMaxAge(3600L);
-
-
-                return cfg;
-            }
+            return cfg;
         };
     }
 }
