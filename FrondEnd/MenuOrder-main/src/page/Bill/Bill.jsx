@@ -5,16 +5,17 @@ import { useNavigate } from "react-router-dom";
 import Foor from "../../costormer/Components/Foor/Foor";
 import { Conter } from "./style";
 import { convertToTime } from "../../costormer/Time/time";
+import { API_URL } from "../../config";
 
 const { Title } = Typography;
 
 const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, onBillDeleted, table, setStatus, customerName, tableName }) => {
   const navigate = useNavigate();
-  
+
   const handleDeleteBill = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/orders/${orderId}/bill`,
+        `${API_URL}/admin/orders/${orderId}/bill`,
         {
           method: "DELETE",
           headers: {
@@ -43,7 +44,7 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
   const fetchOrderDetails = async () => {
     if (!table?.tableId) return;
     try {
-      const response = await fetch(`http://localhost:8080/orders/tables/${table.tableId}`, {
+      const response = await fetch(`${API_URL}/orders/tables/${table.tableId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -54,7 +55,7 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
       if (response.ok) {
         const data = await response.json();
         setOrder(data);
-        updateDoneDishCount(data.orderItemResponseDTO); 
+        updateDoneDishCount(data.orderItemResponseDTO);
       } else {
         console.error("Failed to fetch order details:", response.statusText);
       }
@@ -67,7 +68,7 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
     if (orderItems && orderItems.length > 0) {
       const doneDishCount = orderItems.filter((item) => item.dishStatus === "Đã ra món").length;
       const updatedTable = { ...table, doneDish: doneDishCount };
-      setStatus(updatedTable); 
+      setStatus(updatedTable);
     }
   };
 
@@ -82,7 +83,7 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
     }
 
     try {
-      const response = await fetch(`http://localhost:8080/orders/${order.orderId}/bill`, {
+      const response = await fetch(`${API_URL}/orders/${order.orderId}/bill`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +95,7 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
         if (!data?.message) {
           setBill(data);
           setIsBillCreated(true);
-          localStorage.setItem(`bill-${order.orderId}`, JSON.stringify(data)); 
+          localStorage.setItem(`bill-${order.orderId}`, JSON.stringify(data));
         } else {
           setBill(null);
           setIsBillCreated(false);
@@ -113,19 +114,19 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
   const handleMakeTableEmpty = async () => {
     try {
 
-      const response = await fetch(`http://localhost:8080/admin/tables/${tableId}/status`, {
+      const response = await fetch(`${API_URL}/admin/tables/${tableId}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-      
+
       });
 
       if (response.ok) {
         const data = await response.json();
         message.success("Làm trống bàn thành công");
-        setStatus({ ...table, tableStatus: "Bàn trống" }); 
+        setStatus({ ...table, tableStatus: "Bàn trống" });
       } else {
         console.success("Làm trống bàn thành công", response.statusText);
       }
@@ -137,7 +138,7 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
   const handleAcceptPayment = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/tables/${tableId}/payment/accept`,
+        `${API_URL}/admin/tables/${tableId}/payment/accept`,
         {
           method: "POST",
           headers: {
@@ -148,7 +149,7 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
       );
       if (response.ok) {
         message.success("Xác nhận thanh toán thành công");
-        await handleMakeTableEmpty(); 
+        await handleMakeTableEmpty();
         window.location.reload();
 
 
@@ -227,30 +228,30 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
           </Typography.Text>
 
           <Table
-            dataSource={bill?.billItems || []} 
+            dataSource={bill?.billItems || []}
             columns={[
-              { 
-                title: "Tên món", 
-                dataIndex: "billItemName", 
-                key: "billItemName" 
+              {
+                title: "Tên món",
+                dataIndex: "billItemName",
+                key: "billItemName"
               },
-              { 
-                title: "Số lượng", 
-                dataIndex: "billItemQuantity", 
-                key: "billItemQuantity" 
+              {
+                title: "Số lượng",
+                dataIndex: "billItemQuantity",
+                key: "billItemQuantity"
               },
               {
                 title: "Giá tiền",
-                dataIndex: "billItemPrice", 
+                dataIndex: "billItemPrice",
                 key: "billItemPrice",
                 render: (billItemPrice) => billItemPrice?.toLocaleString() + " đ",
               },
               {
-                title: "Thành tiền", 
+                title: "Thành tiền",
                 key: "totalPrice",
                 render: (text, record) => {
                   const total = record.billItemQuantity * record.billItemPrice;
-                  return total.toLocaleString(); 
+                  return total.toLocaleString();
                 },
               },
             ]}

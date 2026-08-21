@@ -7,6 +7,7 @@ import {
   Headers, Hero, IconButton, Page, SearchBox, SectionHead, Shell, Titles,
 } from "./style";
 import DishComponent from "./DishComponent";
+import { API_URL } from "../../../config";
 
 const ClientDish = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const ClientDish = () => {
   const [customerName, setCustomerName] = useState(sessionStorage.getItem(`customer-${tableId}`) || "");
 
   useEffect(() => {
-    fetch("http://localhost:8080/menus")
+    fetch(`${API_URL}/menus`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -33,7 +34,7 @@ const ClientDish = () => {
 
   useEffect(() => {
     if (!tableId) return;
-    fetch(`http://localhost:8080/orders/tables/${tableId}`)
+    fetch(`${API_URL}/orders/tables/${tableId}`)
       .then((res) => res.json())
       .then((data) => {
         setOrderId(data?.orderId || 0);
@@ -55,25 +56,25 @@ const ClientDish = () => {
     <Page>
       <Headers>
         <HeaderInner>
-          <IconButton aria-label="Quay lại" onClick={() => navigate(`/tables/${tableId}`)}><ArrowLeftOutlined /></IconButton>
-          <Titles>TLU Quán<span>{customerName || "Khách hàng"} · Bàn số {tableId}</span></Titles>
+          <IconButton aria-label="Quay láº¡i" onClick={() => navigate(`/tables/${tableId}`)}><ArrowLeftOutlined /></IconButton>
+          <Titles>TLU QuÃ¡n<span>{customerName || "KhÃ¡ch hÃ ng"} Â· BÃ n sá»‘ {tableId}</span></Titles>
           <div />
         </HeaderInner>
       </Headers>
 
       <Shell>
         <Hero>
-          <p>Hôm nay ăn gì?</p>
-          <h1>Món ngon vừa nấu, chọn nhanh tại bàn.</h1>
-          <small>Khám phá thực đơn và thêm món bạn yêu thích vào giỏ.</small>
+          <p>HÃ´m nay Äƒn gÃ¬?</p>
+          <h1>MÃ³n ngon vá»«a náº¥u, chá»n nhanh táº¡i bÃ n.</h1>
+          <small>KhÃ¡m phÃ¡ thá»±c Ä‘Æ¡n vÃ  thÃªm mÃ³n báº¡n yÃªu thÃ­ch vÃ o giá».</small>
         </Hero>
 
         <SearchBox>
-          <Input prefix={<SearchOutlined style={{ color: "#b08b74", marginRight: 8 }} />} value={search} onChange={(event) => setSearch(event.target.value)} allowClear placeholder="Tìm món bạn muốn..." />
+          <Input prefix={<SearchOutlined style={{ color: "#b08b74", marginRight: 8 }} />} value={search} onChange={(event) => setSearch(event.target.value)} allowClear placeholder="TÃ¬m mÃ³n báº¡n muá»‘n..." />
         </SearchBox>
 
-        <Categories aria-label="Danh mục món ăn">
-          <CategoryButton $active={menuId === "0"} onClick={() => setMenuId("0")}>Tất cả</CategoryButton>
+        <Categories aria-label="Danh má»¥c mÃ³n Äƒn">
+          <CategoryButton $active={menuId === "0"} onClick={() => setMenuId("0")}>Táº¥t cáº£</CategoryButton>
           {menus.map((menu) => (
             <CategoryButton key={menu.menuId} $active={menuId === String(menu.menuId)} onClick={() => setMenuId(String(menu.menuId))}>
               {menu.menuTitle}
@@ -81,10 +82,10 @@ const ClientDish = () => {
           ))}
         </Categories>
 
-        <SectionHead><h2>Thực đơn</h2><span>{dishes.length} món</span></SectionHead>
+        <SectionHead><h2>Thá»±c Ä‘Æ¡n</h2><span>{dishes.length} mÃ³n</span></SectionHead>
         <DishGrid>
           {dishes.map((dish) => <DishComponent key={dish.dishId} dish={dish} orderId={orderId} handleAddToCart={(quantity) => setCartCount((count) => count + quantity)} />)}
-          {!dishes.length && <EmptyState>Không tìm thấy món phù hợp. Hãy thử một từ khóa khác nhé.</EmptyState>}
+          {!dishes.length && <EmptyState>KhÃ´ng tÃ¬m tháº¥y mÃ³n phÃ¹ há»£p. HÃ£y thá»­ má»™t tá»« khÃ³a khÃ¡c nhÃ©.</EmptyState>}
         </DishGrid>
       </Shell>
 

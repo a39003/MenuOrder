@@ -14,8 +14,9 @@ import {
   TableFooter,
 } from "./style";
 import Bill from "../Bill/Bill";
+import { API_URL } from "../../config";
 
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = API_URL;
 
 const TableOrder = ({ table, setStatus }) => {
   const [order, setOrder] = useState(null);
@@ -80,20 +81,20 @@ const TableOrder = ({ table, setStatus }) => {
 
   const updateDoneDishCount = (orderItems) => {
     if (orderItems && orderItems.length > 0) {
-      const doneDishCount = orderItems.filter((item) => item.dishStatus === "Đã ra món").length;
+      const doneDishCount = orderItems.filter((item) => item.dishStatus === "ÄÃ£ ra mÃ³n").length;
       const updatedTable = { ...table, doneDish: doneDishCount };
       setStatus(updatedTable);
     }
   };
 
   useEffect(() => {
-    fetchData(); 
+    fetchData();
 
     const intervalId = setInterval(() => {
       fetchData();
-    }, 5000); 
+    }, 5000);
 
-    return () => clearInterval(intervalId); 
+    return () => clearInterval(intervalId);
   }, [table?.tableId]);
 
   const handleMakeTableEmpty = async () => {
@@ -107,8 +108,8 @@ const TableOrder = ({ table, setStatus }) => {
       });
 
       if (response.ok) {
-        message.success("Làm trống bàn thành công");
-        setStatus({ ...table, tableStatus: "Bàn trống" });
+        message.success("LÃ m trá»‘ng bÃ n thÃ nh cÃ´ng");
+        setStatus({ ...table, tableStatus: "BÃ n trá»‘ng" });
       } else {
         console.error("Failed to make table empty:", response.statusText);
       }
@@ -130,16 +131,16 @@ const TableOrder = ({ table, setStatus }) => {
 
       if (response.ok) {
         const data = await response.json();
-        message.success(data.message || "Tạo bill thành công");
+        message.success(data.message || "Táº¡o bill thÃ nh cÃ´ng");
         setBill(data);
         setIsBillCreated(true);
         setIsBillDialogOpen(true);
         localStorage.setItem(`bill-${order.orderId}`, JSON.stringify(data));
       } else {
-        message.error("Có món ăn chưa ra");
+        message.error("CÃ³ mÃ³n Äƒn chÆ°a ra");
       }
     } catch (error) {
-      message.error("Lỗi tạo hóa đơn:", error);
+      message.error("Lá»—i táº¡o hÃ³a Ä‘Æ¡n:", error);
     }
   };
 
@@ -152,23 +153,23 @@ const TableOrder = ({ table, setStatus }) => {
     <Tables>
       <TableCar>
         <TableHeader>
-          <span>{table?.tableName}<small style={{display:"block",fontSize:11,fontWeight:600,color:"#a98f81",marginTop:3}}>Khách: {order?.customerName || "Chưa nhập tên"}</small></span> <Status>{table?.tableStatus}</Status>
+          <span>{table?.tableName}<small style={{display:"block",fontSize:11,fontWeight:600,color:"#a98f81",marginTop:3}}>KhÃ¡ch: {order?.customerName || "ChÆ°a nháº­p tÃªn"}</small></span> <Status>{table?.tableStatus}</Status>
         </TableHeader>
         <TableBody>
           <TimeSection>
             <ClockCircleOutlined style={{ fontSize: "18px", marginRight: "8px" }} />
-            {table?.totalTime} Phút
+            {table?.totalTime} PhÃºt
           </TimeSection>
-          <DishesSection>{`${table?.doneDish || 0}/${table?.totalDish || 0}`} món ăn</DishesSection>
+          <DishesSection>{`${table?.doneDish || 0}/${table?.totalDish || 0}`} mÃ³n Äƒn</DishesSection>
         </TableBody>
         <TableFooter>
           <Badge count={table?.notificationNumber || 0}>
             <Notificatio tableId={table?.tableId} setStatus={setStatus} />
           </Badge>
-          {table?.tableStatus === "Đang yêu cầu thanh toán" && (
+          {table?.tableStatus === "Äang yÃªu cáº§u thanh toÃ¡n" && (
             <div style={{ display: "flex" }}>
               <Button onClick={handleCreateBill} disabled={isBillCreated} style={{ margin: "0 5px" }}>
-                Tạo bill
+                Táº¡o bill
               </Button>
               <Bill
                 bill={bill}
@@ -185,9 +186,9 @@ const TableOrder = ({ table, setStatus }) => {
               </Bill>
             </div>
           )}
-          {table?.tableStatus === "Đã thanh toán" && (
+          {table?.tableStatus === "ÄÃ£ thanh toÃ¡n" && (
             <Button onClick={handleMakeTableEmpty}>
-              Làm trống bàn
+              LÃ m trá»‘ng bÃ n
             </Button>
           )}
           {table?.totalDish > 0 && (

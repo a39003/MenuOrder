@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import logo from "../../config/Logo TL.png";
 import * as message from "../../costormer/Components/message/Message";
 import { LoginCar, LoginContainer, LoginPage, LoginVisual } from "./style";
+import { API_URL } from "../../config";
 
 const Login = () => {
   const [values, setValues] = useState({ username: "", password: "" });
@@ -15,7 +16,7 @@ const Login = () => {
     event.preventDefault();
     if (!values.username || !values.password) return message.warning("Vui lòng nhập tài khoản và mật khẩu");
     try {
-      const res = await fetch("http://localhost:8080/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(values) });
+      const res = await fetch(`${API_URL}/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(values) });
       const data = await res.json();
       if (res.ok) { localStorage.setItem("token", data.jwt); message.success("Đăng nhập thành công"); navigate("/admin/order"); }
       else message.error("Tài khoản hoặc mật khẩu không đúng");

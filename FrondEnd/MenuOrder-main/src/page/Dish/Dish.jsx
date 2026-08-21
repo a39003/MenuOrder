@@ -6,6 +6,7 @@ import { Button, Form, message, Select, Space, Table } from "antd";
 import Foor from "../../costormer/Components/Foor/Foor";
 import InpuComponent from "../../costormer/Components/InputComponent/InputComponent";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../../config";
 
 
 const Dish = ({ dish }) => {
@@ -39,7 +40,7 @@ const Dish = ({ dish }) => {
 
   const [menus, setMenus] = useState([])
   useEffect(() => {
-    fetch("http://localhost:8080/menus", {
+    fetch(`${API_URL}/menus`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +87,7 @@ const Dish = ({ dish }) => {
     console.log(formData);
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/dishes${rowSelected.dishId ? "/" + rowSelected.dishId : ""}`,
+        `${API_URL}/admin/dishes${rowSelected.dishId ? "/" + rowSelected.dishId : ""}`,
         {
           method: `${rowSelected.dishId ? "PUT" : "POST"}`,
           headers: {
@@ -115,14 +116,14 @@ const Dish = ({ dish }) => {
     } catch (error) {
       console.message.error("There was an error!");
     }
-  
+
   };
 
 
   const handleDeleteDish = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/dishes/${rowSelected?.dishId}`,
+        `${API_URL}/admin/dishes/${rowSelected?.dishId}`,
         {
           method: "DELETE",
           headers: {
@@ -141,7 +142,7 @@ const Dish = ({ dish }) => {
 
   useEffect(() => {
     if (status) {
-      fetch("http://localhost:8080/dishes")
+      fetch(`${API_URL}/dishes`)
         .then((res) => res.json())
         .then((data) => {
           setDishes(data);
@@ -255,7 +256,7 @@ const Dish = ({ dish }) => {
     console.log(formData);
     try {
       const response = await fetch(
-        `http://localhost:8080/admin/dishes${record.dishId ? "/" + record.dishId : ""}`,
+        `${API_URL}/admin/dishes${record.dishId ? "/" + record.dishId : ""}`,
         {
           method: `${record.dishId ? "PUT" : "POST"}`,
           headers: {
@@ -402,7 +403,7 @@ const Dish = ({ dish }) => {
             style={{ maxWidth: 600 }}
             initialValues={{ dishName: stateDish?.name,
                 dishPrice: stateDish?.price,
-                menuId: stateDish?.menuId, 
+                menuId: stateDish?.menuId,
                 dishStatus: stateDish?.dishStatus, }}
             onFinish={onFinish}
             autoComplete="off"
@@ -434,9 +435,9 @@ const Dish = ({ dish }) => {
                 onChange={handleOnchangeSelect}
                 name="menuId"
                 options={menus.map((menu) => ({
-                  label: menu.menuTitle, 
+                  label: menu.menuTitle,
                   value: menu.menuId,
-                  name: menu.menuId  
+                  name: menu.menuId
                 }))}
               />
               <span></span>
@@ -446,10 +447,10 @@ const Dish = ({ dish }) => {
               label="Trạng thái"
               name="dishStatus"
               rules={[{ required: true, message: 'Vui lòng nhập danh mục!' }]}
-              
+
             >
           <Select
-                
+
                 value={stateDish?.dishStatus == 1 ? "còn món" : "đã hết" }
                 onChange={(value) => setSateDish({ ...stateDish, dishStatus: value })}
                 options={[
@@ -605,7 +606,7 @@ const Dish = ({ dish }) => {
                 />
               )}
                 </div>
-                
+
 
             </Form.Item>
 

@@ -6,6 +6,7 @@ import { DeleteOutlined, EditOutlined} from "@ant-design/icons"
 import { Button, Form, message, Table } from "antd";
 import Foor from "../../costormer/Components/Foor/Foor";
 import InpuComponent from "../../costormer/Components/InputComponent/InputComponent";
+import { API_URL } from "../../config";
 
 
 
@@ -26,11 +27,11 @@ const Menu = () => {
     const [menuName, setMenuName] = useState("");
     const [menuDescription, setMenuDescription] = useState("");
 
-    
+
 
     const handleSubmitForm = async (e) => {
         const res = await fetch(
-          `http://localhost:8080/admin/menus${selectedMenu? "/" + selectedMenu.menuId : ""}`,
+          `${API_URL}/admin/menus${selectedMenu? "/" + selectedMenu.menuId : ""}`,
           {
             method: `${selectedMenu ? "PUT" : "POST"}`,
             headers: {
@@ -61,11 +62,11 @@ const Menu = () => {
         setIsOpenModal(false)
         setIsOpenModal(false)
       };
-    
+
       const handleDeleteMenu = async () => {
         try{
         const res = await fetch(
-          `http://localhost:8080/admin/menus/${selectedMenu?.menuId}`,
+          `${API_URL}/admin/menus/${selectedMenu?.menuId}`,
           {
             method: "DELETE",
             headers: {
@@ -79,8 +80,8 @@ const Menu = () => {
 
         if (res.ok) {
         message.success("Xóa menu thành công");
-        setStatus(true); 
-        setIsModalOpenDelete(false); 
+        setStatus(true);
+        setIsModalOpenDelete(false);
       } else {
         const errorData = await res.json();
         message.error(errorData
@@ -95,7 +96,7 @@ const Menu = () => {
 
       useEffect(() => {
         if (status) {
-          fetch("http://localhost:8080/menus", {
+          fetch(`${API_URL}/menus`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -127,7 +128,7 @@ const Menu = () => {
         setMenuName(record?.menuTitle); // Đặt tên bàn vào input
         setMenuDescription(record?.menuDescription);
         setIsOpenModal(true); // Mở modal
-        form.setFieldsValue({ menuTitle: record?.menuTitle, menuDescription:record?.menuDescription }); 
+        form.setFieldsValue({ menuTitle: record?.menuTitle, menuDescription:record?.menuDescription });
     }
 
 
@@ -151,7 +152,7 @@ const Menu = () => {
         onClick={() => {
             setSelectedMenu(record);
             handleDetails(record);;
-        }} 
+        }}
       />
           </div>
         )
@@ -236,7 +237,7 @@ const Menu = () => {
                     autoComplete="off"
                     form={form}
                 >
-                <Form.Item 
+                <Form.Item
                     label="Tên danh mục"
                     name="menuTitle"
                     rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
@@ -244,13 +245,13 @@ const Menu = () => {
                     <InpuComponent value={menu?.menuTitle} onChange={(e) => setMenuName(e.target.value)} name="menuTitle" placeholder="Nhập"/>
                 </Form.Item>
 
-                <Form.Item 
+                <Form.Item
                     label="Mô tả"
                     name="menuDescription"
                     >
                     <InpuComponent value={menu?.menuDescription} onChange={(e) => setMenuDescription(e.target.value)} name="menuDescription" placeholder="Nhập"/>
                 </Form.Item>
-        
+
 
                 <Form.Item wrapperCol={{ offset: 8, span: 16 }} style={{ textAlign: 'right' }}>
                   <Button
@@ -266,16 +267,16 @@ const Menu = () => {
                 </Form>
             </Modald>
 
-            <Modald title='Chỉnh sửa danh mục' 
+            <Modald title='Chỉnh sửa danh mục'
 
-                    isOpen={isOpenMoadl} 
+                    isOpen={isOpenMoadl}
                     onCancel={() => {setIsOpenModal(false);
-                    handleCancel();}} 
+                    handleCancel();}}
                     status={setStatus}
                     menu={menu}
                     footer={null}>
                 <Form
-                key={menu.menuId} 
+                key={menu.menuId}
                 name="basic"
                 labelCol={{ span: 7 }}
                 wrapperCol={{ span: 16 }}
@@ -289,7 +290,7 @@ const Menu = () => {
                 autoComplete="on"
                 form={form}
             >
-            <Form.Item 
+            <Form.Item
                 label="Tên danh mục"
                 name="menuTitle"
                 rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
@@ -297,7 +298,7 @@ const Menu = () => {
                 <InpuComponent  onChange={(e) => setMenuName(e.target.value)} />
               </Form.Item>
 
-            <Form.Item 
+            <Form.Item
                 label="Mô tả"
                 name="menuDescription"
                 >

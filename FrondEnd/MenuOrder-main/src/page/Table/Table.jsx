@@ -8,6 +8,7 @@ import Foor from "../../costormer/Components/Foor/Foor";
 
 import InpuComponent from "../../costormer/Components/InputComponent/InputComponent";
 import { QRCodeCanvas } from "qrcode.react";
+import { API_URL } from "../../config";
 
 
 const Tabled = () => {
@@ -28,7 +29,7 @@ const Tabled = () => {
 
   const handleSubmitForm = async (e) => {
     const res = await fetch(
-      `http://localhost:8080/admin/tables${selectedTable ? "/" + selectedTable.tableId : ""}`,
+      `${API_URL}/admin/tables${selectedTable ? "/" + selectedTable.tableId : ""}`,
       {
         method: `${selectedTable ? "PUT" : "POST"}`,
         headers: {
@@ -65,7 +66,7 @@ const Tabled = () => {
 
     try {
       const res = await fetch(
-        `http://localhost:8080/admin/tables/${selectedTable.tableId}`,
+        `${API_URL}/admin/tables/${selectedTable.tableId}`,
         {
           method: "DELETE",
           headers: {
@@ -92,7 +93,7 @@ const Tabled = () => {
 
   useEffect(() => {
     if (status) {
-      fetch("http://localhost:8080/admin/tables", {
+      fetch(`${API_URL}/admin/tables`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +121,7 @@ const Tabled = () => {
 
   const handleDetails = (record) => {
     console.log(record)
-    setSelectedTable(record); 
+    setSelectedTable(record);
     setTableName(record?.tableName); // Đặt tên bàn vào input
     setTableDescription(record?.tableDescription);
     setIsOpenModal(true); // Mở modal
@@ -161,7 +162,7 @@ const Tabled = () => {
       tableName: '',
     })
     setTableDescription({
-     tableDescription:'', 
+     tableDescription:'',
       })
     form.resetFields()
     console.log("....");
@@ -304,7 +305,7 @@ const Tabled = () => {
                 onClick={handleCancel}
               >
                 ĐÓNG
-              </Button> 
+              </Button>
               <Button type="primary" htmlType="submit">
                 Lưu
               </Button>
@@ -330,7 +331,7 @@ const Tabled = () => {
             wrapperCol={{ span: 16 }}
             style={{ maxWidth: 600 }}
             initialValues={{ tableName: selectedTable?.tableName,
-             tableDescription: selectedTable?.tableDescription}} 
+             tableDescription: selectedTable?.tableDescription}}
             onFinish={() => {
               handleSubmitForm();
               setTimeout(() => {
@@ -369,7 +370,7 @@ const Tabled = () => {
               onClick={handleCancel}
             >
               ĐÓNG
-            </Button>              
+            </Button>
             </Form.Item>
           </Form>
         </Modald>

@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { StatusButton } from './style';
 import TableOrder from './TableOrder';
+import { API_URL } from '../../config';
 
 function StatusPanel() {
-  const [data, setData] = useState([]); 
-  const [tables, setTables] = useState([]); 
-  const [status, setStatus] = useState(true); 
-  const [tableStatus, setTableStatus] = useState("Tất cả các bàn"); 
-  const [error, setError] = useState(null); 
+  const [data, setData] = useState([]);
+  const [tables, setTables] = useState([]);
+  const [status, setStatus] = useState(true);
+  const [tableStatus, setTableStatus] = useState("Táº¥t cáº£ cÃ¡c bÃ n");
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchTables = async () => {
       try {
-        setError(null); 
+        setError(null);
         const token = localStorage.getItem("token");
 
         if (!token) {
-          throw new Error("Authorization token không tồn tại. Vui lòng đăng nhập lại.");
+          throw new Error("Authorization token khÃ´ng tá»“n táº¡i. Vui lÃ²ng Ä‘Äƒng nháº­p láº¡i.");
         }
 
-        const response = await fetch("http://localhost:8080/admin/tables", {
+        const response = await fetch(`${API_URL}/admin/tables`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -28,20 +29,20 @@ function StatusPanel() {
         });
 
         if (!response.ok) {
-          throw new Error(`Lỗi khi lấy dữ liệu: ${response.statusText}`);
+          throw new Error(`Lá»—i khi láº¥y dá»¯ liá»‡u: ${response.statusText}`);
         }
 
         const result = await response.json();
 
         if (!Array.isArray(result)) {
-          throw new Error("Dữ liệu trả về không hợp lệ.");
+          throw new Error("Dá»¯ liá»‡u tráº£ vá» khÃ´ng há»£p lá»‡.");
         }
 
         setData(result);
-        setTables(result.filter((table) => table?.tableStatus === tableStatus || tableStatus === "Tất cả các bàn")); 
+        setTables(result.filter((table) => table?.tableStatus === tableStatus || tableStatus === "Táº¥t cáº£ cÃ¡c bÃ n"));
       } catch (error) {
         setError(error.message);
-        console.error("Lỗi khi lấy danh sách bàn:", error);
+        console.error("Lá»—i khi láº¥y danh sÃ¡ch bÃ n:", error);
       } finally {
         setStatus(false);
       }
@@ -54,17 +55,17 @@ function StatusPanel() {
   }, [tableStatus]);
 
   const handleClick = (status) => {
-    setTableStatus(status); 
-    if (status === "Tất cả các bàn") {
-      setTables(data); 
+    setTableStatus(status);
+    if (status === "Táº¥t cáº£ cÃ¡c bÃ n") {
+      setTables(data);
     } else {
-      setTables(data.filter((table) => table?.tableStatus === status)); 
+      setTables(data.filter((table) => table?.tableStatus === status));
     }
   };
 
   const quantity = (status) => {
-    if (status === "Tất cả các bàn") {
-      return data.length; 
+    if (status === "Táº¥t cáº£ cÃ¡c bÃ n") {
+      return data.length;
     }
     return data.filter((table) => table?.tableStatus === status).length || 0;
   };
@@ -76,9 +77,9 @@ function StatusPanel() {
   return (
     <div>
       <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: "10px" }}>
-        <h2>Trạng thái của bàn:</h2>
+        <h2>Tráº¡ng thÃ¡i cá»§a bÃ n:</h2>
         <div style={{ display: 'flex', gap: "2px", flexWrap: "wrap" }}>
-          {["Tất cả các bàn", "Đang order", "Đang phục vụ", "Đang yêu cầu thanh toán", "Đang trống"].map((status) => (
+          {["Táº¥t cáº£ cÃ¡c bÃ n", "Äang order", "Äang phá»¥c vá»¥", "Äang yÃªu cáº§u thanh toÃ¡n", "Äang trá»‘ng"].map((status) => (
             <StatusButton
               key={status}
               variant={tableStatus === status ? "contained" : "outlined"}
@@ -100,7 +101,7 @@ function StatusPanel() {
             ))}
           </div>
         ) : (
-          <p>Không có bàn nào </p>
+          <p>KhÃ´ng cÃ³ bÃ n nÃ o </p>
         )}
       </div>
     </div>
