@@ -57,7 +57,7 @@ public class MenuService implements IMenuService {
     }
     @Transactional
     public List<MenuResponseDTO> getAllMenusAndCreateOrder(Long tableId, String customerName) throws NotFoundException {
-        Table table = tableRepository.findByIdWithoutRelations(tableId)
+        Table table = tableRepository.findById(tableId)
                 .orElseThrow(() -> new NotFoundException("Không thể tìm thấy bàn với id: " + tableId));
         // Tạo order mới nếu bàn trống
         if(table.getTableStatus().equals("Đang trống")){
