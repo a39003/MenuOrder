@@ -25,6 +25,12 @@ export const Headers = styled.header`
   background: rgba(255, 250, 244, 0.92);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid #eee1d8;
+
+  @media (max-width: 480px) {
+    height: 64px;
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    gap: 8px;
+  }
 `;
 export const HeaderButton = styled.button`
   width: 42px;
@@ -51,6 +57,10 @@ export const Titles = styled.div`
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
+
+  @media (max-width: 420px) {
+    font-size: 16px;
+  }
 `;
 export const CartIntro = styled.section`
   width: min(820px, calc(100% - 32px));
@@ -76,6 +86,12 @@ export const CartIntro = styled.section`
     font-size: 12px;
     font-weight: 800;
   }
+
+  @media (max-width: 480px) {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
 `;
 export const ListContainer = styled.div`
   width: min(820px, calc(100% - 32px));
@@ -95,6 +111,7 @@ export const CartItem = styled.article`
   background: #fff;
   box-shadow: 0 9px 28px rgba(60, 34, 20, 0.065);
   @media (max-width: 560px) {
+    padding: 15px;
     grid-template-columns: 54px 1fr;
     .item-actions {
       grid-column: 1/-1;
@@ -241,12 +258,18 @@ export const Footer = styled.footer`
   left: 0;
   width: 100%;
   padding: 14px max(16px, calc((100vw - 820px) / 2));
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
   display: flex;
   gap: 12px;
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(14px);
   border-top: 1px solid #eee1d8;
   box-shadow: 0 -10px 30px rgba(60, 34, 20, 0.06);
+
+  @media (max-width: 420px) {
+    padding-inline: 10px;
+    gap: 8px;
+  }
 `;
 export const FooterButton = styled.button`
   height: 54px;
@@ -272,5 +295,12 @@ export const FooterButton = styled.button`
     color: #9b8e86;
     box-shadow: none;
     cursor: not-allowed;
+  }
+
+  @media (max-width: 420px) {
+    height: 50px;
+    padding: 0 8px;
+    border-radius: 13px;
+    font-size: 12px;
   }
 `;

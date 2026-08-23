@@ -14,6 +14,17 @@ export const WrapperHeader = styled.header`
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 8px 26px rgba(36, 21, 15, 0.14);
+
+  @media (max-width: 768px) {
+    height: 64px;
+    padding: 0 16px;
+    gap: 10px;
+  }
+
+  @media (max-width: 420px) {
+    padding: 0 12px;
+    gap: 8px;
+  }
 `;
 
 export const Brand = styled.button`
@@ -47,6 +58,25 @@ export const Brand = styled.button`
     text-transform: uppercase;
     letter-spacing: 0.09em;
   }
+
+  @media (max-width: 480px) {
+    gap: 8px;
+
+    div {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    strong {
+      font-size: 15px;
+    }
+
+    span {
+      display: none;
+    }
+  }
 `;
 
 export const WrapperMenu = styled.button`
@@ -61,6 +91,11 @@ export const WrapperMenu = styled.button`
   cursor: pointer;
   &:hover {
     background: rgba(255, 255, 255, 0.13);
+  }
+
+  @media (max-width: 480px) {
+    width: 38px;
+    height: 38px;
   }
 `;
 
@@ -128,6 +163,11 @@ export const WrapperOrder = styled.button`
     color: #ffb27d;
   }
   @media (max-width: 560px) {
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    justify-content: center;
+
     span {
       display: none;
     }

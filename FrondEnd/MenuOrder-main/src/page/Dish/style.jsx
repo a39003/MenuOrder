@@ -41,6 +41,26 @@ export const DishSearch = styled(Input.Search)`
     justify-content: center;
   }
 `;
+export const Toolbar = styled.div`
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  @media (max-width: 720px) {
+    align-items: stretch;
+    flex-direction: column;
+
+    ${DishSearch},
+    .ant-btn {
+      width: 100%;
+      margin: 0;
+    }
+  }
+`;
 export const LoadFile = styled(Upload)`
   .ant-upload-select {
     width: 88px !important;
@@ -59,6 +79,20 @@ export const Conter = styled.main`
     letter-spacing: -0.04em;
     text-transform: none;
   }
+
+  @media (max-width: 768px) {
+    min-height: calc(100vh - 64px) !important;
+    padding: 28px 16px 44px !important;
+
+    h1 {
+      margin-bottom: 16px;
+      font-size: clamp(23px, 7vw, 31px);
+    }
+  }
+
+  @media (max-width: 420px) {
+    padding-inline: 12px !important;
+  }
 `;
 export const Tablecontainer = styled.div`
   width: min(1180px, 100%);
@@ -68,4 +102,9 @@ export const Tablecontainer = styled.div`
   border-radius: 20px;
   background: #fff;
   box-shadow: 0 14px 40px rgba(60, 34, 20, 0.08);
+
+  @media (max-width: 768px) {
+    margin-top: 20px;
+    border-radius: 16px;
+  }
 `;

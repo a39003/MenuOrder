@@ -13,6 +13,11 @@ export const Headers = styled.header`
   letter-spacing: -0.02em;
   background: rgba(255, 250, 244, 0.9);
   border-bottom: 1px solid #eee1d8;
+
+  @media (max-width: 480px) {
+    padding: 15px 16px;
+    font-size: 16px;
+  }
 `;
 export const Titles = styled.div`
   font-size: inherit;
@@ -64,6 +69,25 @@ export const ContentMain1 = styled.section`
     color: #ead9cf;
     font-size: 14px;
   }
+
+  @media (max-width: 600px) {
+    min-height: 330px;
+    margin: 16px 0;
+    border-radius: 22px;
+  }
+
+  @media (max-width: 420px) {
+    min-height: 280px;
+
+    .hero-copy h1 {
+      font-size: 30px;
+    }
+
+    .hero-copy p {
+      padding-right: 16px;
+      font-size: 13px;
+    }
+  }
 `;
 export const Promo = styled.section`
   display: grid;
@@ -99,6 +123,10 @@ export const Promo = styled.section`
   }
   @media (max-width: 600px) {
     grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 18px;
+    border-radius: 20px;
+
     img {
       height: 160px;
     }
@@ -190,6 +218,14 @@ export const GuestForm = styled.section`
     padding: 20px;
     .ant-input-affix-wrapper {
       height: 50px;
+    }
+  }
+
+  @media (max-width: 420px) {
+    padding: 18px 16px;
+
+    strong {
+      font-size: 19px;
     }
   }
 `;

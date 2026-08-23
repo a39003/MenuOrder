@@ -1,4 +1,4 @@
-import { ButtonGruoup, Conter, Tablecontainer } from "./style";
+import { ButtonGruoup, Conter, Tablecontainer, Toolbar } from "./style";
 import React, { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Modald from "../../costormer/Components/Modal/Modal";
@@ -198,14 +198,14 @@ const Menu = () => {
         }}
       >
         <h1>QUẢN LÝ MENU</h1>
-        <div style={{ margin: "10px" }}>
+        <Toolbar>
           <ButtonGruoup onClick={() => setIsModalOpen(true)}>
             Thêm mới
           </ButtonGruoup>
           <ButtonGruoup onClick={() => navigate("/admin/dish")}>
             Danh sách món ăn
           </ButtonGruoup>
-        </div>
+        </Toolbar>
         <Tablecontainer>
           <Table
             onRow={(record, rowIndex) => {
@@ -220,6 +220,7 @@ const Menu = () => {
             pagination={{ pageSize: 6 }}
             bordered
             rowKey="key"
+            scroll={{ x: "max-content" }}
           />
         </Tablecontainer>
         <Modald

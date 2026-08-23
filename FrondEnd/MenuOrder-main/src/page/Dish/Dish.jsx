@@ -4,6 +4,7 @@ import {
   DishSearch,
   LoadFile,
   Tablecontainer,
+  Toolbar,
 } from "./style";
 import React, { useEffect, useState } from "react";
 import Modald from "../../costormer/Components/Modal/Modal";
@@ -352,7 +353,7 @@ const Dish = ({ dish }) => {
         }}
       >
         <h1>DANH SÁCH MÓN ĂN</h1>
-        <div style={{ margin: "10px" }}>
+        <Toolbar>
           <ButtonDish
             icon={<ArrowLeftOutlined />}
             onClick={() => navigate("/admin/menu")}
@@ -373,7 +374,7 @@ const Dish = ({ dish }) => {
             }
           />
           <ButtonDish onClick={() => setIsModalOpen(true)}>Thêm mới</ButtonDish>
-        </div>
+        </Toolbar>
         <Tablecontainer>
           <Table
             onRow={(record, rowIndex) => {
@@ -386,7 +387,7 @@ const Dish = ({ dish }) => {
             dataSource={searchResults.length > 0 ? searchResults : dishes}
             columns={columns}
             pagination={{ pageSize: 10 }}
-            scroll={{ y: 400 }}
+            scroll={{ x: "max-content", y: 400 }}
             bordered
           />
         </Tablecontainer>

@@ -26,6 +26,10 @@ export const Headers = styled.header`
   background: rgba(255, 250, 244, 0.88);
   backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(74, 46, 31, 0.08);
+
+  @media (max-width: 480px) {
+    padding: 10px 0;
+  }
 `;
 
 export const HeaderInner = styled.div`
@@ -35,6 +39,12 @@ export const HeaderInner = styled.div`
   grid-template-columns: 44px 1fr 44px;
   align-items: center;
   gap: 12px;
+
+  @media (max-width: 480px) {
+    width: min(1120px, calc(100% - 24px));
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    gap: 8px;
+  }
 `;
 
 export const IconButton = styled.button`
@@ -57,6 +67,12 @@ export const IconButton = styled.button`
     transform: translateY(-2px);
     box-shadow: 0 10px 28px rgba(60, 34, 20, 0.12);
   }
+
+  @media (max-width: 480px) {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
 `;
 
 export const Titles = styled.div`
@@ -74,6 +90,14 @@ export const Titles = styled.div`
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+  }
+
+  @media (max-width: 420px) {
+    font-size: 16px;
+
+    span {
+      font-size: 9px;
+    }
   }
 `;
 
@@ -118,6 +142,12 @@ export const Hero = styled.section`
     margin-top: 12px;
     color: rgba(255, 255, 255, 0.72);
     font-size: 14px;
+  }
+
+  @media (max-width: 600px) {
+    margin-top: 16px;
+    padding: 22px 18px;
+    border-radius: 21px;
   }
 `;
 
@@ -174,6 +204,12 @@ export const SectionHead = styled.div`
     color: #957b6b;
     font-size: 13px;
   }
+
+  @media (max-width: 420px) {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
 `;
 
 export const DishGrid = styled.div`
@@ -205,7 +241,7 @@ export const DishCard = styled.article`
   }
 
   @media (max-width: 420px) {
-    grid-template-columns: 116px minmax(0, 1fr);
+    grid-template-columns: 104px minmax(0, 1fr);
     min-height: 132px;
   }
 `;
@@ -250,6 +286,10 @@ export const DishInfo = styled.div`
     color: #9a7c6a;
     font-size: 12px;
     line-height: 1.5;
+  }
+
+  @media (max-width: 420px) {
+    padding: 13px 12px;
   }
 `;
 
@@ -320,7 +360,8 @@ export const Cart = styled.button`
   }
   @media (max-width: 650px) {
     right: 16px;
-    bottom: 16px;
+    bottom: max(16px, env(safe-area-inset-bottom));
+  }
   }
 `;
 
@@ -347,5 +388,12 @@ export const ModalContent = styled.div`
     text-align: center;
     font-size: 17px;
     font-weight: 800;
+  }
+
+  @media (max-width: 480px) {
+    .dish-modal-image {
+      height: 180px;
+      border-radius: 14px;
+    }
   }
 `;

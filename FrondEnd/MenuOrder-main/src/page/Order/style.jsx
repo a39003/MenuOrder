@@ -22,6 +22,12 @@ export const TableCar = styled.article`
     transform: translateY(-3px);
     box-shadow: 0 18px 42px rgba(60, 34, 20, 0.13);
   }
+
+  @media (max-width: 480px) {
+    min-height: 190px;
+    padding: 16px;
+    border-radius: 16px;
+  }
 `;
 export const TableHeader = styled.div`
   font-size: 19px;
@@ -224,6 +230,29 @@ export const Conter = styled.main`
     grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
     gap: 18px !important;
   }
+
+  @media (max-width: 768px) {
+    min-height: calc(100vh - 64px) !important;
+    padding: 28px 16px !important;
+
+    &::before {
+      margin-bottom: 18px;
+    }
+
+    > div > div:first-child {
+      padding: 14px !important;
+      border-radius: 15px;
+    }
+
+    > div > div:last-child > div {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+      gap: 14px !important;
+    }
+  }
+
+  @media (max-width: 420px) {
+    padding: 22px 12px !important;
+  }
 `;
 export const StatusButton = styled(Button)`
   display: block;
@@ -232,4 +261,12 @@ export const StatusButton = styled(Button)`
   font-weight: 600;
   background: ${(props) =>
     props.variant === "contained" ? "#d96b2b" : "#fff5ee"};
+
+  @media (max-width: 520px) {
+    max-width: 100%;
+    height: auto;
+    min-height: 36px;
+    margin: 4px;
+    white-space: normal;
+  }
 `;

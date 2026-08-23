@@ -1,4 +1,4 @@
-import { ButtonGruoup, Conter, Tablecontainer } from "./style";
+import { ButtonGruoup, Conter, Tablecontainer, Toolbar } from "./style";
 import React, { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Modald from "../../costormer/Components/Modal/Modal";
@@ -248,11 +248,11 @@ const Tabled = () => {
         }}
       >
         <h1>QUẢN LÝ BÀN</h1>
-        <div style={{ margin: "10px" }}>
+        <Toolbar>
           <ButtonGruoup onClick={() => setIsModalOpen(true)}>
             Thêm mới
           </ButtonGruoup>
-        </div>
+        </Toolbar>
         <Tablecontainer>
           <Table
             onRow={(record, rowIndex) => {
@@ -267,6 +267,7 @@ const Tabled = () => {
             pagination={{ pageSize: 6 }}
             bordered
             rowKey="tableId"
+            scroll={{ x: "max-content" }}
             style={{ overflowX: "auto" }}
           />
         </Tablecontainer>

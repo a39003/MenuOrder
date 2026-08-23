@@ -1,1 +1,1 @@
-export { ButtonGruoup, Conter, Tablecontainer } from "../Table/style";
+export { ButtonGruoup, Conter, Tablecontainer, Toolbar } from "../Table/style";

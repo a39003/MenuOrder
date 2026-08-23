@@ -24,6 +24,11 @@ export const Headers = styled.header`
   background: rgba(255, 250, 244, 0.92);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid #eee1d8;
+
+  @media (max-width: 480px) {
+    height: 64px;
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+  }
 `;
 export const BackButton = styled.button`
   width: 42px;
@@ -47,6 +52,10 @@ export const Titles = styled.div`
     font-size: 10px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
+  }
+
+  @media (max-width: 420px) {
+    font-size: 16px;
   }
 `;
 export const OrderHero = styled.section`
@@ -80,6 +89,19 @@ export const OrderHero = styled.section`
     border-radius: 18px;
     background: rgba(255, 255, 255, 0.12);
     font-size: 25px;
+  }
+
+  @media (max-width: 480px) {
+    margin: 16px auto;
+    padding: 19px 17px;
+    border-radius: 20px;
+
+    .hero-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      font-size: 21px;
+    }
   }
 `;
 export const OrderList = styled.section`
@@ -188,8 +210,11 @@ export const FooterButton = styled.footer`
   backdrop-filter: blur(14px);
   border-top: 1px solid #eee1d8;
   box-shadow: 0 -10px 30px rgba(60, 34, 20, 0.06);
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
+
   @media (max-width: 500px) {
     padding: 10px;
+    padding-bottom: max(10px, env(safe-area-inset-bottom));
     gap: 7px;
     grid-template-columns: 0.85fr 1.3fr 0.85fr;
   }
@@ -277,6 +302,16 @@ export const ContainerModal = styled.div`
     margin-top: 12px;
     color: #90786a;
     font-size: 12px;
+  }
+
+  @media (max-width: 480px) {
+    padding: 14px;
+    border-radius: 14px;
+
+    .receipt-total {
+      padding: 13px;
+      font-size: 14px;
+    }
   }
 `;
 export const StyledTable = styled(Table)`

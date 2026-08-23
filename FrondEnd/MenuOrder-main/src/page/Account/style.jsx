@@ -5,6 +5,11 @@ export const MainContent = styled.main`
   display: grid;
   place-items: start center;
   background: #fffaf4;
+
+  @media (max-width: 768px) {
+    min-height: calc(100vh - 64px);
+    padding: 30px 16px;
+  }
 `;
 export const ProfileContainer = styled.section`
   width: min(520px, 100%);
@@ -55,6 +60,19 @@ export const ProfileContainer = styled.section`
     color: #b34d25;
     font-weight: 800;
     cursor: pointer;
+  }
+
+  @media (max-width: 480px) {
+    padding: 24px 18px;
+    border-radius: 20px;
+
+    h2 {
+      font-size: 22px;
+    }
+
+    .role {
+      margin-bottom: 20px;
+    }
   }
 `;
 export const Info = styled.div``;

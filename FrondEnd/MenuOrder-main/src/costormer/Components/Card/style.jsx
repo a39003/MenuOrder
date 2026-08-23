@@ -2,10 +2,12 @@ import { Card } from "antd";
 import styled from "styled-components";
 
 export const CardStyle = styled(Card)`
-  width: 200px;
+  width: min(200px, 100%);
   & img {
-    height: 200px;
-    width: 200px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1;
+    object-fit: cover;
   }
 `;
 

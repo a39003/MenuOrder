@@ -14,6 +14,7 @@ body {
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
+  -webkit-text-size-adjust: 100%;
 }
 
 *,
@@ -26,6 +27,14 @@ button,
 input,
 textarea {
   font: inherit;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  max-width: 100%;
 }
 
 .ant-btn-primary {
@@ -83,10 +92,98 @@ html {
   background-color: #fffaf4;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
 .admin-shell {
   min-height: 100vh;
   background: #f8f3ee;
 }
 .admin-content {
   min-height: calc(100vh - 72px);
+  width: 100%;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .admin-content {
+    min-height: calc(100vh - 64px);
+  }
+
+  .ant-modal {
+    width: calc(100vw - 24px) !important;
+    max-width: calc(100vw - 24px) !important;
+    margin: 12px auto;
+    top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .ant-modal-content {
+    padding: 18px !important;
+    border-radius: 18px !important;
+  }
+
+  .ant-modal-header {
+    margin-bottom: 16px !important;
+  }
+
+  .ant-form-item-row {
+    flex-direction: column;
+  }
+
+  .ant-form-item-label,
+  .ant-form-item-control {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+  }
+
+  .ant-form-item-label {
+    padding: 0 0 6px !important;
+    text-align: left !important;
+  }
+
+  .ant-form-item-label > label {
+    height: auto;
+  }
+
+  .ant-input-number,
+  .ant-picker,
+  .ant-select {
+    max-width: 100%;
+  }
+
+  .ant-table-wrapper .ant-table-thead > tr > th,
+  .ant-table-wrapper .ant-table-tbody > tr > td {
+    padding: 11px 12px;
+  }
+
+  .ant-table-wrapper .ant-pagination {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+}
+
+@media (max-width: 420px) {
+  .ant-modal {
+    width: calc(100vw - 16px) !important;
+    max-width: calc(100vw - 16px) !important;
+    margin: 8px auto;
+    top: 8px;
+  }
+
+  .ant-modal-content {
+    padding: 15px !important;
+  }
 }

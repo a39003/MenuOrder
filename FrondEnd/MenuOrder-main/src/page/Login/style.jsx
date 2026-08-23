@@ -43,11 +43,30 @@ export const LoginVisual = styled.section`
       font-size: 38px;
     }
   }
+
+  @media (max-width: 480px) {
+    min-height: 230px;
+    padding: 28px 18px;
+
+    h1 {
+      font-size: 32px;
+    }
+
+    p {
+      margin-top: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  }
 `;
 export const LoginContainer = styled.section`
   display: grid;
   place-items: center;
   padding: 34px;
+
+  @media (max-width: 480px) {
+    padding: 18px 12px;
+  }
 `;
 export const LoginCar = styled.div`
   width: min(390px, 100%);
@@ -91,5 +110,14 @@ export const LoginCar = styled.div`
   }
   .login-button:hover {
     background: #b9501f;
+  }
+
+  @media (max-width: 480px) {
+    padding: 26px 20px;
+    border-radius: 20px;
+
+    h2 {
+      font-size: 24px;
+    }
   }
 `;
