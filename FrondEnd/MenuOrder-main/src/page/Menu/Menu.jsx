@@ -13,6 +13,8 @@ const Menu = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenMoadl, setIsOpenModal] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const [menu, setMenus] = useState([]);
   const [status, setStatus] = useState(true);
@@ -22,40 +24,49 @@ const Menu = () => {
   const [menuDescription, setMenuDescription] = useState("");
 
   const handleSubmitForm = async (e) => {
-    const res = await fetch(
-      `${API_URL}/admin/menus${selectedMenu ? "/" + selectedMenu.menuId : ""}`,
-      {
-        method: `${selectedMenu ? "PUT" : "POST"}`,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+    if (saving) return;
+    setSaving(true);
+    try {
+      const res = await fetch(
+        `${API_URL}/admin/menus${selectedMenu ? "/" + selectedMenu.menuId : ""}`,
+        {
+          method: `${selectedMenu ? "PUT" : "POST"}`,
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            menuTitle: menuName,
+            menuDescription: menuDescription || "",
+          }),
         },
-        body: JSON.stringify({
-          menuTitle: menuName,
-          menuDescription: menuDescription || "",
-        }),
-      },
-    );
-    const data = await res.json();
-    if (data.menuId) {
-      message.success("Thành công");
-      setMenuName("");
-      setMenuDescription("");
-      form.resetFields();
-      setStatus(true);
-      setIsModalOpen(false);
-    } else {
-      setStatus(false);
-      setMenuName("");
-      setMenuDescription("");
-      message.error(data.message);
+      );
+      const data = await res.json();
+      if (data.menuId) {
+        message.success("Thành công");
+        setMenuName("");
+        setMenuDescription("");
+        form.resetFields();
+        setStatus(true);
+        setIsModalOpen(false);
+      } else {
+        setStatus(false);
+        setMenuName("");
+        setMenuDescription("");
+        message.error(data.message);
+      }
+      setIsOpenModal(false);
+    } catch {
+      message.error("Không thể lưu danh mục");
+    } finally {
+      setSaving(false);
     }
-    setIsOpenModal(false);
-    setIsOpenModal(false);
   };
 
   const handleDeleteMenu = async () => {
+    if (deleting) return;
+    setDeleting(true);
     try {
       const res = await fetch(
         `${API_URL}/admin/menus/${selectedMenu?.menuId}`,
@@ -79,6 +90,8 @@ const Menu = () => {
       }
     } catch (error) {
       message.error("Có lỗi xảy ra khi xóa bàn");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -271,7 +284,7 @@ const Menu = () => {
               <Button style={{ margin: "3px" }} onClick={handleCancel}>
                 ĐÓNG
               </Button>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={saving}>
                 LƯU
               </Button>
             </Form.Item>
@@ -321,7 +334,7 @@ const Menu = () => {
             </Form.Item>
 
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={saving}>
                 LƯU
               </Button>
             </Form.Item>
@@ -332,12 +345,8 @@ const Menu = () => {
           title="Xóa danh mục"
           open={isModalOpenDelete}
           onCancel={handleCancelDelete}
-          onOk={() => {
-            handleDeleteMenu();
-            setTimeout(() => {
-              handleCancelDelete();
-            }, 500);
-          }}
+          onOk={handleDeleteMenu}
+          confirmLoading={deleting}
           okText="Có"
           cancelText="Hủy"
         >

@@ -4,6 +4,7 @@ import {
   ArrowLeftOutlined,
   CustomerServiceOutlined,
   FileTextOutlined,
+  LoadingOutlined,
   ShoppingOutlined,
   WalletOutlined,
 } from "@ant-design/icons";
@@ -44,6 +45,8 @@ const ClientOrderItem = () => {
   const [bill, setBill] = useState(null);
   const [hasBill, setHasBill] = useState(false);
   const [billOpen, setBillOpen] = useState(false);
+  const [requestingPayment, setRequestingPayment] = useState(false);
+  const [loadingBill, setLoadingBill] = useState(false);
   const navigate = useNavigate();
   const { tableId } = useParams();
   const paymentRedirected = useRef(false);
@@ -120,6 +123,8 @@ const ClientOrderItem = () => {
     }
   };
   const requestPayment = async () => {
+    if (requestingPayment) return;
+    setRequestingPayment(true);
     try {
       const res = await fetch(`${API_URL}/tables/${tableId}/payment/request`, {
         method: "POST",
@@ -129,21 +134,27 @@ const ClientOrderItem = () => {
       message.success("Đã gửi yêu cầu thanh toán");
     } catch {
       message.error("Không thể gửi yêu cầu thanh toán");
+    } finally {
+      setRequestingPayment(false);
     }
   };
-  const getBill = () =>
-    fetch(`${API_URL}/orders/${orderId}/bill`, {
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data) => {
-        setBill(data);
-        setBillOpen(true);
-      })
-      .catch(() => message.error("Hóa đơn chưa sẵn sàng"));
+  const getBill = async () => {
+    if (loadingBill) return;
+    setLoadingBill(true);
+    try {
+      const res = await fetch(`${API_URL}/orders/${orderId}/bill`, {
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      setBill(data);
+      setBillOpen(true);
+    } catch {
+      message.error("Hóa đơn chưa sẵn sàng");
+    } finally {
+      setLoadingBill(false);
+    }
+  };
   const allSelecting =
     orderItems.length > 0 &&
     orderItems.every((item) => item.dishStatus === "Đang chọn");
@@ -212,17 +223,35 @@ const ClientOrderItem = () => {
         </ActionButton>
         <ActionButton
           className="primary"
-          disabled={!orderItems.length || allSelecting}
+          disabled={!orderItems.length || allSelecting || requestingPayment}
           onClick={requestPayment}
         >
-          <WalletOutlined /> Thanh toán
+          {requestingPayment ? (
+            <>
+              <LoadingOutlined spin /> Đang gửi...
+            </>
+          ) : (
+            <>
+              <WalletOutlined /> Thanh toán
+            </>
+          )}
         </ActionButton>
         <ActionButton
           className="bill-button"
-          disabled={!orderItems.length || allSelecting || !hasBill}
+          disabled={
+            !orderItems.length || allSelecting || !hasBill || loadingBill
+          }
           onClick={getBill}
         >
-          <FileTextOutlined /> Hóa đơn
+          {loadingBill ? (
+            <>
+              <LoadingOutlined spin /> Đang tải...
+            </>
+          ) : (
+            <>
+              <FileTextOutlined /> Hóa đơn
+            </>
+          )}
         </ActionButton>
       </FooterButton>
       <Modal

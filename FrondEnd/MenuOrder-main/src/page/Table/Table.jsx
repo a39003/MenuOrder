@@ -19,6 +19,8 @@ const Tabled = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenMoadl, setIsOpenModal] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [qrTable, setQrTable] = useState(null);
 
   const [table, setTables] = useState([]);
@@ -29,40 +31,50 @@ const Tabled = () => {
   const [tableDescription, setTableDescription] = useState("");
 
   const handleSubmitForm = async (e) => {
-    const res = await fetch(
-      `${API_URL}/admin/tables${selectedTable ? "/" + selectedTable.tableId : ""}`,
-      {
-        method: `${selectedTable ? "PUT" : "POST"}`,
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+    if (saving) return;
+    setSaving(true);
+    try {
+      const res = await fetch(
+        `${API_URL}/admin/tables${selectedTable ? "/" + selectedTable.tableId : ""}`,
+        {
+          method: `${selectedTable ? "PUT" : "POST"}`,
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            tableName: tableName,
+            tableDescription: tableDescription || "",
+          }),
         },
-        body: JSON.stringify({
-          tableName: tableName,
-          tableDescription: tableDescription || "",
-        }),
-      },
-    );
-    const data = await res.json();
-    if (data.tableId) {
-      setStatus(true);
-      setTableName("");
-      setTableDescription("");
-      form.resetFields();
-      message.success("Thành công");
-    } else {
-      setStatus(false);
-      setTableName("");
-      setTableDescription("");
-      message.error(data.message);
+      );
+      const data = await res.json();
+      if (data.tableId) {
+        setStatus(true);
+        setTableName("");
+        setTableDescription("");
+        form.resetFields();
+        message.success("Thành công");
+      } else {
+        setStatus(false);
+        setTableName("");
+        setTableDescription("");
+        message.error(data.message);
+      }
+      setIsOpenModal(false);
+      setIsModalOpen(false);
+    } catch {
+      message.error("Không thể lưu thông tin bàn");
+    } finally {
+      setSaving(false);
     }
-    setIsOpenModal(false);
-    setIsModalOpen(false);
   };
 
   const handleDeleteTable = async () => {
     if (!selectedTable?.tableId) return;
+    if (deleting) return;
+    setDeleting(true);
 
     try {
       const res = await fetch(
@@ -88,6 +100,8 @@ const Tabled = () => {
     } catch (error) {
       message.error("Có lỗi xảy ra khi xóa bàn");
       console.error(error);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -361,7 +375,7 @@ const Tabled = () => {
               <Button style={{ margin: "3px" }} onClick={handleCancel}>
                 ĐÓNG
               </Button>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={saving}>
                 Lưu
               </Button>
             </Form.Item>
@@ -429,7 +443,7 @@ const Tabled = () => {
               wrapperCol={{ offset: 8, span: 16 }}
               style={{ textAlign: "right" }}
             >
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={saving}>
                 Lưu
               </Button>
               <Button style={{ marginLeft: "10px" }} onClick={handleCancel}>
@@ -443,12 +457,8 @@ const Tabled = () => {
           title="Xóa Bàn"
           open={isModalOpenDelete}
           onCancel={handleCancelDelete}
-          onOk={() => {
-            handleDeleteTable();
-            setTimeout(() => {
-              handleCancelDelete();
-            }, 500);
-          }}
+          onOk={handleDeleteTable}
+          confirmLoading={deleting}
           okText="Có"
           cancelText="Hủy"
         >

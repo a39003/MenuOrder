@@ -4,6 +4,7 @@ import {
   ArrowLeftOutlined,
   DeleteOutlined,
   FileTextOutlined,
+  LoadingOutlined,
   RightOutlined,
   ShoppingOutlined,
 } from "@ant-design/icons";
@@ -31,6 +32,8 @@ const ClientOrder = () => {
   const [orderId, setOrderId] = useState(0);
   const [customerName, setCustomerName] = useState("");
   const [notes, setNotes] = useState({});
+  const [sending, setSending] = useState(false);
+  const [updatingItems, setUpdatingItems] = useState({});
   const navigate = useNavigate();
   const { tableId } = useParams();
   useEffect(() => {
@@ -69,6 +72,8 @@ const ClientOrder = () => {
   );
   const updateQuantity = async (id, quantity) => {
     if (quantity < 1) return;
+    if (updatingItems[id]) return;
+    setUpdatingItems((old) => ({ ...old, [id]: true }));
     try {
       const res = await fetch(`${API_URL}/orders/${orderId}/items/${id}`, {
         method: "PUT",
@@ -83,6 +88,8 @@ const ClientOrder = () => {
       );
     } catch {
       message.error("Không thể cập nhật số lượng");
+    } finally {
+      setUpdatingItems((old) => ({ ...old, [id]: false }));
     }
   };
   const saveNote = (item) =>
@@ -94,41 +101,48 @@ const ClientOrder = () => {
         dishQuantity: item.dishQuantity,
       }),
     }).catch(() => message.error("Không thể lưu ghi chú"));
-  const removeItem = (id) =>
-    fetch(`${API_URL}/orders/${orderId}/items/${id}`, {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        setOrderItems((items) =>
-          items.filter((item) => item.orderItemId !== id),
-        );
-        message.success("Đã xóa món khỏi giỏ");
-      })
-      .catch(() => message.error("Không thể xóa món"));
-  const sendOrder = () => {
+  const removeItem = async (id) => {
+    if (updatingItems[id]) return;
+    setUpdatingItems((old) => ({ ...old, [id]: true }));
+    try {
+      const res = await fetch(`${API_URL}/orders/${orderId}/items/${id}`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (!res.ok) throw new Error();
+      setOrderItems((items) => items.filter((item) => item.orderItemId !== id));
+      message.success("Đã xóa món khỏi giỏ");
+    } catch {
+      message.error("Không thể xóa món");
+    } finally {
+      setUpdatingItems((old) => ({ ...old, [id]: false }));
+    }
+  };
+  const sendOrder = async () => {
+    if (sending) return;
+    setSending(true);
     const items = orderItems.map((item) => ({
       dishId: item.dishId,
       quantity: item.dishQuantity,
       notes: notes[item.orderItemId] || item.dishNote || "",
     }));
-    fetch(`${API_URL}/orders/${tableId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ items }),
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error();
-        return res.json();
-      })
-      .then((data) => {
-        if (data.orderId) {
-          message.success("Đã gửi món tới nhà bếp");
-          navigate(`/orderitem/${tableId}`);
-        }
-      })
-      .catch(() => message.error("Gửi đơn chưa thành công, vui lòng thử lại"));
+    try {
+      const res = await fetch(`${API_URL}/orders/${tableId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      if (data.orderId) {
+        message.success("Đã gửi món tới nhà bếp");
+        navigate(`/orderitem/${tableId}`);
+      }
+    } catch {
+      message.error("Gửi đơn chưa thành công, vui lòng thử lại");
+    } finally {
+      setSending(false);
+    }
   };
   return (
     <Container>
@@ -186,6 +200,7 @@ const ClientOrder = () => {
               <Actions className="item-actions">
                 <div className="stepper">
                   <button
+                    disabled={updatingItems[item.orderItemId]}
                     onClick={() =>
                       updateQuantity(item.orderItemId, item.dishQuantity - 1)
                     }
@@ -194,6 +209,7 @@ const ClientOrder = () => {
                   </button>
                   <strong>{item.dishQuantity}</strong>
                   <button
+                    disabled={updatingItems[item.orderItemId]}
                     onClick={() =>
                       updateQuantity(item.orderItemId, item.dishQuantity + 1)
                     }
@@ -207,7 +223,11 @@ const ClientOrder = () => {
                   disabled={item.dishStatus !== "Đang chọn"}
                   onClick={() => removeItem(item.orderItemId)}
                 >
-                  <DeleteOutlined />
+                  {updatingItems[item.orderItemId] ? (
+                    <LoadingOutlined spin />
+                  ) : (
+                    <DeleteOutlined />
+                  )}
                 </button>
               </Actions>
             </CartItem>
@@ -236,10 +256,19 @@ const ClientOrder = () => {
         </FooterButton>
         <FooterButton
           className="primary"
-          disabled={!orderItems.length}
+          disabled={!orderItems.length || sending}
           onClick={sendOrder}
         >
-          Gửi món tới bếp&nbsp; <RightOutlined />
+          {sending ? (
+            <>
+              <LoadingOutlined spin />
+              &nbsp; Đang gửi món...
+            </>
+          ) : (
+            <>
+              Gửi món tới bếp&nbsp; <RightOutlined />
+            </>
+          )}
         </FooterButton>
       </Footer>
     </Container>

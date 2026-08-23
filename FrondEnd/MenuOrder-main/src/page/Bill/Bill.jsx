@@ -24,8 +24,12 @@ const Bill = ({
   tableName,
 }) => {
   const navigate = useNavigate();
+  const [deletingBill, setDeletingBill] = useState(false);
+  const [acceptingPayment, setAcceptingPayment] = useState(false);
 
   const handleDeleteBill = async () => {
+    if (deletingBill) return;
+    setDeletingBill(true);
     try {
       const response = await fetch(`${API_URL}/admin/orders/${orderId}/bill`, {
         method: "DELETE",
@@ -45,6 +49,8 @@ const Bill = ({
     } catch (error) {
       console.error("Error deleting bill:", error);
       alert(error.message || "Xóa bill không thành công");
+    } finally {
+      setDeletingBill(false);
     }
   };
 
@@ -152,6 +158,8 @@ const Bill = ({
   };
 
   const handleAcceptPayment = async () => {
+    if (acceptingPayment) return;
+    setAcceptingPayment(true);
     try {
       const response = await fetch(
         `${API_URL}/admin/tables/${tableId}/payment/accept`,
@@ -176,6 +184,8 @@ const Bill = ({
     } catch (error) {
       console.error("Error accepting payment:", error);
       message.error(error.message || "Xác nhận thanh toán không thành công");
+    } finally {
+      setAcceptingPayment(false);
     }
   };
 
@@ -347,6 +357,7 @@ const Bill = ({
               border: "none",
             }}
             onClick={handleAcceptPayment}
+            loading={acceptingPayment}
           >
             Xác Nhận Thanh Toán
           </Button>
@@ -362,6 +373,7 @@ const Bill = ({
               margin: "10px",
             }}
             onClick={handleDeleteBill}
+            loading={deletingBill}
           >
             Hủy hóa đơn
           </Button>

@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Button, Empty, Modal, Spin, Table, message } from "antd";
-import { EyeOutlined, SearchOutlined } from "@ant-design/icons";
+import {
+  EyeOutlined,
+  LoadingOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { Card, Filters, Head, Page, Receipt, Summary } from "./style";
 import { API_URL } from "../../config";
 
@@ -129,8 +133,13 @@ const PaidBills = () => {
             setFilters({ ...filters, to: event.target.value })
           }
         />
-        <button onClick={() => setQuery({ ...filters })}>
-          <SearchOutlined /> Tìm kiếm
+        <button
+          onClick={() => setQuery({ ...filters })}
+          disabled={loading}
+          aria-busy={loading}
+        >
+          {loading ? <LoadingOutlined spin /> : <SearchOutlined />}{" "}
+          {loading ? "Đang tìm..." : "Tìm kiếm"}
         </button>
       </Filters>
       <Card>

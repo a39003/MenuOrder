@@ -23,6 +23,8 @@ const TableOrder = ({ table, onTableChanged }) => {
   const [bill, setBill] = useState(null);
   const [isBillCreated, setIsBillCreated] = useState(false);
   const [isBillDialogOpen, setIsBillDialogOpen] = useState(false);
+  const [creatingBill, setCreatingBill] = useState(false);
+  const [emptyingTable, setEmptyingTable] = useState(false);
 
   // Combined Fetch Data Function
   const fetchData = async () => {
@@ -115,6 +117,8 @@ const TableOrder = ({ table, onTableChanged }) => {
   }, [table?.tableId, table?.tableStatus]);
 
   const handleMakeTableEmpty = async () => {
+    if (emptyingTable) return;
+    setEmptyingTable(true);
     try {
       const response = await fetch(
         `${BASE_URL}/admin/tables/${table?.tableId}/status`,
@@ -135,11 +139,15 @@ const TableOrder = ({ table, onTableChanged }) => {
       }
     } catch (error) {
       message.error("Error making table empty:", error);
+    } finally {
+      setEmptyingTable(false);
     }
   };
 
   const handleCreateBill = async () => {
     if (!order?.orderId) return;
+    if (creatingBill) return;
+    setCreatingBill(true);
     try {
       const response = await fetch(
         `${BASE_URL}/admin/orders/${order.orderId}/bill`,
@@ -164,6 +172,8 @@ const TableOrder = ({ table, onTableChanged }) => {
       }
     } catch (error) {
       message.error("Lỗi tạo hóa đơn:", error);
+    } finally {
+      setCreatingBill(false);
     }
   };
 
@@ -212,6 +222,7 @@ const TableOrder = ({ table, onTableChanged }) => {
               <Button
                 onClick={handleCreateBill}
                 disabled={isBillCreated}
+                loading={creatingBill}
                 style={{ margin: "0 5px" }}
               >
                 Tạo bill
@@ -232,7 +243,9 @@ const TableOrder = ({ table, onTableChanged }) => {
             </div>
           )}
           {table?.tableStatus === "Đã thanh toán" && (
-            <Button onClick={handleMakeTableEmpty}>Làm trống bàn</Button>
+            <Button onClick={handleMakeTableEmpty} loading={emptyingTable}>
+              Làm trống bàn
+            </Button>
           )}
           {table?.totalDish > 0 && (
             <ListDish

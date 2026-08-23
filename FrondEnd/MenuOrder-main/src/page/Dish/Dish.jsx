@@ -27,6 +27,9 @@ const Dish = ({ dish }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenMoadl, setIsOpenModal] = useState(false);
   const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [changingStatusId, setChangingStatusId] = useState(null);
 
   const [dishes, setDishes] = useState([]);
   const [status, setStatus] = useState(true);
@@ -72,6 +75,8 @@ const Dish = ({ dish }) => {
   };
 
   const onFinish = async (e) => {
+    if (saving) return;
+    setSaving(true);
     // e.preventDefault();
     console.log(stateDish);
     const formData = new FormData();
@@ -117,11 +122,15 @@ const Dish = ({ dish }) => {
         setIsOpenModal(false);
       }
     } catch (error) {
-      console.message.error("There was an error!");
+      message.error("Không thể lưu món ăn");
+    } finally {
+      setSaving(false);
     }
   };
 
   const handleDeleteDish = async () => {
+    if (deleting) return;
+    setDeleting(true);
     try {
       const response = await fetch(
         `${API_URL}/admin/dishes/${rowSelected?.dishId}`,
@@ -136,6 +145,8 @@ const Dish = ({ dish }) => {
       setStatus(true);
     } catch (error) {
       console.error("There was an error!", error);
+    } finally {
+      setDeleting(false);
     }
     setIsModalOpenDelete(false);
   };
@@ -226,6 +237,8 @@ const Dish = ({ dish }) => {
   const [form] = Form.useForm();
 
   const handleStatusChange = async (record, value) => {
+    if (changingStatusId) return;
+    setChangingStatusId(record.dishId);
     const formData = new FormData();
     formData.append("dishName", record.dishName);
     formData.append("dishPrice", record.dishPrice);
@@ -264,7 +277,9 @@ const Dish = ({ dish }) => {
         setIsOpenModal(false);
       }
     } catch (error) {
-      console.message.error("There was an error!");
+      message.error("Không thể cập nhật trạng thái món");
+    } finally {
+      setChangingStatusId(null);
     }
   };
 
@@ -327,6 +342,8 @@ const Dish = ({ dish }) => {
         <Select
           value={dishStatus == 1 ? "còn món" : "đã hết"}
           onChange={(value) => handleStatusChange(record, value)}
+          loading={changingStatusId === record.dishId}
+          disabled={changingStatusId === record.dishId}
           options={[
             { label: "Còn món", value: 1 },
             { label: "Đã hết", value: 0 },
@@ -520,7 +537,7 @@ const Dish = ({ dish }) => {
               <Button style={{ margin: "3px" }} onClick={handleCancel}>
                 ĐÓNG
               </Button>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={saving}>
                 Lưu
               </Button>
             </Form.Item>
@@ -651,7 +668,7 @@ const Dish = ({ dish }) => {
             </Form.Item>
 
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" loading={saving}>
                 Lưu
               </Button>
             </Form.Item>
@@ -662,12 +679,8 @@ const Dish = ({ dish }) => {
           title="Xóa món ăn"
           open={isModalOpenDelete}
           onCancel={handleCancelDelete}
-          onOk={() => {
-            handleDeleteDish();
-            setTimeout(() => {
-              handleCancelDelete();
-            }, 500);
-          }}
+          onOk={handleDeleteDish}
+          confirmLoading={deleting}
           okText="Có"
           cancelText="Hủy"
         >

@@ -17,6 +17,9 @@ import { API_URL } from "../../config";
 const ListDish = ({ tableId }) => {
   const [visible, setVisible] = useState(false);
   const [orders, setOrders] = useState({ orderItemResponseDTO: [] });
+  const [updatingItems, setUpdatingItems] = useState({});
+  const setItemLoading = (id, value) =>
+    setUpdatingItems((old) => ({ ...old, [id]: value }));
   const fetchOrders = async () => {
     try {
       const response = await fetch(
@@ -40,10 +43,12 @@ const ListDish = ({ tableId }) => {
     return () => clearInterval(timer);
   }, [tableId]);
   const updateStatus = async (id) => {
+    if (updatingItems[id]) return;
     const item = orders.orderItemResponseDTO.find(
       (entry) => entry.orderItemId === id,
     );
     if (!item) return;
+    setItemLoading(id, true);
     const dishStatus =
       item.dishStatus === "Đang ra món" ? "Đã ra món" : "Đang ra món";
     try {
@@ -68,10 +73,14 @@ const ListDish = ({ tableId }) => {
       message.success("Đã cập nhật trạng thái món");
     } catch {
       message.error("Không thể cập nhật trạng thái");
+    } finally {
+      setItemLoading(id, false);
     }
   };
   const updateQuantity = async (id, quantity) => {
     if (quantity <= 0) return;
+    if (updatingItems[id]) return;
+    setItemLoading(id, true);
     try {
       const response = await fetch(
         `${API_URL}/admin/orders/${orders.orderId}/items/${id}`,
@@ -95,6 +104,8 @@ const ListDish = ({ tableId }) => {
       }));
     } catch {
       message.error("Không thể cập nhật số lượng");
+    } finally {
+      setItemLoading(id, false);
     }
   };
   const items = orders.orderItemResponseDTO || [];
@@ -146,6 +157,7 @@ const ListDish = ({ tableId }) => {
           <QuantityControl>
             <Button
               icon={<MinusOutlined />}
+              loading={updatingItems[record.orderItemId]}
               disabled={locked || record.dishQuantity <= 1}
               onClick={() =>
                 updateQuantity(record.orderItemId, record.dishQuantity - 1)
@@ -160,6 +172,7 @@ const ListDish = ({ tableId }) => {
             />
             <Button
               icon={<PlusOutlined />}
+              loading={updatingItems[record.orderItemId]}
               disabled={locked}
               onClick={() =>
                 updateQuantity(record.orderItemId, record.dishQuantity + 1)
@@ -207,6 +220,7 @@ const ListDish = ({ tableId }) => {
           <Button
             type="primary"
             icon={<CheckOutlined />}
+            loading={updatingItems[record.orderItemId]}
             disabled={!preparing || served}
             onClick={() => updateStatus(record.orderItemId)}
           >

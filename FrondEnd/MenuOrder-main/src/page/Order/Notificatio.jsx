@@ -28,6 +28,8 @@ const Notificatio = ({ tableId, setStatus }) => {
       .finally(() => setLoading(false));
   }, [open, tableId]);
   const clearAll = async () => {
+    if (loading) return;
+    setLoading(true);
     try {
       await fetch(`${API_URL}/admin/notifications/tables/${tableId}`, {
         method: "DELETE",
@@ -42,6 +44,8 @@ const Notificatio = ({ tableId, setStatus }) => {
       message.success("Đã xử lý tất cả thông báo");
     } catch {
       message.error("Không thể xử lý thông báo");
+    } finally {
+      setLoading(false);
     }
   };
   return (

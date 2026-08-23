@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, message } from "antd";
 import { ArrowRightOutlined, UserOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
@@ -22,6 +22,24 @@ const ClientTable = () => {
   const { tableId } = useParams();
   const [customerName, setCustomerName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [currentTime, setCurrentTime] = useState(() => new Date());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const vietnamTime = new Intl.DateTimeFormat("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  }).format(currentTime);
   const handleCreateOrder = async () => {
     if (submitting) return;
     if (!customerName.trim()) {
@@ -80,7 +98,7 @@ const ClientTable = () => {
           <div className="hero-copy">
             <span>Chào mừng bạn</span>
             <h1>Ăn ngon, vui trọn khoảnh khắc.</h1>
-            <p>Mở cửa mỗi ngày · 18:00 — 24:00</p>
+            <p>Giờ Việt Nam · {vietnamTime}</p>
           </div>
         </ContentMain1>
         <Promo>

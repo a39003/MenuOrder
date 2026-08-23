@@ -3,6 +3,7 @@ import { Empty, Spin, message } from "antd";
 import {
   CoffeeOutlined,
   DollarOutlined,
+  LoadingOutlined,
   ShopOutlined,
   ShoppingCartOutlined,
 } from "@ant-design/icons";
@@ -66,14 +67,16 @@ const Dashboard = () => {
           <button
             className={days === 7 ? "active" : ""}
             onClick={() => setDays(7)}
+            disabled={loading}
           >
-            7 ngày
+            {loading && days === 7 && <LoadingOutlined spin />} 7 ngày
           </button>
           <button
             className={days === 30 ? "active" : ""}
             onClick={() => setDays(30)}
+            disabled={loading}
           >
-            30 ngày
+            {loading && days === 30 && <LoadingOutlined spin />} 30 ngày
           </button>
         </div>
       </Hero>
