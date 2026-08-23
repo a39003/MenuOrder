@@ -33,8 +33,27 @@ const ClientTable = () => {
       const res = await fetch(
         `${API_URL}/${tableId}/menus?customerName=${encodeURIComponent(customerName.trim())}`,
       );
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message);
+      const responseText = await res.text();
+      let data = null;
+
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          throw new Error("Máy chủ trả về dữ liệu không hợp lệ.");
+        }
+      }
+
+      if (!res.ok) {
+        throw new Error(
+          data?.message || `Máy chủ phản hồi lỗi (${res.status}).`,
+        );
+      }
+
+      if (!data) {
+        throw new Error("Máy chủ không trả về dữ liệu thực đơn.");
+      }
+
       if (data?.length > 0) {
         sessionStorage.setItem(`customer-${tableId}`, customerName.trim());
         message.success(`Chào ${customerName.trim()}, bàn đã sẵn sàng`);

@@ -27,14 +27,30 @@ const Login = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      const data = await res.json();
+      const responseText = await res.text();
+      let data = null;
+
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          throw new Error("Máy chủ trả về dữ liệu không hợp lệ.");
+        }
+      }
+
       if (res.ok) {
+        if (!data?.jwt)
+          throw new Error("Máy chủ không trả về token đăng nhập.");
         localStorage.setItem("token", data.jwt);
         message.success("Đăng nhập thành công");
         navigate("/admin/order");
-      } else message.error("Tài khoản hoặc mật khẩu không đúng");
-    } catch {
-      message.warning("Không thể kết nối máy chủ. Vui lòng thử lại.");
+      } else {
+        message.error(data?.message || "Tài khoản hoặc mật khẩu không đúng");
+      }
+    } catch (error) {
+      message.warning(
+        error.message || "Không thể kết nối máy chủ. Vui lòng thử lại.",
+      );
     } finally {
       setSubmitting(false);
     }
