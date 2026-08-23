@@ -1,23 +1,31 @@
-import { ButtonDish, Conter, DishSearch, LoadFile, Tablecontainer } from "./style"
+import {
+  ButtonDish,
+  Conter,
+  DishSearch,
+  LoadFile,
+  Tablecontainer,
+} from "./style";
 import React, { useEffect, useState } from "react";
 import Modald from "../../costormer/Components/Modal/Modal";
-import { ArrowLeftOutlined, DeleteOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons"
+import {
+  ArrowLeftOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { Button, Form, message, Select, Space, Table } from "antd";
 import Foor from "../../costormer/Components/Foor/Foor";
 import InpuComponent from "../../costormer/Components/InputComponent/InputComponent";
 import { useNavigate } from "react-router-dom";
 import { API_URL } from "../../config";
 
-
 const Dish = ({ dish }) => {
-
   const navigate = useNavigate();
 
-  const [rowSelected, setRowSelected] = useState('')
+  const [rowSelected, setRowSelected] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isOpenMoadl, setIsOpenModal] = useState(false)
-  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
-
+  const [isOpenMoadl, setIsOpenModal] = useState(false);
+  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
 
   const [dishes, setDishes] = useState([]);
   const [status, setStatus] = useState(true);
@@ -31,14 +39,11 @@ const Dish = ({ dish }) => {
     menuId: 0,
     ...dish,
     thumbnail: null,
-  })
+  });
 
   const [thumbnailPreview, setThumbnailPreview] = useState(null);
 
-
-
-
-  const [menus, setMenus] = useState([])
+  const [menus, setMenus] = useState([]);
   useEffect(() => {
     fetch(`${API_URL}/menus`, {
       method: "GET",
@@ -57,30 +62,27 @@ const Dish = ({ dish }) => {
       });
   }, []);
 
-
-
   const handleSearch = (value) => {
     const searchValue = value?.toLowerCase();
     const filteredDishes = dishes?.filter((dish) =>
-      dish.dishName?.toLowerCase()?.includes(searchValue)
+      dish.dishName?.toLowerCase()?.includes(searchValue),
     );
     setSearchResults(filteredDishes);
   };
 
   const onFinish = async (e) => {
     // e.preventDefault();
-    console.log(stateDish)
+    console.log(stateDish);
     const formData = new FormData();
     formData.append("dishName", stateDish.dishName);
     formData.append("dishPrice", stateDish.dishPrice);
     formData.append("dishStatus", stateDish.dishStatus);
     formData.append("menuId", stateDish.menuId);
     if (stateDish.thumbnail && rowSelected?.dishId == null) {
-      formData.append("thumbnail",stateDish.thumbnail);
-    }
-    else{
-      if(thumbnailPreview){
-        formData.append("thumbnail",stateDish.thumbnail);
+      formData.append("thumbnail", stateDish.thumbnail);
+    } else {
+      if (thumbnailPreview) {
+        formData.append("thumbnail", stateDish.thumbnail);
       }
     }
 
@@ -95,7 +97,7 @@ const Dish = ({ dish }) => {
           },
 
           body: formData,
-        }
+        },
       );
       const data = await response.json();
       if (data.dishId) {
@@ -108,17 +110,15 @@ const Dish = ({ dish }) => {
           menuId: 0,
           thumbnail: null,
         });
-        form.resetFields()
+        form.resetFields();
         setThumbnailPreview(null);
-        setIsModalOpen(false)
-        setIsOpenModal(false)
+        setIsModalOpen(false);
+        setIsOpenModal(false);
       }
     } catch (error) {
       console.message.error("There was an error!");
     }
-
   };
-
 
   const handleDeleteDish = async () => {
     try {
@@ -129,7 +129,7 @@ const Dish = ({ dish }) => {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
-        }
+        },
       );
       message.success("Xóa món ăn thành công");
       setStatus(true);
@@ -138,7 +138,6 @@ const Dish = ({ dish }) => {
     }
     setIsModalOpenDelete(false);
   };
-
 
   useEffect(() => {
     if (status) {
@@ -152,48 +151,39 @@ const Dish = ({ dish }) => {
   }, [status]);
   console.log(dishes);
 
-
-
-
-
-
   const handleDetails = (record) => {
-    console.log(record)
-    setIsOpenModal(true)
-    setSateDish(record)
+    console.log(record);
+    setIsOpenModal(true);
+    setSateDish(record);
     // setRowSelected(record)
-    console.log('rowSelected', rowSelected)
-
-  }
-
+    console.log("rowSelected", rowSelected);
+  };
 
   const handleCancelDelete = () => {
-    setIsModalOpenDelete(false)
-  }
-
-
-
-
+    setIsModalOpenDelete(false);
+  };
 
   const renderAction = (record) => {
     return (
       <div>
-        <DeleteOutlined style={{ color: 'red', fontSize: '20px', cursor: 'pointer' }} onClick={() => {
-          setIsModalOpenDelete(true);
-          setStatus(record.id)
-          console.log(record)
-        }} />
-        <EditOutlined
-          style={{ color: 'orange', fontSize: '20px', cursor: 'pointer' }}
+        <DeleteOutlined
+          style={{ color: "red", fontSize: "20px", cursor: "pointer" }}
           onClick={() => {
-            setStatus(record.id)
+            setIsModalOpenDelete(true);
+            setStatus(record.id);
+            console.log(record);
+          }}
+        />
+        <EditOutlined
+          style={{ color: "orange", fontSize: "20px", cursor: "pointer" }}
+          onClick={() => {
+            setStatus(record.id);
             handleDetails(record);
           }}
         />
       </div>
-    )
-  }
-
+    );
+  };
 
   const handleOnchangeAvatar = (e) => {
     const file = e.target.files[0];
@@ -202,52 +192,43 @@ const Dish = ({ dish }) => {
       thumbnail: file,
     });
     setThumbnailPreview(URL.createObjectURL(file));
-  }
-
-
-
-
-
+  };
 
   const handleOnchange = (e) => {
-
     setSateDish({
       ...stateDish,
-      [e.target.name]: e.target.value
-    })
-  }
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleOnchangeSelect = (value) => {
     setSateDish({
       ...stateDish,
-      menuId: value
-    })
-  }
-
+      menuId: value,
+    });
+  };
 
   const handleCancel = () => {
-    setIsModalOpen(false)
+    setIsModalOpen(false);
     setSateDish({
-      dishName: '',
-      dishPrice: '',
+      dishName: "",
+      dishPrice: "",
       thumbnail: null,
-      dishStatus: '',
+      dishStatus: "",
       menuId: 0,
-    })
-    form.resetFields()
+    });
+    form.resetFields();
     console.log("....");
     setThumbnailPreview(null);
   };
 
   const [form] = Form.useForm();
 
-
-
   const handleStatusChange = async (record, value) => {
-  const formData = new FormData();
+    const formData = new FormData();
     formData.append("dishName", record.dishName);
     formData.append("dishPrice", record.dishPrice);
-    formData.append("dishStatus",value);
+    formData.append("dishStatus", value);
     formData.append("menuId", record.menuId);
     if (record.thumbnail && record?.dishId == null) {
       formData.append("thumbnail", record.thumbnail);
@@ -264,7 +245,7 @@ const Dish = ({ dish }) => {
           },
 
           body: formData,
-        }
+        },
       );
       const data = await response.json();
       if (data.dishId) {
@@ -277,16 +258,14 @@ const Dish = ({ dish }) => {
           menuId: 0,
           thumbnail: null,
         });
-        form.resetFields()
+        form.resetFields();
         setThumbnailPreview(null);
-        setIsOpenModal(false)
+        setIsOpenModal(false);
       }
     } catch (error) {
       console.message.error("There was an error!");
     }
-};
-
-
+  };
 
   const columns = [
     {
@@ -310,18 +289,25 @@ const Dish = ({ dish }) => {
       title: "Danh mục",
       key: "menuTitle",
       render: (_, record) => {
-        const menu = menus.find((item) => Number(item.menuId) === Number(record.menuId));
+        const menu = menus.find(
+          (item) => Number(item.menuId) === Number(record.menuId),
+        );
         return (
-          <span style={{
-            display: "inline-flex",
-            padding: "6px 10px",
-            borderRadius: "999px",
-            background: "#fff0e5",
-            color: "#b65325",
-            fontWeight: 700,
-            fontSize: "12px",
-          }}>
-            {record.menuTitle || record.menuName || menu?.menuTitle || "Chưa phân loại"}
+          <span
+            style={{
+              display: "inline-flex",
+              padding: "6px 10px",
+              borderRadius: "999px",
+              background: "#fff0e5",
+              color: "#b65325",
+              fontWeight: 700,
+              fontSize: "12px",
+            }}
+          >
+            {record.menuTitle ||
+              record.menuName ||
+              menu?.menuTitle ||
+              "Chưa phân loại"}
           </span>
         );
       },
@@ -338,73 +324,90 @@ const Dish = ({ dish }) => {
       key: "key",
       render: (dishStatus, record) => (
         <Select
-          value={dishStatus == 1 ? "còn món" : "đã hết" }
+          value={dishStatus == 1 ? "còn món" : "đã hết"}
           onChange={(value) => handleStatusChange(record, value)}
           options={[
             { label: "Còn món", value: 1 },
-            { label: "Đã hết", value:0 },
+            { label: "Đã hết", value: 0 },
           ]}
           style={{ width: 100 }}
         />
       ),
     },
     {
-      title: 'Thao tác',
-      dataIndex: 'action',
-      key: 'action',
-      render: (text, record) => renderAction(record)
-    }
+      title: "Thao tác",
+      dataIndex: "action",
+      key: "action",
+      render: (text, record) => renderAction(record),
+    },
   ];
-
 
   return (
     <div>
-      <Conter style={{ textAlign: 'center', padding: '20px', backgroundColor: "#f3e2d3" }}>
+      <Conter
+        style={{
+          textAlign: "center",
+          padding: "20px",
+          backgroundColor: "#f3e2d3",
+        }}
+      >
         <h1>DANH SÁCH MÓN ĂN</h1>
-        <div style={{ margin: '10px' }}>
+        <div style={{ margin: "10px" }}>
           <ButtonDish
             icon={<ArrowLeftOutlined />}
-            onClick={() => navigate('/admin/menu')}
+            onClick={() => navigate("/admin/menu")}
             style={{ background: "#2a1912" }}
           >
             Quay lại quản lý menu
           </ButtonDish>
           <DishSearch
-          placeholder="Tìm kiếm món ăn..."
-          onSearch={handleSearch}
+            placeholder="Tìm kiếm món ăn..."
+            onSearch={handleSearch}
             enterButton={
-              <Button type="primary" style={{ backgroundColor: "#d35400", borderColor: "#d35400" }}>
+              <Button
+                type="primary"
+                style={{ backgroundColor: "#d35400", borderColor: "#d35400" }}
+              >
                 <SearchOutlined />
               </Button>
-                }
-        />
+            }
+          />
           <ButtonDish onClick={() => setIsModalOpen(true)}>Thêm mới</ButtonDish>
         </div>
-        <Tablecontainer >
-          <Table onRow={(record, rowIndex) => {
-            return {
-              onClick: event => {
-                setRowSelected(record)
-              }
-            };
-          }}
-              dataSource={searchResults.length > 0 ? searchResults : dishes}
+        <Tablecontainer>
+          <Table
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: (event) => {
+                  setRowSelected(record);
+                },
+              };
+            }}
+            dataSource={searchResults.length > 0 ? searchResults : dishes}
             columns={columns}
             pagination={{ pageSize: 10 }}
             scroll={{ y: 400 }}
             bordered
           />
         </Tablecontainer>
-        <Modald title="Thêm món ăn" open={isModalOpen} setStatus={setStatus} onCancel={handleCancel} footer={null}>
+        <Modald
+          title="Thêm món ăn"
+          open={isModalOpen}
+          setStatus={setStatus}
+          onCancel={handleCancel}
+          footer={null}
+        >
           <Form
             name="basic"
             labelCol={{ span: 7 }}
             wrapperCol={{ span: 16 }}
             style={{ maxWidth: 600 }}
-            initialValues={{ dishName: stateDish?.name,
-                dishPrice: stateDish?.price,
-                menuId: stateDish?.menuId,
-                dishStatus: stateDish?.dishStatus, }}
+            initialValues={{
+              dishName: stateDish?.name,
+              dishPrice: stateDish?.price,
+              menuId: stateDish?.menuId,
+              dishStatus: stateDish?.dishStatus,
+            }}
             onFinish={onFinish}
             autoComplete="off"
             form={form}
@@ -412,32 +415,42 @@ const Dish = ({ dish }) => {
             <Form.Item
               label="Tên món"
               name="dishName"
-              rules={[{ required: true, message: 'Vui lòng nhập tên món ăn!' }]}
+              rules={[{ required: true, message: "Vui lòng nhập tên món ăn!" }]}
             >
-              <InpuComponent value={stateDish?.name} onChange={handleOnchange} name="dishName" placeholder="Nhập" />
+              <InpuComponent
+                value={stateDish?.name}
+                onChange={handleOnchange}
+                name="dishName"
+                placeholder="Nhập"
+              />
             </Form.Item>
 
             <Form.Item
               label="Giá bán"
               name="dishPrice"
-              rules={[{ required: true, message: 'Vui lòng nhập giá tiền!' }]}
+              rules={[{ required: true, message: "Vui lòng nhập giá tiền!" }]}
             >
-              <InpuComponent value={stateDish?.name} onChange={handleOnchange} name="dishPrice" placeholder="Nhập" />
+              <InpuComponent
+                value={stateDish?.name}
+                onChange={handleOnchange}
+                name="dishPrice"
+                placeholder="Nhập"
+              />
             </Form.Item>
 
             <Form.Item
               label="Danh mục"
               name="menuId"
-              rules={[{ required: true, message: 'Vui lòng nhập danh mục!' }]}
+              rules={[{ required: true, message: "Vui lòng nhập danh mục!" }]}
             >
               <Select
-              value={stateDish?.name}
+                value={stateDish?.name}
                 onChange={handleOnchangeSelect}
                 name="menuId"
                 options={menus.map((menu) => ({
                   label: menu.menuTitle,
                   value: menu.menuId,
-                  name: menu.menuId
+                  name: menu.menuId,
                 }))}
               />
               <span></span>
@@ -446,16 +459,16 @@ const Dish = ({ dish }) => {
             <Form.Item
               label="Trạng thái"
               name="dishStatus"
-              rules={[{ required: true, message: 'Vui lòng nhập danh mục!' }]}
-
+              rules={[{ required: true, message: "Vui lòng nhập danh mục!" }]}
             >
-          <Select
-
-                value={stateDish?.dishStatus == 1 ? "còn món" : "đã hết" }
-                onChange={(value) => setSateDish({ ...stateDish, dishStatus: value })}
+              <Select
+                value={stateDish?.dishStatus == 1 ? "còn món" : "đã hết"}
+                onChange={(value) =>
+                  setSateDish({ ...stateDish, dishStatus: value })
+                }
                 options={[
                   { label: "Còn món", value: 1 },
-                  { label: "Đã hết", value:0 },
+                  { label: "Đã hết", value: 0 },
                 ]}
                 style={{ width: 100 }}
               />
@@ -464,53 +477,63 @@ const Dish = ({ dish }) => {
             <Form.Item
               label="Image"
               name="thumbnail"
-              rules={[{ required: true, message: 'Thêm ảnh!' }]}
+              rules={[{ required: true, message: "Thêm ảnh!" }]}
             >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-    <Button variant="outlined" component="label">
-      <label style={{ display: 'block' }}>Thêm ảnh
-      <input
-        style={{ display: "none" }}
-        type="file"
-        accept="image/*"
-        onChange={handleOnchangeAvatar}
-      />
-      </label>
-    </Button>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                }}
+              >
+                <Button variant="outlined" component="label">
+                  <label style={{ display: "block" }}>
+                    Thêm ảnh
+                    <input
+                      style={{ display: "none" }}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleOnchangeAvatar}
+                    />
+                  </label>
+                </Button>
 
-    {thumbnailPreview && (
-      <img
-        src={thumbnailPreview}
-        alt="Thumbnail Preview"
-        style={{
-          width: '100px',
-          height: 'auto',
-          marginTop: '8px',
-        }}
-      />
-    )}
-  </div>
-
+                {thumbnailPreview && (
+                  <img
+                    src={thumbnailPreview}
+                    alt="Thumbnail Preview"
+                    style={{
+                      width: "100px",
+                      height: "auto",
+                      marginTop: "8px",
+                    }}
+                  />
+                )}
+              </div>
             </Form.Item>
 
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }} style={{ textAlign: 'right' }}>
-            <Button
-              style={{ margin: '3px' }}
-              onClick={handleCancel}
+            <Form.Item
+              wrapperCol={{ offset: 8, span: 16 }}
+              style={{ textAlign: "right" }}
             >
-              ĐÓNG
-            </Button>
+              <Button style={{ margin: "3px" }} onClick={handleCancel}>
+                ĐÓNG
+              </Button>
               <Button type="primary" htmlType="submit">
                 Lưu
               </Button>
-
             </Form.Item>
           </Form>
         </Modald>
 
-        <Modald title='Chỉnh sửa món ăn' isOpen={isOpenMoadl} onCancel={() => setIsOpenModal(false)}
+        <Modald
+          title="Chỉnh sửa món ăn"
+          isOpen={isOpenMoadl}
+          onCancel={() => setIsOpenModal(false)}
           setStatus={setStatus}
-          dishes={dishes} footer={null}>
+          dishes={dishes}
+          footer={null}
+        >
           <Form
             name="basic"
             labelCol={{ span: 7 }}
@@ -520,8 +543,8 @@ const Dish = ({ dish }) => {
               dishName: rowSelected.dishName,
               dishPrice: rowSelected.dishPrice,
               menuId: rowSelected?.menuId, // Giá trị mặc định cho trường "menuId",
-              dishStatus:rowSelected?.dishStatus,
-              thumbnail:"FALSE"
+              dishStatus: rowSelected?.dishStatus,
+              thumbnail: "FALSE",
             }}
             onFinish={onFinish}
             autoComplete="on"
@@ -530,32 +553,39 @@ const Dish = ({ dish }) => {
             <Form.Item
               label="Tên món"
               name="dishName"
-              rules={[{ required: true, message: 'Vui lòng nhập tên món ăn!' }]}
+              rules={[{ required: true, message: "Vui lòng nhập tên món ăn!" }]}
             >
-              <InpuComponent value={stateDish?.dishName} onChange={handleOnchange} name="dishName" />
+              <InpuComponent
+                value={stateDish?.dishName}
+                onChange={handleOnchange}
+                name="dishName"
+              />
               <span></span>
             </Form.Item>
 
             <Form.Item
               label="Giá bán"
               name="dishPrice"
-              rules={[{ required: true, message: 'Vui lòng nhập giá tiền!' }]}
+              rules={[{ required: true, message: "Vui lòng nhập giá tiền!" }]}
             >
-              <InpuComponent value={stateDish?.dishPrice} onChange={handleOnchange} name="dishPrice" />
+              <InpuComponent
+                value={stateDish?.dishPrice}
+                onChange={handleOnchange}
+                name="dishPrice"
+              />
               <span></span>
-
             </Form.Item>
 
             <Form.Item
               label="Danh mục"
               name="menuId"
-              rules={[{ required: true, message: 'Vui lòng nhập danh mục!' }]}
+              rules={[{ required: true, message: "Vui lòng nhập danh mục!" }]}
             >
               <Select
                 onChange={handleOnchangeSelect}
                 options={menus.map((menu) => ({
                   label: menu.menuTitle, // Hiển thị tên danh mục
-                  value: menu.menuId,    // Giá trị để gửi lên server
+                  value: menu.menuId, // Giá trị để gửi lên server
                 }))}
               />
             </Form.Item>
@@ -563,14 +593,16 @@ const Dish = ({ dish }) => {
             <Form.Item
               label="Trạng thái"
               name="dishStatus"
-              rules={[{ required: true, message: 'Vui lòng nhập danh mục!' }]}
+              rules={[{ required: true, message: "Vui lòng nhập danh mục!" }]}
             >
-                        <Select
-                value={stateDish?.dishStatus == 1 ? "còn món" : "đã hết" }
-                onChange={(value) => setSateDish({ ...stateDish, dishStatus: value })}
+              <Select
+                value={stateDish?.dishStatus == 1 ? "còn món" : "đã hết"}
+                onChange={(value) =>
+                  setSateDish({ ...stateDish, dishStatus: value })
+                }
                 options={[
                   { label: "Còn món", value: 1 },
-                  { label: "Đã hết", value:0 },
+                  { label: "Đã hết", value: 0 },
                 ]}
                 style={{ width: 100 }}
               />
@@ -580,34 +612,41 @@ const Dish = ({ dish }) => {
             <Form.Item
               label="Image"
               name="thumbnail"
-              rules={[{ required: true, message: 'Thêm ảnh!' }]}
+              rules={[{ required: true, message: "Thêm ảnh!" }]}
             >
-     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                }}
+              >
                 <Button variant="outlined" component="label">
-                <label style={{ display: 'block' }}>Thêm ảnh
-                <input
-                  style={{ display: "none" }}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleOnchangeAvatar}
-                />
-                </label>
-              </Button>
-              {stateDish?.thumbnail && (
-                <img
-                  component="img"
-                  src={thumbnailPreview ?  thumbnailPreview: stateDish.thumbnail }
-                  alt="Thumbnail Preview"
-                  style={{
-                    width: '100px',
-                    height: 'auto',
-                    marginTop: 2,
-                  }}
-                />
-              )}
-                </div>
-
-
+                  <label style={{ display: "block" }}>
+                    Thêm ảnh
+                    <input
+                      style={{ display: "none" }}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleOnchangeAvatar}
+                    />
+                  </label>
+                </Button>
+                {stateDish?.thumbnail && (
+                  <img
+                    component="img"
+                    src={
+                      thumbnailPreview ? thumbnailPreview : stateDish.thumbnail
+                    }
+                    alt="Thumbnail Preview"
+                    style={{
+                      width: "100px",
+                      height: "auto",
+                      marginTop: 2,
+                    }}
+                  />
+                )}
+              </div>
             </Form.Item>
 
             <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
@@ -618,20 +657,26 @@ const Dish = ({ dish }) => {
           </Form>
         </Modald>
 
-        <Modald title="Xóa món ăn" open={isModalOpenDelete} onCancel={handleCancelDelete}
+        <Modald
+          title="Xóa món ăn"
+          open={isModalOpenDelete}
+          onCancel={handleCancelDelete}
           onOk={() => {
             handleDeleteDish();
             setTimeout(() => {
               handleCancelDelete();
             }, 500);
-          }} okText="Có" cancelText="Hủy">
-              Bạn có chắc muốn xóa món{" "}
-            <strong>{rowSelected?.dishName || "này"}</strong> không?
+          }}
+          okText="Có"
+          cancelText="Hủy"
+        >
+          Bạn có chắc muốn xóa món{" "}
+          <strong>{rowSelected?.dishName || "này"}</strong> không?
         </Modald>
       </Conter>
       <Foor />
     </div>
-  )
-}
+  );
+};
 
-export default Dish
+export default Dish;

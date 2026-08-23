@@ -1,8 +1,12 @@
-import { ButtonGruoup, Conter, Tablecontainer  } from "./style"
+import { ButtonGruoup, Conter, Tablecontainer } from "./style";
 import React, { useEffect, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import Modald from "../../costormer/Components/Modal/Modal";
-import { DeleteOutlined, DownloadOutlined, EditOutlined } from "@ant-design/icons"
+import {
+  DeleteOutlined,
+  DownloadOutlined,
+  EditOutlined,
+} from "@ant-design/icons";
 import { Button, Form, Input, message, Modal, Space, Table } from "antd";
 import Foor from "../../costormer/Components/Foor/Foor";
 
@@ -10,13 +14,11 @@ import InpuComponent from "../../costormer/Components/InputComponent/InputCompon
 import { QRCodeCanvas } from "qrcode.react";
 import { API_URL } from "../../config";
 
-
 const Tabled = () => {
-
-  const [rowSelected, setRowSelected] = useState('')
+  const [rowSelected, setRowSelected] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isOpenMoadl, setIsOpenModal] = useState(false)
-  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false)
+  const [isOpenMoadl, setIsOpenModal] = useState(false);
+  const [isModalOpenDelete, setIsModalOpenDelete] = useState(false);
   const [qrTable, setQrTable] = useState(null);
 
   const [table, setTables] = useState([]);
@@ -25,7 +27,6 @@ const Tabled = () => {
   const [selectedTable, setSelectedTable] = useState(null);
   const [tableName, setTableName] = useState("");
   const [tableDescription, setTableDescription] = useState("");
-
 
   const handleSubmitForm = async (e) => {
     const res = await fetch(
@@ -41,14 +42,14 @@ const Tabled = () => {
           tableName: tableName,
           tableDescription: tableDescription || "",
         }),
-      }
+      },
     );
     const data = await res.json();
     if (data.tableId) {
       setStatus(true);
       setTableName("");
       setTableDescription("");
-      form.resetFields()
+      form.resetFields();
       message.success("Thành công");
     } else {
       setStatus(false);
@@ -56,9 +57,8 @@ const Tabled = () => {
       setTableDescription("");
       message.error(data.message);
     }
-    setIsOpenModal(false)
-    setIsModalOpen(false)
-
+    setIsOpenModal(false);
+    setIsModalOpen(false);
   };
 
   const handleDeleteTable = async () => {
@@ -74,7 +74,7 @@ const Tabled = () => {
             Accept: "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
 
       if (res.ok) {
@@ -116,61 +116,60 @@ const Tabled = () => {
       setStatus(false);
     }
   }, [status]);
-  console.log(table)
-
+  console.log(table);
 
   const handleDetails = (record) => {
-    console.log(record)
+    console.log(record);
     setSelectedTable(record);
     setTableName(record?.tableName); // Đặt tên bàn vào input
     setTableDescription(record?.tableDescription);
     setIsOpenModal(true); // Mở modal
-
-  }
-
+  };
 
   const handleCancelDelete = () => {
-    setIsModalOpenDelete(false)
-  }
+    setIsModalOpenDelete(false);
+  };
 
-
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const renderAction = (record) => {
     return (
       <div>
-        <DeleteOutlined style={{ color: 'red', fontSize: '20px', cursor: 'pointer' }} onClick={() => {
-          setIsModalOpenDelete(true);
-          setSelectedTable(record);
-          console.log(record)
-        }} />
+        <DeleteOutlined
+          style={{ color: "red", fontSize: "20px", cursor: "pointer" }}
+          onClick={() => {
+            setIsModalOpenDelete(true);
+            setSelectedTable(record);
+            console.log(record);
+          }}
+        />
         <EditOutlined
-          style={{ color: 'orange', fontSize: '20px', cursor: 'pointer' }}
+          style={{ color: "orange", fontSize: "20px", cursor: "pointer" }}
           onClick={() => {
             setSelectedTable(record);
             handleDetails(record);
           }}
         />
       </div>
-    )
-  }
-
+    );
+  };
 
   const handleCancel = () => {
-    setIsModalOpen(false)
+    setIsModalOpen(false);
     setTableName({
-      tableName: '',
-    })
+      tableName: "",
+    });
     setTableDescription({
-     tableDescription:'',
-      })
-    form.resetFields()
+      tableDescription: "",
+    });
+    form.resetFields();
     console.log("....");
   };
 
   const [form] = Form.useForm();
 
-  const getTableUrl = (tableId) => `${window.location.origin}/tables/${tableId}`;
+  const getTableUrl = (tableId) =>
+    `${window.location.origin}/tables/${tableId}`;
 
   const handleDownloadQr = () => {
     const canvas = document.getElementById("table-qr-canvas");
@@ -181,23 +180,21 @@ const Tabled = () => {
     link.click();
   };
 
-
-
   const columns = [
     {
-      title: 'Tên bàn',
-      dataIndex: 'tableName',
-      key: 'tableName'
+      title: "Tên bàn",
+      dataIndex: "tableName",
+      key: "tableName",
     },
     {
-      title: 'Mô tả',
-      dataIndex: 'tableDescription',
-      key: 'tableDescription'
+      title: "Mô tả",
+      dataIndex: "tableDescription",
+      key: "tableDescription",
     },
     {
-      title: 'Mã QR',
-      key: 'qrCode',
-      align: 'center',
+      title: "Mã QR",
+      key: "qrCode",
+      align: "center",
       render: (_, record) => (
         <button
           type="button"
@@ -205,19 +202,34 @@ const Tabled = () => {
             event.stopPropagation();
             setQrTable(record);
           }}
-          style={{ width: 58, height: 58, display: 'grid', placeItems: 'center', margin: '0 auto', padding: 5, border: '1px solid #eadfd7', borderRadius: 12, background: '#fff', cursor: 'pointer' }}
+          style={{
+            width: 58,
+            height: 58,
+            display: "grid",
+            placeItems: "center",
+            margin: "0 auto",
+            padding: 5,
+            border: "1px solid #eadfd7",
+            borderRadius: 12,
+            background: "#fff",
+            cursor: "pointer",
+          }}
           aria-label={`Xem mã QR ${record.tableName}`}
         >
-          <QRCodeCanvas value={getTableUrl(record.tableId)} size={46} marginSize={0} />
+          <QRCodeCanvas
+            value={getTableUrl(record.tableId)}
+            size={46}
+            marginSize={0}
+          />
         </button>
       ),
     },
     {
-      title: 'Thao tác',
-      dataIndex: 'action',
-      key: 'action',
-      render: (text, record) => renderAction(record)
-    }
+      title: "Thao tác",
+      dataIndex: "action",
+      key: "action",
+      render: (text, record) => renderAction(record),
+    },
   ];
 
   const [dataSource, setDataSource] = useState([
@@ -228,29 +240,38 @@ const Tabled = () => {
 
   return (
     <div>
-      <Conter style={{ textAlign: 'center', padding: '20px', backgroundColor: "#f3e2d3" }}>
+      <Conter
+        style={{
+          textAlign: "center",
+          padding: "20px",
+          backgroundColor: "#f3e2d3",
+        }}
+      >
         <h1>QUẢN LÝ BÀN</h1>
-        <div style={{ margin: '10px' }}>
-          <ButtonGruoup onClick={() => setIsModalOpen(true)}>Thêm mới</ButtonGruoup>
+        <div style={{ margin: "10px" }}>
+          <ButtonGruoup onClick={() => setIsModalOpen(true)}>
+            Thêm mới
+          </ButtonGruoup>
         </div>
-        <Tablecontainer >
-          <Table onRow={(record, rowIndex) => {
-            return {
-              onClick: event => {
-                setRowSelected(record)
-              }
-            };
-          }}
+        <Tablecontainer>
+          <Table
+            onRow={(record, rowIndex) => {
+              return {
+                onClick: (event) => {
+                  setRowSelected(record);
+                },
+              };
+            }}
             dataSource={table}
             columns={columns}
-            pagination={{pageSize: 6 }}
+            pagination={{ pageSize: 6 }}
             bordered
             rowKey="tableId"
-            style={{ overflowX: 'auto' }}
+            style={{ overflowX: "auto" }}
           />
         </Tablecontainer>
         <Modal
-          title={`Mã QR · ${qrTable?.tableName || ''}`}
+          title={`Mã QR · ${qrTable?.tableName || ""}`}
           open={Boolean(qrTable)}
           onCancel={() => setQrTable(null)}
           footer={null}
@@ -258,21 +279,48 @@ const Tabled = () => {
           width={420}
         >
           {qrTable && (
-            <div style={{ textAlign: 'center', padding: '8px 0 4px' }}>
-              <div style={{ width: 260, margin: '0 auto 20px', padding: 22, border: '1px solid #eee1d8', borderRadius: 24, background: '#fffaf4' }}>
-                <QRCodeCanvas id="table-qr-canvas" value={getTableUrl(qrTable.tableId)} size={216} marginSize={2} level="H" />
+            <div style={{ textAlign: "center", padding: "8px 0 4px" }}>
+              <div
+                style={{
+                  width: 260,
+                  margin: "0 auto 20px",
+                  padding: 22,
+                  border: "1px solid #eee1d8",
+                  borderRadius: 24,
+                  background: "#fffaf4",
+                }}
+              >
+                <QRCodeCanvas
+                  id="table-qr-canvas"
+                  value={getTableUrl(qrTable.tableId)}
+                  size={216}
+                  marginSize={2}
+                  level="H"
+                />
               </div>
-              <h3 style={{ margin: '0 0 5px', fontSize: 20 }}>{qrTable.tableName}</h3>
-              <p style={{ margin: '0 0 18px', color: '#91786a' }}>
+              <h3 style={{ margin: "0 0 5px", fontSize: 20 }}>
+                {qrTable.tableName}
+              </h3>
+              <p style={{ margin: "0 0 18px", color: "#91786a" }}>
                 Khách quét mã để mở thực đơn và gọi món tại bàn.
               </p>
-              <Button type="primary" icon={<DownloadOutlined />} onClick={handleDownloadQr}>
+              <Button
+                type="primary"
+                icon={<DownloadOutlined />}
+                onClick={handleDownloadQr}
+              >
                 Tải mã QR
               </Button>
             </div>
           )}
         </Modal>
-        <Modald title="Thêm bàn" open={isModalOpen} setStatus={setStatus} onCancel={handleCancel} footer={null}>
+        <Modald
+          title="Thêm bàn"
+          open={isModalOpen}
+          setStatus={setStatus}
+          onCancel={handleCancel}
+          footer={null}
+        >
           <Form
             name="basic"
             labelCol={{ span: 7 }}
@@ -286,24 +334,30 @@ const Tabled = () => {
             <Form.Item
               label="Tên bàn"
               name="tableName"
-              rules={[{ required: true, message: 'Vui lòng nhập tên bàn!' }]}
+              rules={[{ required: true, message: "Vui lòng nhập tên bàn!" }]}
             >
-              <InpuComponent value={tableName} onChange={(e) => setTableName(e.target.value)} name="tableName" placeholder="Nhập"/>
+              <InpuComponent
+                value={tableName}
+                onChange={(e) => setTableName(e.target.value)}
+                name="tableName"
+                placeholder="Nhập"
+              />
+            </Form.Item>
+
+            <Form.Item label="Mô tả" name="tableDescription">
+              <InpuComponent
+                value={tableDescription}
+                onChange={(e) => setTableDescription(e.target.value)}
+                name="tableDescription"
+                placeholder="Nhập"
+              />
             </Form.Item>
 
             <Form.Item
-              label="Mô tả"
-              name="tableDescription"
+              wrapperCol={{ offset: 8, span: 16 }}
+              style={{ textAlign: "right" }}
             >
-              <InpuComponent value={tableDescription} onChange={(e) => setTableDescription(e.target.value)} name="tableDescription" placeholder="Nhập"/>
-            </Form.Item>
-
-
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }} style={{ textAlign: 'right' }}>
-                <Button
-                style={{ margin: '3px' }}
-                onClick={handleCancel}
-              >
+              <Button style={{ margin: "3px" }} onClick={handleCancel}>
                 ĐÓNG
               </Button>
               <Button type="primary" htmlType="submit">
@@ -313,8 +367,8 @@ const Tabled = () => {
           </Form>
         </Modald>
 
-        <Modald title='Chỉnh sửa bàn'
-
+        <Modald
+          title="Chỉnh sửa bàn"
           isOpen={isOpenMoadl}
           onCancel={() => {
             setIsOpenModal(false);
@@ -330,8 +384,10 @@ const Tabled = () => {
             labelCol={{ span: 7 }}
             wrapperCol={{ span: 16 }}
             style={{ maxWidth: 600 }}
-            initialValues={{ tableName: selectedTable?.tableName,
-             tableDescription: selectedTable?.tableDescription}}
+            initialValues={{
+              tableName: selectedTable?.tableName,
+              tableDescription: selectedTable?.tableDescription,
+            }}
             onFinish={() => {
               handleSubmitForm();
               setTimeout(() => {
@@ -343,53 +399,65 @@ const Tabled = () => {
             <Form.Item
               label="Tên bàn"
               name="tableName"
-              rules={[{ required: true, message: 'Vui lòng nhập tên danh mục!' }]}
+              rules={[
+                { required: true, message: "Vui lòng nhập tên danh mục!" },
+              ]}
             >
-              <InpuComponent defaultValue={tableName} value={tableName} onChange={(e) => {
-                setTableName(e.target.value);
-                }} />
+              <InpuComponent
+                defaultValue={tableName}
+                value={tableName}
+                onChange={(e) => {
+                  setTableName(e.target.value);
+                }}
+              />
+              <span></span>
+            </Form.Item>
+
+            <Form.Item label="Mô tả" name="tableDescription">
+              <InpuComponent
+                defaultValue={tableDescription}
+                value={tableDescription}
+                onChange={(e) => {
+                  setTableDescription(e.target.value);
+                }}
+              />
               <span></span>
             </Form.Item>
 
             <Form.Item
-              label="Mô tả"
-              name="tableDescription"
+              wrapperCol={{ offset: 8, span: 16 }}
+              style={{ textAlign: "right" }}
             >
-              <InpuComponent defaultValue={tableDescription} value={tableDescription} onChange={(e) => {
-                setTableDescription(e.target.value);
-                }} />
-              <span></span>
-            </Form.Item>
-
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }} style={{ textAlign: 'right' }}>
               <Button type="primary" htmlType="submit">
                 Lưu
               </Button>
-              <Button
-              style={{ marginLeft: '10px' }}
-              onClick={handleCancel}
-            >
-              ĐÓNG
-            </Button>
+              <Button style={{ marginLeft: "10px" }} onClick={handleCancel}>
+                ĐÓNG
+              </Button>
             </Form.Item>
           </Form>
         </Modald>
 
-
-        <Modald title="Xóa Bàn" open={isModalOpenDelete} onCancel={handleCancelDelete}
+        <Modald
+          title="Xóa Bàn"
+          open={isModalOpenDelete}
+          onCancel={handleCancelDelete}
           onOk={() => {
             handleDeleteTable();
             setTimeout(() => {
               handleCancelDelete();
             }, 500);
-          }} okText="Có" cancelText="Hủy">
-            Bạn có chắc muốn xóa bàn{" "}
-            <strong>{selectedTable?.tableName || "này"}</strong> không?
+          }}
+          okText="Có"
+          cancelText="Hủy"
+        >
+          Bạn có chắc muốn xóa bàn{" "}
+          <strong>{selectedTable?.tableName || "này"}</strong> không?
         </Modald>
       </Conter>
       <Foor />
     </div>
-  )
-}
+  );
+};
 
-export default Tabled
+export default Tabled;

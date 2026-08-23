@@ -6,7 +6,7 @@ services:
     staticPublishPath: ./build
     envVars:
       - key: REACT_APP_API_URL
-        sync: false
+        value: https://menuorder-1.onrender.com
     routes:
       - type: rewrite
         source: /*

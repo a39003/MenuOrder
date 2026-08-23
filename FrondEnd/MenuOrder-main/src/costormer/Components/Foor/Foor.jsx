@@ -1,12 +1,12 @@
-import React from "react"
-import {WrapperFooter} from "./style"
+import React from "react";
+import { WrapperFooter } from "./style";
 
 const Foor = () => {
-    return(
-        <div>
-            <WrapperFooter></WrapperFooter>
-        </div>
-    )
-}
+  return (
+    <div>
+      <WrapperFooter></WrapperFooter>
+    </div>
+  );
+};
 
-export default Foor
+export default Foor;

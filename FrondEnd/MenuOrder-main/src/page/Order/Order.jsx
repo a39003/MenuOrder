@@ -1,8 +1,26 @@
-import React, { useEffect, useState } from "react"
-import { Tables, TableCar, TableHeader, Status, TableBody,TimeSection,
-    DishesSection, TableFooter, Notification, StatusFooter, Icons, 
-    Conter} from "./style";
-import { ClockCircleOutlined, EyeOutlined, BellOutlined, EllipsisOutlined, CheckCircleOutlined, MinusCircleOutlined } from "@ant-design/icons"
+import React, { useEffect, useState } from "react";
+import {
+  Tables,
+  TableCar,
+  TableHeader,
+  Status,
+  TableBody,
+  TimeSection,
+  DishesSection,
+  TableFooter,
+  Notification,
+  StatusFooter,
+  Icons,
+  Conter,
+} from "./style";
+import {
+  ClockCircleOutlined,
+  EyeOutlined,
+  BellOutlined,
+  EllipsisOutlined,
+  CheckCircleOutlined,
+  MinusCircleOutlined,
+} from "@ant-design/icons";
 import Modald from "../../costormer/Components/Modal/Modal";
 import { Badge, Button, Form, Input, InputNumber, Table } from "antd";
 import { Navigate, useNavigate } from "react-router-dom";
@@ -10,9 +28,7 @@ import Foor from "../../costormer/Components/Foor/Foor";
 import StatusPanel from "./StatusPanl";
 import TableOrder from "./TableOrder";
 
-
 const Order = () => {
-
   const tables = [
     {
       id: 1,
@@ -41,22 +57,18 @@ const Order = () => {
       dishes: "Món 5/14",
     },
     {
-        id: 5,
-        status: "Đang phục vụ",
-        time: "10'",
-        dishes: "Món 5/14",
-      },
-      {
-        id: 6,
-        status: "Đang phục vụ",
-        time: "10'",
-        dishes: "Món 5/14",
-      },
+      id: 5,
+      status: "Đang phục vụ",
+      time: "10'",
+      dishes: "Món 5/14",
+    },
+    {
+      id: 6,
+      status: "Đang phục vụ",
+      time: "10'",
+      dishes: "Món 5/14",
+    },
   ];
-
-    
- 
-
 
   const [dataSource, setDataSource] = useState([
     {
@@ -65,7 +77,7 @@ const Order = () => {
       quantity: 1,
       price: 239000,
       status: "done",
-      note:"",
+      note: "",
     },
     {
       key: "2",
@@ -73,7 +85,7 @@ const Order = () => {
       quantity: 1,
       price: 139000,
       status: "done",
-      note:"bỏ bớt cay, không cho hành",
+      note: "bỏ bớt cay, không cho hành",
     },
     {
       key: "3",
@@ -81,7 +93,7 @@ const Order = () => {
       quantity: 1,
       price: 139000,
       status: "done",
-      note:"bỏ bớt cay",
+      note: "bỏ bớt cay",
     },
     {
       key: "4",
@@ -89,7 +101,7 @@ const Order = () => {
       quantity: 1,
       price: 139000,
       status: "done",
-      note:"bỏ bớt cay",
+      note: "bỏ bớt cay",
     },
     {
       key: "5",
@@ -97,7 +109,7 @@ const Order = () => {
       quantity: 1,
       price: 139000,
       status: "done",
-      note:"bỏ bớt cay",
+      note: "bỏ bớt cay",
     },
     {
       key: "6",
@@ -105,7 +117,7 @@ const Order = () => {
       quantity: 1,
       price: 139000,
       status: "done",
-      note:"bỏ bớt cay",
+      note: "bỏ bớt cay",
     },
     {
       key: "7",
@@ -113,20 +125,18 @@ const Order = () => {
       quantity: 1,
       price: 139000,
       status: "done",
-      note:"bỏ bớt cay",
+      note: "bỏ bớt cay",
     },
   ]);
 
+  return (
+    <div style={{ backgroundColor: "#f3e2d3", height: "200vh" }}>
+      <Conter style={{ padding: "20px" }}>
+        <StatusPanel tables={tables} />
+      </Conter>
+      <Foor />
+    </div>
+  );
+};
 
-
-    return(
-      <div  style={{backgroundColor: "#f3e2d3", height: "200vh"}}>
-        <Conter style={{padding:'20px'}}>
-          <StatusPanel tables={tables}/>
-        </Conter>
-        <Foor/>
-        </div>
-    )
-}
-
-export default Order
+export default Order;

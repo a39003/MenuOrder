@@ -9,21 +9,31 @@ import { API_URL } from "../../config";
 
 const { Title } = Typography;
 
-const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, onBillDeleted, table, setStatus, customerName, tableName }) => {
+const Bill = ({
+  children,
+  bill,
+  tableId,
+  orderId,
+  isOpen,
+  setIsOpen,
+  setBill,
+  onBillDeleted,
+  table,
+  setStatus,
+  customerName,
+  tableName,
+}) => {
   const navigate = useNavigate();
 
   const handleDeleteBill = async () => {
     try {
-      const response = await fetch(
-        `${API_URL}/admin/orders/${orderId}/bill`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await fetch(`${API_URL}/admin/orders/${orderId}/bill`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       if (response.ok) {
         message.success("Xóa bill thành công");
         setBill(null);
@@ -44,13 +54,16 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
   const fetchOrderDetails = async () => {
     if (!table?.tableId) return;
     try {
-      const response = await fetch(`${API_URL}/orders/tables/${table.tableId}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const response = await fetch(
+        `${API_URL}/orders/tables/${table.tableId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -66,7 +79,9 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
 
   const updateDoneDishCount = (orderItems) => {
     if (orderItems && orderItems.length > 0) {
-      const doneDishCount = orderItems.filter((item) => item.dishStatus === "Đã ra món").length;
+      const doneDishCount = orderItems.filter(
+        (item) => item.dishStatus === "Đã ra món",
+      ).length;
       const updatedTable = { ...table, doneDish: doneDishCount };
       setStatus(updatedTable);
     }
@@ -113,15 +128,16 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
   // Make table empty and update table status
   const handleMakeTableEmpty = async () => {
     try {
-
-      const response = await fetch(`${API_URL}/admin/tables/${tableId}/status`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
+      const response = await fetch(
+        `${API_URL}/admin/tables/${tableId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         },
-
-      });
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -145,13 +161,12 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
       if (response.ok) {
         message.success("Xác nhận thanh toán thành công");
         await handleMakeTableEmpty();
         window.location.reload();
-
 
         setIsOpen(false);
       } else {
@@ -165,12 +180,42 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
   };
 
   const dataSource = [
-    { key: "1", name: "Bò sốt tiêu đen", quantity: 1, price: 239000, total: 239000 },
-    { key: "2", name: "Dê tái chanh", quantity: 1, price: 239000, total: 239000 },
-    { key: "3", name: "Bò xào rau muống", quantity: 1, price: 239000, total: 239000 },
+    {
+      key: "1",
+      name: "Bò sốt tiêu đen",
+      quantity: 1,
+      price: 239000,
+      total: 239000,
+    },
+    {
+      key: "2",
+      name: "Dê tái chanh",
+      quantity: 1,
+      price: 239000,
+      total: 239000,
+    },
+    {
+      key: "3",
+      name: "Bò xào rau muống",
+      quantity: 1,
+      price: 239000,
+      total: 239000,
+    },
     { key: "4", name: "Dê hấp", quantity: 1, price: 239000, total: 239000 },
-    { key: "5", name: "Thịt lợn quay", quantity: 1, price: 239000, total: 239000 },
-    { key: "6", name: "Chân giò hầm", quantity: 1, price: 239000, total: 239000 },
+    {
+      key: "5",
+      name: "Thịt lợn quay",
+      quantity: 1,
+      price: 239000,
+      total: 239000,
+    },
+    {
+      key: "6",
+      name: "Chân giò hầm",
+      quantity: 1,
+      price: 239000,
+      total: 239000,
+    },
   ];
 
   const columns = [
@@ -223,8 +268,16 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
             Địa Chỉ: Nghiêm Xuân Yên - Đại Kim - Hoàng Mai - Hà Nội <br />
             SDT: 012345678
           </Typography.Text>
-          <Typography.Text style={{ display: "block", textAlign: "center", margin: "10px 0 16px", fontWeight: 700 }}>
-            Khách hàng: {customerName || bill?.customerName || "Khách hàng"} · Bàn: {tableName || bill?.tableName || tableId}
+          <Typography.Text
+            style={{
+              display: "block",
+              textAlign: "center",
+              margin: "10px 0 16px",
+              fontWeight: 700,
+            }}
+          >
+            Khách hàng: {customerName || bill?.customerName || "Khách hàng"} ·
+            Bàn: {tableName || bill?.tableName || tableId}
           </Typography.Text>
 
           <Table
@@ -233,18 +286,19 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
               {
                 title: "Tên món",
                 dataIndex: "billItemName",
-                key: "billItemName"
+                key: "billItemName",
               },
               {
                 title: "Số lượng",
                 dataIndex: "billItemQuantity",
-                key: "billItemQuantity"
+                key: "billItemQuantity",
               },
               {
                 title: "Giá tiền",
                 dataIndex: "billItemPrice",
                 key: "billItemPrice",
-                render: (billItemPrice) => billItemPrice?.toLocaleString() + " đ",
+                render: (billItemPrice) =>
+                  billItemPrice?.toLocaleString() + " đ",
               },
               {
                 title: "Thành tiền",
@@ -269,7 +323,11 @@ const Bill = ({ children, bill, tableId, orderId, isOpen, setIsOpen, setBill, on
                   </Table.Summary.Cell>
                 </Table.Summary.Row>
                 <Table.Summary.Row>
-                  <Table.Summary.Cell index={0} colSpan={4} style={{ textAlign: "center" }}>
+                  <Table.Summary.Cell
+                    index={0}
+                    colSpan={4}
+                    style={{ textAlign: "center" }}
+                  >
                     <b>Thời gian: {convertToTime(bill?.billDateTime)}</b>
                   </Table.Summary.Cell>
                 </Table.Summary.Row>
