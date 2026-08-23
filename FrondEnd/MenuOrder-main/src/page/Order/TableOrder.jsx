@@ -18,7 +18,7 @@ import { API_URL } from "../../config";
 
 const BASE_URL = API_URL;
 
-const TableOrder = ({ table, setStatus }) => {
+const TableOrder = ({ table, onTableChanged }) => {
   const [order, setOrder] = useState(null);
   const [bill, setBill] = useState(null);
   const [isBillCreated, setIsBillCreated] = useState(false);
@@ -27,6 +27,7 @@ const TableOrder = ({ table, setStatus }) => {
   // Combined Fetch Data Function
   const fetchData = async () => {
     if (!table?.tableId) return;
+    let currentOrderId = order?.orderId;
 
     // Fetch Order Details
     try {
@@ -43,8 +44,8 @@ const TableOrder = ({ table, setStatus }) => {
 
       if (orderResponse.ok) {
         const orderData = await orderResponse.json();
+        currentOrderId = orderData?.orderId;
         setOrder(orderData);
-        updateDoneDishCount(orderData.orderItemResponseDTO);
       } else {
         console.error(
           "Failed to fetch order details:",
@@ -56,10 +57,15 @@ const TableOrder = ({ table, setStatus }) => {
     }
 
     // Fetch Bill Details
-    if (!order?.orderId) return;
+    const shouldFetchBill = [
+      "Đang yêu cầu thanh toán",
+      "Đã thanh toán",
+    ].includes(table?.tableStatus);
+
+    if (!currentOrderId || !shouldFetchBill) return;
     try {
       const billResponse = await fetch(
-        `${BASE_URL}/orders/${order.orderId}/bill`,
+        `${BASE_URL}/orders/${currentOrderId}/bill`,
         {
           method: "GET",
           headers: {
@@ -74,7 +80,7 @@ const TableOrder = ({ table, setStatus }) => {
           setBill(billData);
           setIsBillCreated(true);
           localStorage.setItem(
-            `bill-${order.orderId}`,
+            `bill-${currentOrderId}`,
             JSON.stringify(billData),
           );
         } else {
@@ -91,25 +97,22 @@ const TableOrder = ({ table, setStatus }) => {
     }
   };
 
-  const updateDoneDishCount = (orderItems) => {
-    if (orderItems && orderItems.length > 0) {
-      const doneDishCount = orderItems.filter(
-        (item) => item.dishStatus === "Đã ra món",
-      ).length;
-      const updatedTable = { ...table, doneDish: doneDishCount };
-      setStatus(updatedTable);
-    }
-  };
-
   useEffect(() => {
+    if (table?.tableStatus === "Đang trống") {
+      setOrder(null);
+      setBill(null);
+      setIsBillCreated(false);
+      return undefined;
+    }
+
     fetchData();
 
     const intervalId = setInterval(() => {
       fetchData();
-    }, 5000);
+    }, 10000);
 
     return () => clearInterval(intervalId);
-  }, [table?.tableId]);
+  }, [table?.tableId, table?.tableStatus]);
 
   const handleMakeTableEmpty = async () => {
     try {
@@ -126,7 +129,7 @@ const TableOrder = ({ table, setStatus }) => {
 
       if (response.ok) {
         message.success("Làm trống bàn thành công");
-        setStatus({ ...table, tableStatus: "Bàn trống" });
+        onTableChanged?.();
       } else {
         console.error("Failed to make table empty:", response.statusText);
       }
@@ -202,7 +205,7 @@ const TableOrder = ({ table, setStatus }) => {
         </TableBody>
         <TableFooter>
           <Badge count={table?.notificationNumber || 0}>
-            <Notificatio tableId={table?.tableId} setStatus={setStatus} />
+            <Notificatio tableId={table?.tableId} setStatus={onTableChanged} />
           </Badge>
           {table?.tableStatus === "Đang yêu cầu thanh toán" && (
             <div style={{ display: "flex" }}>

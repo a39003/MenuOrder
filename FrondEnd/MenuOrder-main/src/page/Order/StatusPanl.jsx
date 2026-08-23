@@ -1,74 +1,69 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusButton } from "./style";
 import TableOrder from "./TableOrder";
 import { API_URL } from "../../config";
 
 function StatusPanel() {
   const [data, setData] = useState([]);
-  const [tables, setTables] = useState([]);
-  const [status, setStatus] = useState(true);
-  const [tableStatus, setTableStatus] = useState("Tất cả các bàn");
+  const [loading, setLoading] = useState(true);
+  const [tableStatus, setTableStatus] = useState(
+    () => sessionStorage.getItem("admin-table-filter") || "Tất cả các bàn",
+  );
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchTables = async () => {
-      try {
-        setError(null);
-        const token = localStorage.getItem("token");
+  const fetchTables = useCallback(async ({ initial = false } = {}) => {
+    try {
+      if (initial) setLoading(true);
+      setError(null);
+      const token = localStorage.getItem("token");
 
-        if (!token) {
-          throw new Error(
-            "Authorization token không tồn tại. Vui lòng đăng nhập lại.",
-          );
-        }
-
-        const response = await fetch(`${API_URL}/admin/tables`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Lỗi khi lấy dữ liệu: ${response.statusText}`);
-        }
-
-        const result = await response.json();
-
-        if (!Array.isArray(result)) {
-          throw new Error("Dữ liệu trả về không hợp lệ.");
-        }
-
-        setData(result);
-        setTables(
-          result.filter(
-            (table) =>
-              table?.tableStatus === tableStatus ||
-              tableStatus === "Tất cả các bàn",
-          ),
+      if (!token) {
+        throw new Error(
+          "Authorization token không tồn tại. Vui lòng đăng nhập lại.",
         );
-      } catch (error) {
-        setError(error.message);
-        console.error("Lỗi khi lấy danh sách bàn:", error);
-      } finally {
-        setStatus(false);
       }
-    };
-    fetchTables();
-    const interval = setInterval(() => {
-      fetchTables();
-    }, 5000);
+
+      const response = await fetch(`${API_URL}/admin/tables`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Lỗi khi lấy dữ liệu: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (!Array.isArray(result)) {
+        throw new Error("Dữ liệu trả về không hợp lệ.");
+      }
+
+      setData(result);
+    } catch (error) {
+      setError(error.message);
+      console.error("Lỗi khi lấy danh sách bàn:", error);
+    } finally {
+      if (initial) setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTables({ initial: true });
+    const interval = setInterval(fetchTables, 10000);
     return () => clearInterval(interval);
-  }, [tableStatus]);
+  }, [fetchTables]);
+
+  const tables = useMemo(() => {
+    if (tableStatus === "Tất cả các bàn") return data;
+    return data.filter((table) => table?.tableStatus === tableStatus);
+  }, [data, tableStatus]);
 
   const handleClick = (status) => {
     setTableStatus(status);
-    if (status === "Tất cả các bàn") {
-      setTables(data);
-    } else {
-      setTables(data.filter((table) => table?.tableStatus === status));
-    }
+    sessionStorage.setItem("admin-table-filter", status);
   };
 
   const quantity = (status) => {
@@ -112,13 +107,15 @@ function StatusPanel() {
       </div>
 
       <div style={{ flex: 1, marginTop: "20px" }}>
-        {error ? (
+        {loading ? (
+          <p>Đang tải danh sách bàn...</p>
+        ) : error ? (
           <p style={{ color: "red" }}>{error}</p>
         ) : tables.length > 0 ? (
           <div style={{ display: "flex", flexWrap: "wrap", gap: "15px" }}>
             {tables.map((table) => (
               <TableOrder
-                setStatus={setStatus}
+                onTableChanged={fetchTables}
                 key={table.tableId}
                 table={table}
               />
