@@ -83,11 +83,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import org.springframework.http.HttpMethod;
+
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-
-import org.springframework.security.config.http.SessionCreationPolicy;
+        import org.springframework.security.config.http.SessionCreationPolicy;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -109,149 +110,248 @@ import java.util.List;
         securedEnabled = true,
         jsr250Enabled = true
 )
-public class SecurityConfiguration {
+        public class SecurityConfiguration {
 
+        @Value("${app.cors.allowed-origins}")
+        private String allowedOrigins;
 
-    @Value("${app.cors.allowed-origins}")
-    private String allowedOrigins;
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
+        @Bean
+        public JwtTokenValidator jwtTokenValidator() {
+                return new JwtTokenValidator();
+        }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public SecurityFilterChain securityFilterChain(
+                HttpSecurity http
+        ) throws Exception {
 
-
-    @Bean
-    public JwtTokenValidator jwtTokenValidator() {
-        return new JwtTokenValidator();
-    }
-
-
-    @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity http
-    ) throws Exception {
-
-
-        http
-
-                // JWT => không dùng session
+                http
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
-                                SessionCreationPolicy.STATELESS
+                        SessionCreationPolicy.STATELESS
                         )
                 )
 
+                        .csrf(csrf -> csrf.disable())
 
-                // REST API không dùng CSRF
-                .csrf(csrf ->
-                        csrf.disable()
-                )
-
-
-                // Enable CORS
-                .cors(cors ->
-                        cors.configurationSource(
+                        .cors(cors ->
+                                cors.configurationSource(
                                 corsConfigurationSource()
+                                )
                         )
-                )
+
+                        .authorizeHttpRequests(auth -> auth
+
+                                // ==========================================
+                                // 1. LOGIN
+                                // ==========================================
+                                .requestMatchers("/auth/**")
+                                .permitAll()
 
 
-                .authorizeHttpRequests(auth -> auth
-
-
-                        // Public API
+                        // ==========================================
+                        // 2. KHÁCH HÀNG - XEM BÀN
+                        // ==========================================
                         .requestMatchers(
-                                "/auth/**",
-                                "/dishes/**",
-                                "/tables/**",
-                                "/orders/**"
+                        HttpMethod.GET,
+                        "/tables/{tableId}"
                         )
                         .permitAll()
 
 
-                        // Admin API
+                        // ==========================================
+                        // 3. KHÁCH HÀNG - XEM MÓN
+                        // ==========================================
                         .requestMatchers(
-                                "/admin/**"
+                        HttpMethod.GET,
+                        "/dishes",
+                        "/dishes/**"
                         )
+                        .permitAll()
+
+
+                        // ==========================================
+                        // 4. KHÁCH HÀNG - VÀO MENU CỦA BÀN
+                        // GET /1/menus?customerName=...
+                        // ==========================================
+                        .requestMatchers(
+                        HttpMethod.GET,
+                        "/{tableId}/menus"
+                        )
+                        .permitAll()
+
+
+                        // ==========================================
+                        // 5. KHÁCH HÀNG - XEM MENU
+                        // ==========================================
+                        .requestMatchers(
+                        HttpMethod.GET,
+                        "/menus",
+                        "/menus/**"
+                        )
+                        .permitAll()
+
+
+                        // ==========================================
+                        // 6. KHÁCH HÀNG - TẠO ORDER
+                        // POST /orders/{tableId}
+                        // ==========================================
+                        .requestMatchers(
+                        HttpMethod.POST,
+                        "/orders/{tableId}"
+                        )
+                        .permitAll()
+
+
+                        // ==========================================
+                        // 7. KHÁCH HÀNG - THÊM MÓN VÀO ORDER
+                        // POST /orders/{orderId}/items
+                        // ==========================================
+                        .requestMatchers(
+                        HttpMethod.POST,
+                        "/orders/{orderId}/items"
+                        )
+                        .permitAll()
+
+
+                        // ==========================================
+                        // 8. KHÁCH HÀNG - SỬA MÓN TRONG ORDER
+                        // PUT /orders/{orderId}/items/{orderItemId}
+                        // ==========================================
+                        .requestMatchers(
+                        HttpMethod.PUT,
+                        "/orders/{orderId}/items/{orderItemId}"
+                        )
+                        .permitAll()
+
+
+                        // ==========================================
+                        // 9. KHÁCH HÀNG - XÓA MÓN KHỎI ORDER
+                        // DELETE /orders/{orderId}/items/{orderItemId}
+                        // ==========================================
+                        .requestMatchers(
+                        HttpMethod.DELETE,
+                        "/orders/{orderId}/items/{orderItemId}"
+                        )
+                        .permitAll()
+
+
+                        // ==========================================
+                        // 10. KHÁCH HÀNG - XEM ORDER CỦA BÀN
+                        // GET /orders/tables/{tableId}
+                        // ==========================================
+                        .requestMatchers(
+                        HttpMethod.GET,
+                        "/orders/tables/{tableId}"
+                        )
+                        .permitAll()
+
+
+                        // ==========================================
+                        // 11. KHÁCH HÀNG - YÊU CẦU HỖ TRỢ MÓN
+                        // POST /orders/{orderId}/items/{orderItemId}/request
+                        // ==========================================
+                        .requestMatchers(
+                        HttpMethod.POST,
+                        "/orders/{orderId}/items/{orderItemId}/request"
+                        )
+                        .permitAll()
+
+
+                        // ==========================================
+                        // 12. KHÁCH HÀNG - YÊU CẦU THANH TOÁN
+                        // POST /tables/{tableId}/payment/request
+                        // ==========================================
+                        .requestMatchers(
+                        HttpMethod.POST,
+                        "/tables/{tableId}/payment/request"
+                        )
+                        .permitAll()
+
+
+                        // ==========================================
+                        // 13. KHÁCH HÀNG - THEO DÕI UPDATE ORDER
+                        // ==========================================
+                        .requestMatchers(
+                        HttpMethod.GET,
+                        "/orders/updates"
+                        )
+                        .permitAll()
+
+
+                        // ==========================================
+                        // 14. ADMIN
+                        // ==========================================
+                        .requestMatchers("/admin/**")
                         .hasRole("ADMIN")
 
 
-                        // Các API khác cần login
+                        // ==========================================
+                        // 15. CÒN LẠI
+                        // ==========================================
                         .anyRequest()
                         .authenticated()
                 )
 
+                        .addFilterBefore(
+                                jwtTokenValidator(),
+                                UsernamePasswordAuthenticationFilter.class
+                        );
 
-                // JWT filter
-                .addFilterBefore(
-                        jwtTokenValidator(),
-                        UsernamePasswordAuthenticationFilter.class
+                        return http.build();
+                }
+        @Bean
+        public CorsConfigurationSource corsConfigurationSource() {
+
+                return request -> {
+
+                CorsConfiguration cfg =
+                        new CorsConfiguration();
+
+                List<String> origins =
+                        Arrays.stream(
+                        allowedOrigins.split(",")
+                        )
+                        .map(String::trim)
+                        .filter(origin -> !origin.isEmpty())
+                        .toList();
+
+                cfg.setAllowedOrigins(origins);
+
+                cfg.setAllowedMethods(
+                        Arrays.asList(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "DELETE",
+                        "PATCH",
+                        "OPTIONS"
+                        )
                 );
 
+                cfg.setAllowedHeaders(
+                        Arrays.asList(
+                        "Authorization",
+                        "Content-Type",
+                        "Accept",
+                        "Origin"
+                        )
+                );
 
-        return http.build();
-    }
+                cfg.setExposedHeaders(
+                        List.of("Authorization")
+                );
 
+                cfg.setAllowCredentials(true);
 
+                cfg.setMaxAge(3600L);
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-
-
-        return request -> {
-
-
-            CorsConfiguration cfg =
-                    new CorsConfiguration();
-
-
-            List<String> origins =
-                    Arrays.asList(
-                            allowedOrigins.split(",")
-                    );
-
-
-            cfg.setAllowedOrigins(origins);
-
-
-            cfg.setAllowedMethods(
-                    Arrays.asList(
-                            "GET",
-                            "POST",
-                            "PUT",
-                            "DELETE",
-                            "PATCH",
-                            "OPTIONS"
-                    )
-            );
-
-
-            cfg.setAllowedHeaders(
-                    Arrays.asList(
-                            "Authorization",
-                            "Content-Type",
-                            "Accept",
-                            "Origin"
-                    )
-            );
-
-
-            cfg.setExposedHeaders(
-                    List.of(
-                            "Authorization"
-                    )
-            );
-
-
-            cfg.setAllowCredentials(true);
-
-
-            cfg.setMaxAge(3600L);
-
-
-            return cfg;
-        };
-    }
-}
+                return cfg;
+                };
+        }
+        }
