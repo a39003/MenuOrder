@@ -38,8 +38,7 @@ public class NotificationService implements INotificationService {
     }
 
     public Notification addNotification(Long tableId, String text) throws NotFoundException {
-        Table table = tableRepository.findById(tableId)
-                .orElseThrow(() -> new NotFoundException("Không thể tìm thấy bàn có id: " + tableId));
+        Table table = tableRepository.getReferenceById(tableId);
         Notification notification = new Notification();
         notification.setNotificationTime(LocalDateTime.now());
         notification.setText(text);

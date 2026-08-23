@@ -55,7 +55,6 @@ public class UserService implements UserDetailsService {
         if(!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new BadCredentialsException(messages.getString("password.validate.invalid"));
         }
-        User user = userRepository.findByUsername(username).get();
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 }

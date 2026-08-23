@@ -9,6 +9,7 @@ import { API_URL } from "../../config";
 
 const Login = () => {
   const [values, setValues] = useState({ username: "", password: "" });
+  const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
     if (localStorage.getItem("token")) navigate("/admin/order");
@@ -16,8 +17,10 @@ const Login = () => {
 
   const handleSubmitLogin = async (event) => {
     event.preventDefault();
+    if (submitting) return;
     if (!values.username || !values.password)
       return message.warning("Vui lòng nhập tài khoản và mật khẩu");
+    setSubmitting(true);
     try {
       const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
@@ -32,6 +35,8 @@ const Login = () => {
       } else message.error("Tài khoản hoặc mật khẩu không đúng");
     } catch {
       message.warning("Không thể kết nối máy chủ. Vui lòng thử lại.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -55,6 +60,7 @@ const Login = () => {
               prefix={<UserOutlined />}
               placeholder="Tài khoản"
               value={values.username}
+              disabled={submitting}
               onChange={(e) =>
                 setValues({ ...values, username: e.target.value })
               }
@@ -63,12 +69,18 @@ const Login = () => {
               prefix={<LockOutlined />}
               placeholder="Mật khẩu"
               value={values.password}
+              disabled={submitting}
               onChange={(e) =>
                 setValues({ ...values, password: e.target.value })
               }
             />
-            <button className="login-button" type="submit">
-              Đăng nhập
+            <button
+              className="login-button"
+              type="submit"
+              disabled={submitting}
+              aria-busy={submitting}
+            >
+              {submitting ? "Đang kết nối máy chủ..." : "Đăng nhập"}
             </button>
           </form>
         </LoginCar>

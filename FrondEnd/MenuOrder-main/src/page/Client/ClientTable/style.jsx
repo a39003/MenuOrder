@@ -148,6 +148,12 @@ export const Cartd = styled.button`
     background: #b9501f;
     transform: translateY(-2px);
   }
+  &:disabled {
+    background: #bda99d;
+    box-shadow: none;
+    cursor: wait;
+    transform: none;
+  }
 `;
 export const GuestForm = styled.section`
   display: grid;

@@ -16,6 +16,7 @@ import com.project.ezimenu.repositories.OrderRepository;
 import com.project.ezimenu.repositories.TableRepository;
 import com.project.ezimenu.services.interfaces.IMenuService;
 import com.project.ezimenu.utils.Constants;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,6 +39,8 @@ public class MenuService implements IMenuService {
     private ModelMapper modelMapper;
     @Autowired
     private Type listType;
+    @Autowired
+    private NotificationService notificationService;
     public List<MenuResponseDTO> getAllMenus() {
         List<Menu> menus = menuRepository.findByStatus(Constants.ENTITY_STATUS.ACTIVE);
         return menus.stream()
@@ -52,8 +55,9 @@ public class MenuService implements IMenuService {
                 })
                 .collect(Collectors.toList());
     }
+    @Transactional
     public List<MenuResponseDTO> getAllMenusAndCreateOrder(Long tableId, String customerName) throws NotFoundException {
-        Table table = tableRepository.findById(tableId)
+        Table table = tableRepository.findByIdWithoutRelations(tableId)
                 .orElseThrow(() -> new NotFoundException("Không thể tìm thấy bàn với id: " + tableId));
         // Tạo order mới nếu bàn trống
         if(table.getTableStatus().equals("Đang trống")){
@@ -65,12 +69,14 @@ public class MenuService implements IMenuService {
             newOrder.setCustomerName(customerName);
             tableRepository.save(table);
             orderRepository.save(newOrder);
-        } else if (table.getOrders() != null && !table.getOrders().isEmpty()) {
-            Order currentOrder = table.getOrders().get(table.getOrders().size() - 1);
-            if (currentOrder.getCustomerName() == null || currentOrder.getCustomerName().isBlank()) {
-                currentOrder.setCustomerName(customerName);
-                orderRepository.save(currentOrder);
-            }
+            notificationService.addNotification(tableId, "Khách ở bàn " + tableId + " đang order.");
+        } else {
+            orderRepository.findFirstByTableOrderByOrderIdDesc(table)
+                    .filter(currentOrder -> currentOrder.getCustomerName() == null || currentOrder.getCustomerName().isBlank())
+                    .ifPresent(currentOrder -> {
+                        currentOrder.setCustomerName(customerName);
+                        orderRepository.save(currentOrder);
+                    });
         }
         List<Menu> menus = menuRepository.findByStatus(Constants.ENTITY_STATUS.ACTIVE);
         return menus.stream()

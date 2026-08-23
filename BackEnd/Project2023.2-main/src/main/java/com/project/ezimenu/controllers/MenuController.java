@@ -3,11 +3,9 @@ package com.project.ezimenu.controllers;
 import com.project.ezimenu.dtos.MenuDTO.MenuRequestDTO;
 import com.project.ezimenu.dtos.MenuDTO.MenuResponseDTO;
 import com.project.ezimenu.entities.Menu;
-import com.project.ezimenu.entities.Notification;
 import com.project.ezimenu.exceptions.BadRequestException;
 import com.project.ezimenu.exceptions.NotFoundException;
 import com.project.ezimenu.services.MenuService;
-import com.project.ezimenu.services.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +17,6 @@ import java.util.List;
 public class MenuController {
     @Autowired
     private MenuService menuService;
-    @Autowired
-    private NotificationService notificationService;
     @GetMapping("/menus")
     public ResponseEntity<?> getAllMenus() throws NotFoundException {
         List<MenuResponseDTO> menus = menuService.getAllMenus();
@@ -40,7 +36,6 @@ public class MenuController {
         if(menus.isEmpty()){
             throw new NotFoundException("Hiện không có menu nào!");
         }
-        Notification notification = notificationService.addNotification(tableId, "Khách ở bàn " + tableId + " đang order.");
         return ResponseEntity.ok(menus);
     }
     @GetMapping("/menus/{menuId}")

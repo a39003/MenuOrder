@@ -21,11 +21,14 @@ const ClientTable = () => {
   const navigate = useNavigate();
   const { tableId } = useParams();
   const [customerName, setCustomerName] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const handleCreateOrder = async () => {
+    if (submitting) return;
     if (!customerName.trim()) {
       message.warning("Vui lòng nhập tên của bạn trước khi xem thực đơn");
       return;
     }
+    setSubmitting(true);
     try {
       const res = await fetch(
         `${API_URL}/${tableId}/menus?customerName=${encodeURIComponent(customerName.trim())}`,
@@ -36,11 +39,15 @@ const ClientTable = () => {
         sessionStorage.setItem(`customer-${tableId}`, customerName.trim());
         message.success(`Chào ${customerName.trim()}, bàn đã sẵn sàng`);
         navigate(`/menu/${tableId}`);
+      } else {
+        throw new Error("Hiện chưa có thực đơn để hiển thị.");
       }
     } catch (error) {
       message.error(
         error.message || "Không thể tải thực đơn. Vui lòng thử lại.",
       );
+    } finally {
+      setSubmitting(false);
     }
   };
   return (
@@ -85,10 +92,16 @@ const ClientTable = () => {
             value={customerName}
             onChange={(event) => setCustomerName(event.target.value)}
             onPressEnter={handleCreateOrder}
+            disabled={submitting}
           />
         </GuestForm>
-        <Cartd onClick={handleCreateOrder}>
-          Khám phá thực đơn &nbsp;
+        <Cartd
+          onClick={handleCreateOrder}
+          disabled={submitting}
+          aria-busy={submitting}
+        >
+          {submitting ? "Đang chuẩn bị thực đơn..." : "Khám phá thực đơn"}
+          &nbsp;
           <ArrowRightOutlined />
         </Cartd>
         <Footer>

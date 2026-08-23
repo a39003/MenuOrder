@@ -15,4 +15,6 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     Page<Order> findByStatusOrderByOrderTimeDesc(short status, Pageable pageable);
 
     Optional<Order> findByOrderIdAndStatus(Long orderId, short active);
+
+    Optional<Order> findFirstByTableOrderByOrderIdDesc(Table table);
 }

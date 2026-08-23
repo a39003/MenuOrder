@@ -111,6 +111,11 @@ export const LoginCar = styled.div`
   .login-button:hover {
     background: #b9501f;
   }
+  .login-button:disabled {
+    background: #bda99d;
+    box-shadow: none;
+    cursor: wait;
+  }
 
   @media (max-width: 480px) {
     padding: 26px 20px;
