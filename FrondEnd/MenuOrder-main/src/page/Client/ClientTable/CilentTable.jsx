@@ -31,7 +31,7 @@ const ClientTable = () => {
     setSubmitting(true);
     try {
       const res = await fetch(
-        `${API_URL}/${tableId}/menus?customerName=${encodeURIComponent(customerName.trim())}`,
+        `${API_URL}/tables/${tableId}/menus?customerName=${encodeURIComponent(customerName.trim())}`,
       );
       const responseText = await res.text();
       let data = null;

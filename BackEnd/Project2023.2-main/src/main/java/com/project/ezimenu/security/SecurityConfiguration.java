@@ -237,7 +237,7 @@ public class SecurityConfiguration {
                         //
                         .requestMatchers(
                                 HttpMethod.GET,
-                                "/*/menus"
+                                "/{tableId}/menus"
                         )
                         .permitAll()
 

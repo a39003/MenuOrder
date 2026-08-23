@@ -25,7 +25,7 @@ public class MenuController {
         }
         return ResponseEntity.ok(menus);
     }
-    @GetMapping("/{tableId}/menus")
+    @GetMapping({"/{tableId}/menus", "/tables/{tableId}/menus"})
     public ResponseEntity<?> getAllMenusAndCreateOrder(@PathVariable Long tableId,
                                                         @RequestParam String customerName) throws NotFoundException, BadRequestException {
         if (customerName == null || customerName.trim().isEmpty()) {
