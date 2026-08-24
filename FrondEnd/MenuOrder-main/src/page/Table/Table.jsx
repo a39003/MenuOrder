@@ -7,7 +7,17 @@ import {
   DownloadOutlined,
   EditOutlined,
 } from "@ant-design/icons";
-import { Button, Form, Input, message, Modal, Space, Table } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  InputNumber,
+  message,
+  Modal,
+  Select,
+  Space,
+  Table,
+} from "antd";
 import Foor from "../../costormer/Components/Foor/Foor";
 
 import InpuComponent from "../../costormer/Components/InputComponent/InputComponent";
@@ -29,6 +39,9 @@ const Tabled = () => {
   const [selectedTable, setSelectedTable] = useState(null);
   const [tableName, setTableName] = useState("");
   const [tableDescription, setTableDescription] = useState("");
+  const [tableType, setTableType] = useState("THƯỜNG");
+  const [floorNumber, setFloorNumber] = useState(1);
+  const [capacity, setCapacity] = useState(4);
 
   const handleSubmitForm = async (e) => {
     if (saving) return;
@@ -46,6 +59,9 @@ const Tabled = () => {
           body: JSON.stringify({
             tableName: tableName,
             tableDescription: tableDescription || "",
+            tableType,
+            floorNumber,
+            capacity,
           }),
         },
       );
@@ -137,6 +153,9 @@ const Tabled = () => {
     setSelectedTable(record);
     setTableName(record?.tableName); // Đặt tên bàn vào input
     setTableDescription(record?.tableDescription);
+    setTableType(record?.tableType || "THƯỜNG");
+    setFloorNumber(record?.floorNumber || 1);
+    setCapacity(record?.capacity || 4);
     setIsOpenModal(true); // Mở modal
   };
 
@@ -176,6 +195,10 @@ const Tabled = () => {
     setTableDescription({
       tableDescription: "",
     });
+    setTableType("THƯỜNG");
+    setFloorNumber(1);
+    setCapacity(4);
+    setSelectedTable(null);
     form.resetFields();
     console.log("....");
   };
@@ -204,6 +227,28 @@ const Tabled = () => {
       title: "Mô tả",
       dataIndex: "tableDescription",
       key: "tableDescription",
+    },
+    {
+      title: "Loại bàn",
+      dataIndex: "tableType",
+      key: "tableType",
+      render: (value) => (
+        <strong style={{ color: value === "VIP" ? "#c68a11" : "#6f625b" }}>
+          {value || "THƯỜNG"}
+        </strong>
+      ),
+    },
+    {
+      title: "Tầng",
+      dataIndex: "floorNumber",
+      key: "floorNumber",
+      render: (value) => `Tầng ${value || 1}`,
+    },
+    {
+      title: "Sức chứa",
+      dataIndex: "capacity",
+      key: "capacity",
+      render: (value) => `${value || 4} người`,
     },
     {
       title: "Mã QR",
@@ -263,7 +308,15 @@ const Tabled = () => {
       >
         <h1>QUẢN LÝ BÀN</h1>
         <Toolbar>
-          <ButtonGruoup onClick={() => setIsModalOpen(true)}>
+          <ButtonGruoup
+            onClick={() => {
+              setSelectedTable(null);
+              setTableType("THƯỜNG");
+              setFloorNumber(1);
+              setCapacity(4);
+              setIsModalOpen(true);
+            }}
+          >
             Thêm mới
           </ButtonGruoup>
         </Toolbar>
@@ -368,6 +421,34 @@ const Tabled = () => {
               />
             </Form.Item>
 
+            <Form.Item label="Loại bàn" name="tableType" initialValue="THƯỜNG">
+              <Select
+                value={tableType}
+                onChange={setTableType}
+                options={[
+                  { label: "Bàn thường", value: "THƯỜNG" },
+                  { label: "Bàn VIP (+1.000.000đ)", value: "VIP" },
+                ]}
+              />
+            </Form.Item>
+
+            <Form.Item label="Tầng" name="floorNumber" initialValue={1}>
+              <InputNumber
+                min={1}
+                value={floorNumber}
+                onChange={setFloorNumber}
+              />
+            </Form.Item>
+
+            <Form.Item label="Sức chứa" name="capacity" initialValue={4}>
+              <InputNumber
+                min={1}
+                value={capacity}
+                onChange={setCapacity}
+                addonAfter="người"
+              />
+            </Form.Item>
+
             <Form.Item
               wrapperCol={{ offset: 8, span: 16 }}
               style={{ textAlign: "right" }}
@@ -402,6 +483,9 @@ const Tabled = () => {
             initialValues={{
               tableName: selectedTable?.tableName,
               tableDescription: selectedTable?.tableDescription,
+              tableType: selectedTable?.tableType || "THƯỜNG",
+              floorNumber: selectedTable?.floorNumber || 1,
+              capacity: selectedTable?.capacity || 4,
             }}
             onFinish={() => {
               handleSubmitForm();
@@ -437,6 +521,34 @@ const Tabled = () => {
                 }}
               />
               <span></span>
+            </Form.Item>
+
+            <Form.Item label="Loại bàn" name="tableType">
+              <Select
+                value={tableType}
+                onChange={setTableType}
+                options={[
+                  { label: "Bàn thường", value: "THƯỜNG" },
+                  { label: "Bàn VIP (+1.000.000đ)", value: "VIP" },
+                ]}
+              />
+            </Form.Item>
+
+            <Form.Item label="Tầng" name="floorNumber">
+              <InputNumber
+                min={1}
+                value={floorNumber}
+                onChange={setFloorNumber}
+              />
+            </Form.Item>
+
+            <Form.Item label="Sức chứa" name="capacity">
+              <InputNumber
+                min={1}
+                value={capacity}
+                onChange={setCapacity}
+                addonAfter="người"
+              />
             </Form.Item>
 
             <Form.Item

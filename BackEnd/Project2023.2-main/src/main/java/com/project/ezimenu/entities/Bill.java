@@ -21,6 +21,12 @@ public class Bill {
     @Column(name = "totalAmount")
     private long totalAmount;
 
+    @Column(name = "foodAmount")
+    private long foodAmount;
+
+    @Column(name = "tableServiceFee")
+    private long tableServiceFee;
+
     @Column(name = "billDateTime")
     private LocalDateTime billDateTime;
 

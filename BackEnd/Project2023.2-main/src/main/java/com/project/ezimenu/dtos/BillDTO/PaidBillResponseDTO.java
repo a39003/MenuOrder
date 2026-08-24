@@ -14,6 +14,8 @@ public class PaidBillResponseDTO {
     private String tableName;
     private String customerName;
     private long totalAmount;
+    private long foodAmount;
+    private long tableServiceFee;
     private LocalDateTime paidAt;
     private int totalItems;
     private List<BillItemResponseDTO> items;

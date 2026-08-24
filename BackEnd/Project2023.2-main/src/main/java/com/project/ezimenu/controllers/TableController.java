@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class TableController {
@@ -64,6 +65,24 @@ public class TableController {
         request.setText(LocalDateTime.now().format(DateUtils.FORMATTER) + ": Khách ở bàn " + table.getTableName() + " đang yêu cầu thanh toán");
         messageController.sendToSpecificUser(request);
         return new ResponseEntity<>("Yêu cầu đã được gửi đi", HttpStatus.OK);
+    }
+
+    @PostMapping("/tables/{tableId}/support/request")
+    public ResponseEntity<?> sendSupportRequest(@PathVariable Long tableId,
+                                                @RequestBody(required = false) Map<String, String> body)
+            throws NotFoundException {
+        TableResponseDTO table = tableService.getTableById(tableId);
+        String reason = body == null ? null : body.get("reason");
+        if (reason == null || reason.isBlank()) reason = "Gọi nhân viên";
+        String type = table.getTableType() == null ? "THƯỜNG" : table.getTableType();
+        String location = table.getTableName() + " · Tầng " + table.getFloorNumber() + " · " + type;
+        String text = location + " cần hỗ trợ: " + reason.trim();
+        notificationService.addNotification(tableId, text);
+        Message request = new Message();
+        request.setTo("admin");
+        request.setText(LocalDateTime.now().format(DateUtils.FORMATTER) + ": " + text);
+        messageController.sendToSpecificUser(request);
+        return ResponseEntity.ok(Map.of("message", "Yêu cầu hỗ trợ đã được gửi"));
     }
 
 

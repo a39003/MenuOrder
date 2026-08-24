@@ -36,6 +36,20 @@ export const TableHeader = styled.div`
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
+  .table-detail {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #826b5e;
+    font-size: 10px;
+    font-weight: 700;
+    flex-wrap: wrap;
+  }
+  .table-detail > svg,
+  .table-detail > strong {
+    color: #c88909;
+  }
 `;
 export const Status = styled.span`
   padding: 6px 9px;

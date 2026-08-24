@@ -10,6 +10,8 @@ public class BillResponseDTO {
     private String customerName;
     private String tableName;
     private long totalAmount;
+    private long foodAmount;
+    private long tableServiceFee;
     private String billDateTime;
     private List<BillItemResponseDTO> billItemResponseDTOS;
 }

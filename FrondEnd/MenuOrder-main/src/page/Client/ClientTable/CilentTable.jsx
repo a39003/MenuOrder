@@ -23,11 +23,19 @@ const ClientTable = () => {
   const [customerName, setCustomerName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [currentTime, setCurrentTime] = useState(() => new Date());
+  const [tableInfo, setTableInfo] = useState(null);
 
   useEffect(() => {
     const timer = window.setInterval(() => setCurrentTime(new Date()), 1000);
     return () => window.clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    fetch(`${API_URL}/tables/${tableId}`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then(setTableInfo)
+      .catch(() => {});
+  }, [tableId]);
 
   const vietnamTime = new Intl.DateTimeFormat("vi-VN", {
     timeZone: "Asia/Ho_Chi_Minh",
@@ -120,6 +128,17 @@ const ClientTable = () => {
               Tên của bạn sẽ xuất hiện trên hóa đơn và giúp nhân viên phục vụ
               chính xác hơn.
             </small>
+            {tableInfo && (
+              <small
+                className={
+                  tableInfo.tableType === "VIP" ? "vip-notice" : "table-notice"
+                }
+              >
+                {tableInfo.tableType === "VIP"
+                  ? `Bàn VIP · Tầng ${tableInfo.floorNumber || 1} · ${tableInfo.capacity || 4} người · Phụ phí dịch vụ 1.000.000đ/lượt.`
+                  : `Bàn thường · Tầng ${tableInfo.floorNumber || 1} · ${tableInfo.capacity || 4} người · Không có phụ phí bàn.`}
+              </small>
+            )}
           </div>
           <Input
             size="large"

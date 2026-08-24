@@ -8,6 +8,7 @@ import {
   ProfileOutlined,
   UnorderedListOutlined,
   UserOutlined,
+  GatewayOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -44,6 +45,9 @@ const Header = () => {
       </WrapperContentPopup>
       <WrapperContentPopup onClick={() => goTo("/admin/table")}>
         <ApartmentOutlined /> Quản lý bàn
+      </WrapperContentPopup>
+      <WrapperContentPopup onClick={() => goTo("/admin/floor-plan")}>
+        <GatewayOutlined /> Sơ đồ bàn
       </WrapperContentPopup>
       <WrapperContentPopup onClick={() => goTo("/admin/menu")}>
         <ProfileOutlined /> Quản lý Menu

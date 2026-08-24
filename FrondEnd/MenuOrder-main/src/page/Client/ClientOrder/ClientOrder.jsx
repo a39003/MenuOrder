@@ -26,6 +26,7 @@ import {
   Titles,
 } from "./style";
 import { API_URL } from "../../../config";
+import CustomerSupport from "../CustomerSupport/CustomerSupport";
 
 const ClientOrder = () => {
   const [orderItems, setOrderItems] = useState([]);
@@ -271,6 +272,7 @@ const ClientOrder = () => {
           )}
         </FooterButton>
       </Footer>
+      <CustomerSupport tableId={tableId} />
     </Container>
   );
 };

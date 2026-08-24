@@ -351,10 +351,35 @@ const Bill = ({
               <>
                 <Table.Summary.Row>
                   <Table.Summary.Cell index={0} colSpan={3}>
-                    <b>Tổng Tiền:</b>
+                    Tiền món:
                   </Table.Summary.Cell>
                   <Table.Summary.Cell index={1}>
-                    <b>{bill?.totalAmount?.toLocaleString()} đ</b>
+                    <b>
+                      {Number(
+                        bill?.foodAmount ||
+                          Number(bill?.totalAmount || 0) -
+                            Number(bill?.tableServiceFee || 0),
+                      ).toLocaleString()}{" "}
+                      đ
+                    </b>
+                  </Table.Summary.Cell>
+                </Table.Summary.Row>
+                <Table.Summary.Row>
+                  <Table.Summary.Cell index={0} colSpan={3}>
+                    Phụ phí bàn VIP:
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={1}>
+                    <b>
+                      {Number(bill?.tableServiceFee || 0).toLocaleString()} đ
+                    </b>
+                  </Table.Summary.Cell>
+                </Table.Summary.Row>
+                <Table.Summary.Row>
+                  <Table.Summary.Cell index={0} colSpan={3}>
+                    <b>Tổng thanh toán:</b>
+                  </Table.Summary.Cell>
+                  <Table.Summary.Cell index={1}>
+                    <b>{Number(bill?.totalAmount || 0).toLocaleString()} đ</b>
                   </Table.Summary.Cell>
                 </Table.Summary.Row>
                 <Table.Summary.Row>

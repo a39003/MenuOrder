@@ -24,6 +24,7 @@ import {
 } from "./style";
 import DishComponent from "./DishComponent";
 import { API_URL } from "../../../config";
+import CustomerSupport from "../CustomerSupport/CustomerSupport";
 
 const ClientDish = () => {
   const navigate = useNavigate();
@@ -166,6 +167,7 @@ const ClientDish = () => {
           <ShoppingCartOutlined style={{ color: "#fff", fontSize: 21 }} />
         </Badge>
       </Cart>
+      <CustomerSupport tableId={tableId} />
     </Page>
   );
 };

@@ -291,11 +291,23 @@ export const ContainerModal = styled.div`
     margin-top: 18px;
     padding: 16px;
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
     border-radius: 14px;
     background: #2a1912;
     color: #fff;
     font-size: 16px;
+  }
+  .receipt-total > div {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 5px 0;
+  }
+  .receipt-total .grand-total {
+    margin-top: 7px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 18px;
   }
   .receipt-time {
     text-align: center;

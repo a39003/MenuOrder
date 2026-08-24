@@ -10,8 +10,10 @@ import Order from "../page/Order/Order";
 import Table from "../page/Table/Table";
 import Dashboard from "../page/Dashboard/Dashboard";
 import PaidBills from "../page/PaidBills/PaidBills";
+import FloorPlan from "../page/FloorPlan/FloorPlan";
 
 export const routes = [
+  { path: "/admin/floor-plan", page: FloorPlan, isShowHeader: true },
   { path: "/admin/dashboard", page: Dashboard, isShowHeader: true },
   {
     path: "/login",

@@ -185,6 +185,19 @@ export const GuestForm = styled.section`
     color: #d6c5bb;
     line-height: 1.5;
   }
+  .vip-notice,
+  .table-notice {
+    margin-top: 10px;
+    padding: 9px 11px;
+    border-radius: 10px;
+    color: #ffe0aa;
+    background: rgba(217, 154, 0, 0.16);
+    font-weight: 800;
+  }
+  .table-notice {
+    color: #d9cdc6;
+    background: rgba(255, 255, 255, 0.07);
+  }
   .ant-input-affix-wrapper {
     display: flex;
     align-items: center;

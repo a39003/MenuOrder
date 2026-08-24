@@ -27,6 +27,7 @@ import {
   Titles,
 } from "./style";
 import { API_URL } from "../../../config";
+import CustomerSupport from "../CustomerSupport/CustomerSupport";
 
 const statusTone = (status) => {
   if (status === "Đã ra món" || status === "Hoàn thành")
@@ -300,10 +301,29 @@ const ClientOrderItem = () => {
             rowKey="billItemId"
           />
           <div className="receipt-total">
-            <span>Tổng thanh toán</span>
-            <strong>
-              {Number(bill?.totalAmount || 0).toLocaleString("vi-VN")}đ
-            </strong>
+            <div>
+              <span>Tiền món</span>
+              <strong>
+                {Number(
+                  bill?.foodAmount ||
+                    Number(bill?.totalAmount || 0) -
+                      Number(bill?.tableServiceFee || 0),
+                ).toLocaleString("vi-VN")}
+                đ
+              </strong>
+            </div>
+            <div>
+              <span>Phụ phí bàn VIP</span>
+              <strong>
+                {Number(bill?.tableServiceFee || 0).toLocaleString("vi-VN")}đ
+              </strong>
+            </div>
+            <div className="grand-total">
+              <span>Tổng thanh toán</span>
+              <strong>
+                {Number(bill?.totalAmount || 0).toLocaleString("vi-VN")}đ
+              </strong>
+            </div>
           </div>
           <div className="payment-note">
             <WalletOutlined />
@@ -317,6 +337,7 @@ const ClientOrderItem = () => {
           </div>
         </ContainerModal>
       </Modal>
+      <CustomerSupport tableId={tableId} />
     </Page>
   );
 };

@@ -1,7 +1,6 @@
 package com.project.ezimenu.controllers;
 
 import com.project.ezimenu.dtos.BillDTO.BillResponseDTO;
-import com.project.ezimenu.entities.Bill;
 import com.project.ezimenu.exceptions.BadRequestException;
 import com.project.ezimenu.exceptions.NotFoundException;
 import com.project.ezimenu.services.BillService;
@@ -37,8 +36,8 @@ public class BillController {
     }
     @RequestMapping(path = "/admin/orders/{orderId}/bill", method = RequestMethod.POST)
     public ResponseEntity<?> addBill(@PathVariable Long orderId) throws NotFoundException, BadRequestException {
-        Bill bill = billService.addBill(orderId);
-        return ResponseEntity.ok(bill);
+        billService.addBill(orderId);
+        return ResponseEntity.ok(billService.getBill(orderId));
     }
     @RequestMapping(path = "/admin/orders/{orderId}/bill", method = RequestMethod.DELETE)
 public ResponseEntity<?> deleteBill(@PathVariable Long orderId) throws NotFoundException {

@@ -31,6 +31,15 @@ public class Table {
     @Column(name = "tableDescription")
     private String tableDescription;
 
+    @Column(name = "tableType")
+    private String tableType = "THƯỜNG";
+
+    @Column(name = "floorNumber")
+    private Integer floorNumber = 1;
+
+    @Column(name = "capacity")
+    private Integer capacity = 4;
+
     @OneToMany(mappedBy = "table", fetch = FetchType.EAGER)
     @JsonIgnoreProperties("table")
     private List<Order> orders;

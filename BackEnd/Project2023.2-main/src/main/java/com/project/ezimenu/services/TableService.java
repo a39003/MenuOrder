@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class TableService implements ITableService {
+    private static final long VIP_SERVICE_FEE = 1_000_000L;
     @Autowired
     private TableRepository tableRepository;
     @Autowired
@@ -51,6 +52,7 @@ public class TableService implements ITableService {
                         minutes = duration.toMinutes();
                     }
                     TableResponseDTO tableResponseDTO = modelMapper.map(table, TableResponseDTO.class);
+                    applyTableDetails(table, tableResponseDTO);
                     List<NotificationResponseDTO> notificationResponseDTOS = table.getNotifications().stream()
                             .map(notification -> modelMapper.map(notification, NotificationResponseDTO.class)).toList();
                     tableResponseDTO.setNotificationNumber(notificationResponseDTOS.size());
@@ -78,6 +80,7 @@ public class TableService implements ITableService {
             minutes = duration.toMinutes();
         }
         TableResponseDTO tableResponseDTO = modelMapper.map(table, TableResponseDTO.class);
+        applyTableDetails(table, tableResponseDTO);
         List<NotificationResponseDTO> notificationResponseDTOS = table.getNotifications().stream()
                 .map(notification -> modelMapper.map(notification, NotificationResponseDTO.class)).toList();
         tableResponseDTO.setDoneDish(doneDish);
@@ -107,6 +110,7 @@ public class TableService implements ITableService {
                             minutes = duration.toMinutes();
                         }
                         TableResponseDTO tableResponseDTO = modelMapper.map(table, TableResponseDTO.class);
+                        applyTableDetails(table, tableResponseDTO);
                         List<NotificationResponseDTO> notificationResponseDTOS = table.getNotifications().stream()
                                 .map(notification -> modelMapper.map(notification, NotificationResponseDTO.class))
                                 .collect(Collectors.toList());
@@ -138,6 +142,7 @@ public class TableService implements ITableService {
                         minutes = duration.toMinutes();
                     }
                     TableResponseDTO tableResponseDTO = modelMapper.map(table, TableResponseDTO.class);
+                    applyTableDetails(table, tableResponseDTO);
                     List<NotificationResponseDTO> notificationResponseDTOS = table.getNotifications().stream()
                             .map(notification -> modelMapper.map(notification, NotificationResponseDTO.class))
                             .collect(Collectors.toList());
@@ -163,6 +168,7 @@ public class TableService implements ITableService {
         newTable.setTableName(tableRequestDTO.getTableName());
         newTable.setStatus(Constants.ENTITY_STATUS.ACTIVE);
         newTable.setTableDescription(tableRequestDTO.getTableDescription());
+        applyTableRequest(newTable, tableRequestDTO);
         return tableRepository.save(newTable);
     }
     public Table updateTable(Long tableId, TableRequestDTO tableRequestDTO) throws NotFoundException, BadRequestException {
@@ -177,6 +183,7 @@ public class TableService implements ITableService {
 //        }
         table.setTableName(tableRequestDTO.getTableName());
         table.setTableDescription(tableRequestDTO.getTableDescription());
+        applyTableRequest(table, tableRequestDTO);
         return tableRepository.save(table);
     }
     public Table updateTableStatus(Long tableId, String status) throws NotFoundException {
@@ -202,5 +209,22 @@ public class TableService implements ITableService {
                 .orElseThrow(() -> new NotFoundException("Không thể tìm thấy bàn có id: " + tableId));
         table.setStatus(Constants.ENTITY_STATUS.INACTIVE);
         return tableRepository.save(table);
+    }
+
+    private void applyTableRequest(Table table, TableRequestDTO request) {
+        String type = request.getTableType();
+        table.setTableType("VIP".equalsIgnoreCase(type) ? "VIP" : "THƯỜNG");
+        table.setFloorNumber(request.getFloorNumber() != null && request.getFloorNumber() > 0
+                ? request.getFloorNumber() : 1);
+        table.setCapacity(request.getCapacity() != null && request.getCapacity() > 0
+                ? request.getCapacity() : 4);
+    }
+
+    private void applyTableDetails(Table table, TableResponseDTO response) {
+        String type = "VIP".equalsIgnoreCase(table.getTableType()) ? "VIP" : "THƯỜNG";
+        response.setTableType(type);
+        response.setFloorNumber(table.getFloorNumber() == null ? 1 : table.getFloorNumber());
+        response.setCapacity(table.getCapacity() == null ? 4 : table.getCapacity());
+        response.setServiceFee("VIP".equals(type) ? VIP_SERVICE_FEE : 0L);
     }
 }

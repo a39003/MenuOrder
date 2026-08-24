@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Badge, message } from "antd";
-import { ClockCircleOutlined } from "@ant-design/icons";
+import { ClockCircleOutlined, CrownFilled } from "@ant-design/icons";
 import Notificatio from "./Notificatio";
 import ListDish from "./ListDish";
 import {
@@ -198,6 +198,10 @@ const TableOrder = ({ table, onTableChanged }) => {
               }}
             >
               Khách: {order?.customerName || "Chưa nhập tên"}
+            </small>
+            <small className="table-detail">
+              {table?.tableType === "VIP" && <CrownFilled />}
+              <strong>{table?.tableType || "THƯỜNG"}</strong>
             </small>
           </span>{" "}
           <Status>{table?.tableStatus}</Status>
