@@ -141,10 +141,31 @@ svg {
   border-radius: 10px;
 }
 
+.admin-bill-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-bill-actions .ant-btn {
+  margin: 0 !important;
+}
+
 @media (max-width: 560px) {
   .admin-payment-qr {
     flex-direction: column;
     text-align: center;
+  }
+
+  .admin-bill-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-bill-actions .ant-btn {
+    width: 100%;
   }
 }
 

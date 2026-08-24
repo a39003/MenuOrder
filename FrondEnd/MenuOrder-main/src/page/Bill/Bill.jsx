@@ -384,10 +384,7 @@ const Bill = ({
             />
           </div>
         </div>
-        <div
-          className="admin-bill-actions"
-          style={{ textAlign: "center", marginTop: "10px" }}
-        >
+        <div className="admin-bill-actions" style={{ marginTop: "16px" }}>
           <Button
             size="large"
             icon={<PrinterOutlined />}
@@ -419,7 +416,6 @@ const Bill = ({
               borderRadius: "20px",
               padding: "5px 30px",
               border: "none",
-              margin: "10px",
             }}
             onClick={handleDeleteBill}
             loading={deletingBill}
