@@ -43,8 +43,10 @@ const Tabled = () => {
   const [tableType, setTableType] = useState("THƯỜNG");
   const [floorNumber, setFloorNumber] = useState(1);
   const [capacity, setCapacity] = useState(4);
+  const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
 
-  const handleSubmitForm = async (e) => {
+  const handleSubmitForm = async (values = {}) => {
     if (saving) return;
     setSaving(true);
     try {
@@ -58,11 +60,11 @@ const Tabled = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
-            tableName: tableName,
-            tableDescription: tableDescription || "",
-            tableType,
-            floorNumber,
-            capacity,
+            tableName: values.tableName ?? tableName,
+            tableDescription: values.tableDescription ?? tableDescription ?? "",
+            tableType: values.tableType ?? tableType,
+            floorNumber: values.floorNumber ?? floorNumber,
+            capacity: values.capacity ?? capacity,
           }),
         },
       );
@@ -198,6 +200,13 @@ const Tabled = () => {
     setTableType(record?.tableType || "THƯỜNG");
     setFloorNumber(record?.floorNumber || 1);
     setCapacity(record?.capacity || 4);
+    editForm.setFieldsValue({
+      tableName: record?.tableName || "",
+      tableDescription: record?.tableDescription || "",
+      tableType: record?.tableType || "THƯỜNG",
+      floorNumber: record?.floorNumber || 1,
+      capacity: record?.capacity || 4,
+    });
     setIsOpenModal(true); // Mở modal
   };
 
@@ -229,21 +238,16 @@ const Tabled = () => {
 
   const handleCancel = () => {
     setIsModalOpen(false);
-    setTableName({
-      tableName: "",
-    });
-    setTableDescription({
-      tableDescription: "",
-    });
+    setTableName("");
+    setTableDescription("");
     setTableType("THƯỜNG");
     setFloorNumber(1);
     setCapacity(4);
     setSelectedTable(null);
     form.resetFields();
+    editForm.resetFields();
     console.log("....");
   };
-
-  const [form] = Form.useForm();
 
   const getTableUrl = (tableId) =>
     `${window.location.origin}/tables/${tableId}`;
@@ -351,9 +355,18 @@ const Tabled = () => {
           <ButtonGruoup
             onClick={() => {
               setSelectedTable(null);
+              setTableName("");
+              setTableDescription("");
               setTableType("THƯỜNG");
               setFloorNumber(1);
               setCapacity(4);
+              form.setFieldsValue({
+                tableName: "",
+                tableDescription: "",
+                tableType: "THƯỜNG",
+                floorNumber: 1,
+                capacity: 4,
+              });
               setIsModalOpen(true);
             }}
           >
@@ -515,7 +528,8 @@ const Tabled = () => {
           table={table}
         >
           <Form
-            key={table?.tableId}
+            key={selectedTable?.tableId || "edit-table"}
+            form={editForm}
             name="basic"
             labelCol={{ span: 7 }}
             wrapperCol={{ span: 16 }}
@@ -527,12 +541,7 @@ const Tabled = () => {
               floorNumber: selectedTable?.floorNumber || 1,
               capacity: selectedTable?.capacity || 4,
             }}
-            onFinish={() => {
-              handleSubmitForm();
-              setTimeout(() => {
-                setIsModalOpen(false);
-              }, 500);
-            }}
+            onFinish={handleSubmitForm}
             autoComplete="on"
           >
             <Form.Item

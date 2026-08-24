@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CustomerServiceOutlined } from "@ant-design/icons";
 import { message, Modal } from "antd";
 import styled from "styled-components";
@@ -17,6 +17,21 @@ const CustomerSupport = ({ tableId }) => {
   const [sending, setSending] = useState(false);
   const [selected, setSelected] = useState(reasons[0]);
   const [cooldown, setCooldown] = useState(false);
+  const [tableName, setTableName] = useState(
+    sessionStorage.getItem(`table-name-${tableId}`) || "",
+  );
+
+  useEffect(() => {
+    if (!tableId) return;
+    fetch(`${API_URL}/tables/${tableId}`)
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (!data?.tableName) return;
+        setTableName(data.tableName);
+        sessionStorage.setItem(`table-name-${tableId}`, data.tableName);
+      })
+      .catch(() => {});
+  }, [tableId]);
 
   const sendRequest = async () => {
     if (sending || cooldown) return;
@@ -46,14 +61,14 @@ const CustomerSupport = ({ tableId }) => {
     <>
       <FloatingButton
         onClick={() => setOpen(true)}
-        disabled={cooldown}
+        disabled={cooldown || !tableId}
         aria-label="Gọi nhân viên hỗ trợ"
       >
         <CustomerServiceOutlined />
         <span>{cooldown ? "Đã gửi" : "Hỗ trợ"}</span>
       </FloatingButton>
       <Modal
-        title="Bạn cần hỗ trợ gì?"
+        title={`Yêu cầu hỗ trợ · ${tableName || "Bàn của bạn"}`}
         open={open}
         onCancel={() => setOpen(false)}
         onOk={sendRequest}
@@ -94,20 +109,24 @@ const FloatingButton = styled.button`
   background: #d96b2b;
   font-weight: 900;
   cursor: pointer;
+  font-size: 14px;
   box-shadow: 0 12px 28px rgba(217, 107, 43, 0.3);
+  svg {
+    display: block;
+    flex: 0 0 auto;
+    color: #fff;
+    font-size: 20px;
+  }
   &:disabled {
     background: #9e8d83;
     cursor: default;
   }
   @media (max-width: 520px) {
     right: 12px;
-    bottom: 82px;
-    width: 46px;
-    padding: 0;
+    bottom: 86px;
+    min-width: 108px;
+    padding: 0 14px;
     justify-content: center;
-    span {
-      display: none;
-    }
   }
 `;
 const ReasonGrid = styled.div`

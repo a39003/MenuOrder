@@ -38,6 +38,20 @@ const ClientDish = () => {
   const [customerName, setCustomerName] = useState(
     sessionStorage.getItem(`customer-${tableId}`) || "",
   );
+  const [tableName, setTableName] = useState(
+    sessionStorage.getItem(`table-name-${tableId}`) || "",
+  );
+
+  useEffect(() => {
+    fetch(`${API_URL}/tables/${tableId}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!data?.tableName) return;
+        setTableName(data.tableName);
+        sessionStorage.setItem(`table-name-${tableId}`, data.tableName);
+      })
+      .catch(() => {});
+  }, [tableId]);
 
   useEffect(() => {
     fetch(`${API_URL}/menus`)
@@ -95,7 +109,8 @@ const ClientDish = () => {
           <Titles>
             TLU Quán
             <span>
-              {customerName || "Khách hàng"} · Bàn số {tableId}
+              {customerName || "Khách hàng"} ·{" "}
+              {tableName || "Đang tải tên bàn..."}
             </span>
           </Titles>
           <div />

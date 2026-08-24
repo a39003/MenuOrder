@@ -219,7 +219,11 @@ const TableOrder = ({ table, onTableChanged }) => {
         </TableBody>
         <TableFooter>
           <Badge count={table?.notificationNumber || 0}>
-            <Notificatio tableId={table?.tableId} setStatus={onTableChanged} />
+            <Notificatio
+              tableId={table?.tableId}
+              tableName={table?.tableName}
+              setStatus={onTableChanged}
+            />
           </Badge>
           {table?.tableStatus === "Đang yêu cầu thanh toán" && (
             <div style={{ display: "flex" }}>

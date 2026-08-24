@@ -202,4 +202,18 @@ export const TableCard = styled.article`
     color: #80695d;
     font-size: 12px;
   }
+  .table-actions {
+    margin-top: 13px;
+    padding-top: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #eee5df;
+    color: #80695d;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .table-actions button {
+    flex: 0 0 auto;
+  }
 `;

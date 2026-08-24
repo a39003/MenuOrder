@@ -39,19 +39,32 @@ const statusTone = (status) => {
   return { background: "#f0ebe8", color: "#75655c" };
 };
 const ClientOrderItem = () => {
+  const navigate = useNavigate();
+  const { tableId } = useParams();
   const [requestingSupport, setRequestingSupport] = useState({});
   const [orderItems, setOrderItems] = useState([]);
   const [orderId, setOrderId] = useState(0);
   const [customerName, setCustomerName] = useState("");
+  const [tableName, setTableName] = useState(
+    sessionStorage.getItem(`table-name-${tableId}`) || "",
+  );
   const [bill, setBill] = useState(null);
   const [hasBill, setHasBill] = useState(false);
   const [billOpen, setBillOpen] = useState(false);
   const [requestingPayment, setRequestingPayment] = useState(false);
   const [loadingBill, setLoadingBill] = useState(false);
-  const navigate = useNavigate();
-  const { tableId } = useParams();
   const paymentRedirected = useRef(false);
   const orderWasLoaded = useRef(false);
+  useEffect(() => {
+    fetch(`${API_URL}/tables/${tableId}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!data?.tableName) return;
+        setTableName(data.tableName);
+        sessionStorage.setItem(`table-name-${tableId}`, data.tableName);
+      })
+      .catch(() => {});
+  }, [tableId]);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -168,7 +181,8 @@ const ClientOrderItem = () => {
         <Titles>
           Đơn hàng
           <span>
-            {customerName || "Khách hàng"} · Bàn số {tableId}
+            {customerName || "Khách hàng"} ·{" "}
+            {tableName || "Đang tải tên bàn..."}
           </span>
         </Titles>
         <div />

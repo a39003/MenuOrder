@@ -9,7 +9,7 @@ import { convertToTime } from "../../costormer/Time/time";
 import { AdminIconButton, NotificationItem, NotificationList } from "./style";
 import { API_URL } from "../../config";
 
-const Notificatio = ({ tableId, setStatus }) => {
+const Notificatio = ({ tableId, tableName, setStatus = () => {} }) => {
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -54,7 +54,7 @@ const Notificatio = ({ tableId, setStatus }) => {
         <BellOutlined />
       </AdminIconButton>
       <Modal
-        title={`Yêu cầu từ bàn ${tableId}`}
+        title={`Yêu cầu từ ${tableName || `bàn ${tableId}`}`}
         open={open}
         onCancel={() => setOpen(false)}
         onOk={clearAll}

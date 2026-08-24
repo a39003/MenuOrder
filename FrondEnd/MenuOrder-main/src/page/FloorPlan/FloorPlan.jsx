@@ -6,6 +6,7 @@ import {
 } from "@ant-design/icons";
 import { Empty, message, Spin } from "antd";
 import { API_URL } from "../../config";
+import Notificatio from "../Order/Notificatio";
 import {
   FloorBoard,
   FloorTabs,
@@ -179,6 +180,14 @@ const FloorPlan = () => {
                         </strong>
                       </div>
                     )}
+                    <div className="table-actions">
+                      <span>Yêu cầu hỗ trợ</span>
+                      <Notificatio
+                        tableId={table.tableId}
+                        tableName={table.tableName}
+                        setStatus={fetchTables}
+                      />
+                    </div>
                   </TableCard>
                 );
               })}

@@ -29,14 +29,27 @@ import { API_URL } from "../../../config";
 import CustomerSupport from "../CustomerSupport/CustomerSupport";
 
 const ClientOrder = () => {
+  const navigate = useNavigate();
+  const { tableId } = useParams();
   const [orderItems, setOrderItems] = useState([]);
   const [orderId, setOrderId] = useState(0);
   const [customerName, setCustomerName] = useState("");
+  const [tableName, setTableName] = useState(
+    sessionStorage.getItem(`table-name-${tableId}`) || "",
+  );
   const [notes, setNotes] = useState({});
   const [sending, setSending] = useState(false);
   const [updatingItems, setUpdatingItems] = useState({});
-  const navigate = useNavigate();
-  const { tableId } = useParams();
+  useEffect(() => {
+    fetch(`${API_URL}/tables/${tableId}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!data?.tableName) return;
+        setTableName(data.tableName);
+        sessionStorage.setItem(`table-name-${tableId}`, data.tableName);
+      })
+      .catch(() => {});
+  }, [tableId]);
   useEffect(() => {
     const fetchData = () =>
       fetch(`${API_URL}/orders/tables/${tableId}`)
@@ -154,7 +167,8 @@ const ClientOrder = () => {
         <Titles>
           Giỏ hàng
           <span>
-            {customerName || "Khách hàng"} · Bàn số {tableId}
+            {customerName || "Khách hàng"} ·{" "}
+            {tableName || "Đang tải tên bàn..."}
           </span>
         </Titles>
         <HeaderButton onClick={() => navigate(`/orderitem/${tableId}`)}>

@@ -33,7 +33,12 @@ const ClientTable = () => {
   useEffect(() => {
     fetch(`${API_URL}/tables/${tableId}`)
       .then((response) => (response.ok ? response.json() : null))
-      .then(setTableInfo)
+      .then((data) => {
+        setTableInfo(data);
+        if (data?.tableName) {
+          sessionStorage.setItem(`table-name-${tableId}`, data.tableName);
+        }
+      })
       .catch(() => {});
   }, [tableId]);
 
@@ -98,7 +103,9 @@ const ClientTable = () => {
   return (
     <Page>
       <Headers>
-        <Titles>TLU Quán · Bàn {tableId}</Titles>
+        <Titles>
+          TLU Quán · {tableInfo?.tableName || "Đang tải tên bàn..."}
+        </Titles>
       </Headers>
       <Contents>
         <ContentMain1>

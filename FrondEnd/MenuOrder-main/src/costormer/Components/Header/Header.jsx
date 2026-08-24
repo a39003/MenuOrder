@@ -74,6 +74,13 @@ const Header = () => {
           <FileDoneOutlined />
           <span>Đơn hàng</span>
         </button>
+        <button
+          className={location.pathname === "/admin/floor-plan" ? "active" : ""}
+          onClick={() => navigate("/admin/floor-plan")}
+        >
+          <GatewayOutlined />
+          <span>Sơ đồ bàn</span>
+        </button>
       </DesktopNav>
       <Popover
         content={content}
