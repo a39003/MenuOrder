@@ -5,7 +5,7 @@ import {
   LoadingOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { Card, Filters, Head, Page, Receipt, Summary } from "./style";
+import { Card, Filters, Head, Overview, Page, Receipt, Summary } from "./style";
 import { API_URL } from "../../config";
 
 const money = (value) => `${Number(value || 0).toLocaleString("vi-VN")} đ`;
@@ -52,6 +52,19 @@ const PaidBills = () => {
     () => bills.reduce((sum, bill) => sum + Number(bill.totalAmount || 0), 0),
     [bills],
   );
+  const foodRevenue = useMemo(
+    () => bills.reduce((sum, bill) => sum + Number(bill.foodAmount || 0), 0),
+    [bills],
+  );
+  const tableRevenue = useMemo(
+    () =>
+      bills.reduce((sum, bill) => sum + Number(bill.tableServiceFee || 0), 0),
+    [bills],
+  );
+  const vipBills = useMemo(
+    () => bills.filter((bill) => bill.tableType === "VIP").length,
+    [bills],
+  );
   const columns = [
     {
       title: "Mã bill",
@@ -65,8 +78,25 @@ const PaidBills = () => {
         <span className="table-name">{value || "Khách hàng"}</span>
       ),
     },
-    { title: "Bàn", dataIndex: "tableName" },
+    {
+      title: "Bàn",
+      key: "table",
+      render: (_, record) => (
+        <div className="table-info">
+          <strong>{record.tableName}</strong>
+          <span className={record.tableType === "VIP" ? "vip" : "regular"}>
+            {record.tableType || "THƯỜNG"}
+          </span>
+        </div>
+      ),
+    },
     { title: "Mã đơn", dataIndex: "orderId", render: (value) => `#${value}` },
+    {
+      title: "Thu bàn",
+      dataIndex: "tableServiceFee",
+      align: "right",
+      render: money,
+    },
     {
       title: "Thời gian",
       dataIndex: "paidAt",
@@ -108,6 +138,28 @@ const PaidBills = () => {
           <span>{bills.length} hóa đơn</span>
         </Summary>
       </Head>
+      <Overview>
+        <article>
+          <span>Tiền món ăn</span>
+          <strong>{money(foodRevenue)}</strong>
+          <small>Doanh thu từ thực đơn</small>
+        </article>
+        <article>
+          <span>Thu thêm bàn VIP</span>
+          <strong>{money(tableRevenue)}</strong>
+          <small>{vipBills} hóa đơn bàn VIP</small>
+        </article>
+        <article>
+          <span>Giá trị trung bình</span>
+          <strong>{money(bills.length ? total / bills.length : 0)}</strong>
+          <small>Mỗi hóa đơn đã thanh toán</small>
+        </article>
+        <article>
+          <span>Cơ cấu bàn</span>
+          <strong>{vipBills} VIP</strong>
+          <small>{bills.length - vipBills} bàn thường</small>
+        </article>
+      </Overview>
       <Filters>
         <input
           type="search"
@@ -180,6 +232,8 @@ const PaidBills = () => {
                 Khách hàng:{" "}
                 <strong>{selected.customerName || "Khách hàng"}</strong> · Bàn:{" "}
                 <strong>{selected.tableName}</strong>
+                {" · "}
+                <strong>{selected.tableType || "THƯỜNG"}</strong>
               </p>
             </div>
             <div className="meta">
@@ -188,9 +242,10 @@ const PaidBills = () => {
                 <strong>{selected.customerName || "Khách hàng"}</strong>
               </div>
               <div>
-                <span>Bàn · Mã đơn</span>
+                <span>Bàn · Loại bàn · Mã đơn</span>
                 <strong>
-                  {selected.tableName} · #{selected.orderId}
+                  {selected.tableName} · {selected.tableType || "THƯỜNG"} · #
+                  {selected.orderId}
                 </strong>
               </div>
               <div>
@@ -211,6 +266,18 @@ const PaidBills = () => {
                 </strong>
               </div>
             ))}
+            <div className="charge-summary">
+              <div>
+                <span>Tiền món ăn</span>
+                <strong>{money(selected.foodAmount)}</strong>
+              </div>
+              <div className={selected.tableType === "VIP" ? "vip-fee" : ""}>
+                <span>
+                  Thu bàn {selected.tableType === "VIP" ? "VIP" : "thường"}
+                </span>
+                <strong>{money(selected.tableServiceFee)}</strong>
+              </div>
+            </div>
             <div className="total">
               <span>Tổng thanh toán</span>
               <strong>{money(selected.totalAmount)}</strong>

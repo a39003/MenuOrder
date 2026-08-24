@@ -58,7 +58,7 @@ export const Hero = styled.section`
 `;
 export const Stats = styled.section`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 14px;
   margin-bottom: 18px;
   @media (max-width: 900px) {
@@ -98,6 +98,10 @@ export const StatCard = styled.article`
     background: #fff0e4;
     font-size: 18px;
   }
+  .icon.gold {
+    color: #a97100;
+    background: #fff1c8;
+  }
   .value {
     font-size: 27px;
     font-weight: 900;
@@ -136,6 +140,9 @@ export const Panel = styled.article`
     color: #9a8174;
     font-size: 12px;
   }
+  &.wide {
+    grid-column: 1 / -1;
+  }
 `;
 export const Chart = styled.div`
   height: 250px;
@@ -173,9 +180,18 @@ export const Chart = styled.div`
     background: linear-gradient(180deg, #f49a5e, #cf5c26);
     transition: height 0.3s;
   }
+  .month-bar {
+    background: linear-gradient(180deg, #e4b34b, #b96622);
+  }
   .label {
     font-size: 11px;
     color: #8f786c;
+  }
+  &.monthly {
+    overflow-x: auto;
+  }
+  &.monthly .column {
+    min-width: 58px;
   }
 `;
 export const TopList = styled.div`

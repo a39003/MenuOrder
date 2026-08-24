@@ -89,6 +89,36 @@ export const Filters = styled.div`
     flex-direction: column;
   }
 `;
+export const Overview = styled.section`
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+  article {
+    padding: 17px;
+    border: 1px solid #eadfd7;
+    border-radius: 17px;
+    background: #fff;
+  }
+  span,
+  small {
+    display: block;
+    color: #91796c;
+    font-size: 11px;
+  }
+  strong {
+    display: block;
+    margin: 5px 0 3px;
+    color: #2b1c15;
+    font-size: 20px;
+  }
+  @media (max-width: 850px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+`;
 export const Card = styled.section`
   padding: 5px;
   border: 1px solid #eadfd7;
@@ -112,6 +142,23 @@ export const Card = styled.section`
   .amount {
     font-weight: 900;
     color: #2b1c15;
+  }
+  .table-info {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .table-info span {
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #f1ece8;
+    color: #776359;
+    font-size: 9px;
+    font-weight: 900;
+  }
+  .table-info span.vip {
+    background: #fff0c7;
+    color: #9a6800;
   }
 `;
 export const Receipt = styled.div`
@@ -167,6 +214,23 @@ export const Receipt = styled.div`
     padding-top: 16px;
     border-top: 2px solid #2b1c15;
     font-size: 18px;
+  }
+  .charge-summary {
+    margin-top: 14px;
+    padding: 13px 15px;
+    display: grid;
+    gap: 9px;
+    border-radius: 14px;
+    background: #fbf5f0;
+  }
+  .charge-summary div {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+  }
+  .charge-summary .vip-fee {
+    color: #a66c00;
+    font-weight: 800;
   }
   .total strong {
     color: #c55d29;

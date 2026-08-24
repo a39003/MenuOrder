@@ -12,6 +12,9 @@ public class PaidBillResponseDTO {
     private long orderId;
     private long tableId;
     private String tableName;
+    private String tableType;
+    private int floorNumber;
+    private int capacity;
     private String customerName;
     private long totalAmount;
     private long foodAmount;

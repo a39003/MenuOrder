@@ -27,6 +27,18 @@ public class Bill {
     @Column(name = "tableServiceFee")
     private Long tableServiceFee = 0L;
 
+    @Column(name = "tableNameSnapshot")
+    private String tableNameSnapshot;
+
+    @Column(name = "tableTypeSnapshot")
+    private String tableTypeSnapshot;
+
+    @Column(name = "floorNumberSnapshot")
+    private Integer floorNumberSnapshot;
+
+    @Column(name = "capacitySnapshot")
+    private Integer capacitySnapshot;
+
     @Column(name = "billDateTime")
     private LocalDateTime billDateTime;
 

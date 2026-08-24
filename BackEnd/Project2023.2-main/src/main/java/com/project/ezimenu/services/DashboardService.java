@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -33,6 +34,24 @@ public class DashboardService {
         LocalDate firstDay = today.minusDays(days - 1L);
         List<Bill> paidBills = billRepository.findAllByOrderByBillDateTimeDesc().stream()
                 .filter(this::isPaid)
+                .toList();
+
+        YearMonth currentMonth = YearMonth.from(today);
+        Map<YearMonth, List<Bill>> billsByMonth = new LinkedHashMap<>();
+        for (int offset = 11; offset >= 0; offset--) {
+            billsByMonth.put(currentMonth.minusMonths(offset), new ArrayList<>());
+        }
+        paidBills.stream()
+                .filter(bill -> bill.getBillDateTime() != null)
+                .filter(bill -> !YearMonth.from(bill.getBillDateTime()).isBefore(currentMonth.minusMonths(11)))
+                .filter(bill -> !YearMonth.from(bill.getBillDateTime()).isAfter(currentMonth))
+                .forEach(bill -> billsByMonth.get(YearMonth.from(bill.getBillDateTime())).add(bill));
+
+        List<RevenuePointDTO> revenueByMonth = billsByMonth.entrySet().stream()
+                .map(entry -> new RevenuePointDTO(
+                        entry.getKey().toString(),
+                        entry.getValue().stream().mapToLong(Bill::getTotalAmount).sum(),
+                        entry.getValue().size()))
                 .toList();
 
         Map<LocalDate, List<Bill>> billsByDate = new LinkedHashMap<>();
@@ -79,12 +98,32 @@ public class DashboardService {
                 .filter(table -> table.getTableStatus() != null && !"Đang trống".equalsIgnoreCase(table.getTableStatus()))
                 .count());
         response.setPeriodRevenue(revenueByDay.stream().mapToLong(RevenuePointDTO::getRevenue).sum());
+        long allTimeRevenue = paidBills.stream().mapToLong(Bill::getTotalAmount).sum();
+        response.setAllTimeRevenue(allTimeRevenue);
+        response.setTotalPaidBills(paidBills.size());
+        response.setAverageBillValue(paidBills.isEmpty() ? 0L : allTimeRevenue / paidBills.size());
+        response.setVipRevenue(paidBills.stream()
+                .filter(bill -> "VIP".equalsIgnoreCase(resolveTableType(bill)))
+                .mapToLong(Bill::getTotalAmount).sum());
+        response.setRegularRevenue(paidBills.stream()
+                .filter(bill -> !"VIP".equalsIgnoreCase(resolveTableType(bill)))
+                .mapToLong(Bill::getTotalAmount).sum());
         response.setRevenueByDay(revenueByDay);
+        response.setRevenueByMonth(revenueByMonth);
         response.setTopDishes(topDishes);
         return response;
     }
 
     private boolean isPaid(Bill bill) {
         return bill.getOrder() != null && "Đã thanh toán".equalsIgnoreCase(bill.getOrder().getOrderStatus());
+    }
+
+    private String resolveTableType(Bill bill) {
+        if (bill.getTableTypeSnapshot() != null) return bill.getTableTypeSnapshot();
+        if (bill.getOrder() != null && bill.getOrder().getTable() != null
+                && bill.getOrder().getTable().getTableType() != null) {
+            return bill.getOrder().getTable().getTableType();
+        }
+        return "THƯỜNG";
     }
 }

@@ -2,10 +2,12 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Empty, Spin, message } from "antd";
 import {
   CoffeeOutlined,
+  CrownOutlined,
   DollarOutlined,
   LoadingOutlined,
   ShopOutlined,
   ShoppingCartOutlined,
+  FundOutlined,
 } from "@ant-design/icons";
 import {
   Chart,
@@ -45,6 +47,10 @@ const Dashboard = () => {
   }, [days]);
   const max = useMemo(
     () => Math.max(...(data?.revenueByDay || []).map((i) => i.revenue), 1),
+    [data],
+  );
+  const maxMonth = useMemo(
+    () => Math.max(...(data?.revenueByMonth || []).map((i) => i.revenue), 1),
     [data],
   );
   if (loading && !data)
@@ -91,6 +97,34 @@ const Dashboard = () => {
           <div>
             <div className="value">{money(data?.todayRevenue)}</div>
             <span className="hint">Đã xác nhận thanh toán</span>
+          </div>
+        </StatCard>
+        <StatCard>
+          <div className="top">
+            <span>Doanh thu toàn thời gian</span>
+            <span className="icon">
+              <FundOutlined />
+            </span>
+          </div>
+          <div>
+            <div className="value">{money(data?.allTimeRevenue)}</div>
+            <span className="hint">
+              {data?.totalPaidBills || 0} hóa đơn đã thu
+            </span>
+          </div>
+        </StatCard>
+        <StatCard>
+          <div className="top">
+            <span>Doanh thu bàn VIP</span>
+            <span className="icon gold">
+              <CrownOutlined />
+            </span>
+          </div>
+          <div>
+            <div className="value">{money(data?.vipRevenue)}</div>
+            <span className="hint">
+              Trung bình {money(data?.averageBillValue)} / hóa đơn
+            </span>
           </div>
         </StatCard>
         <StatCard>
@@ -183,6 +217,36 @@ const Dashboard = () => {
           ) : (
             <Empty description="Chưa có dữ liệu bán hàng" />
           )}
+        </Panel>
+        <Panel className="wide">
+          <div className="head">
+            <div>
+              <h2>Tổng doanh thu 12 tháng</h2>
+              <span>
+                VIP {money(data?.vipRevenue)} · Thường{" "}
+                {money(data?.regularRevenue)}
+              </span>
+            </div>
+          </div>
+          <Chart className="monthly">
+            {(data?.revenueByMonth || []).map((item) => (
+              <div className="column" key={item.date}>
+                <span className="amount">{shortMoney(item.revenue)}</span>
+                <div className="track">
+                  <div
+                    className="bar month-bar"
+                    style={{
+                      height: `${Math.max(2, (item.revenue / maxMonth) * 100)}%`,
+                    }}
+                  />
+                </div>
+                <span className="label">
+                  T{Number(item.date?.split("-")[1])}/
+                  {item.date?.split("-")[0]?.slice(-2)}
+                </span>
+              </div>
+            ))}
+          </Chart>
         </Panel>
       </Grid>
     </Page>

@@ -73,7 +73,14 @@ public class BillService implements IBillService {
         response.setBillId(bill.getBillId());
         response.setOrderId(bill.getOrder().getOrderId());
         response.setTableId(bill.getOrder().getTable().getTableId());
-        response.setTableName(bill.getOrder().getTable().getTableName());
+        response.setTableName(bill.getTableNameSnapshot() != null
+                ? bill.getTableNameSnapshot() : bill.getOrder().getTable().getTableName());
+        response.setTableType(bill.getTableTypeSnapshot() != null
+                ? bill.getTableTypeSnapshot() : defaultTableType(bill.getOrder().getTable().getTableType()));
+        response.setFloorNumber(bill.getFloorNumberSnapshot() != null
+                ? bill.getFloorNumberSnapshot() : defaultNumber(bill.getOrder().getTable().getFloorNumber(), 1));
+        response.setCapacity(bill.getCapacitySnapshot() != null
+                ? bill.getCapacitySnapshot() : defaultNumber(bill.getOrder().getTable().getCapacity(), 4));
         response.setCustomerName(bill.getOrder().getCustomerName());
         response.setTotalAmount(bill.getTotalAmount());
         response.setFoodAmount(getFoodAmount(bill));
@@ -139,6 +146,10 @@ public class BillService implements IBillService {
                 ? VIP_SERVICE_FEE : 0L;
         bill.setFoodAmount(foodAmount);
         bill.setTableServiceFee(serviceFee);
+        bill.setTableNameSnapshot(order.getTable().getTableName());
+        bill.setTableTypeSnapshot(defaultTableType(order.getTable().getTableType()));
+        bill.setFloorNumberSnapshot(defaultNumber(order.getTable().getFloorNumber(), 1));
+        bill.setCapacitySnapshot(defaultNumber(order.getTable().getCapacity(), 4));
         bill.setTotalAmount(foodAmount + serviceFee);
         billItemRepository.saveAll(billItems);
         return billRepository.save(bill);
@@ -166,5 +177,13 @@ public class BillService implements IBillService {
     private long getFoodAmount(Bill bill) {
         if (bill.getFoodAmount() != null) return bill.getFoodAmount();
         return Math.max(0L, bill.getTotalAmount() - getTableServiceFee(bill));
+    }
+
+    private String defaultTableType(String tableType) {
+        return tableType == null || tableType.isBlank() ? "THƯỜNG" : tableType;
+    }
+
+    private int defaultNumber(Integer value, int fallback) {
+        return value == null || value < 1 ? fallback : value;
     }
 }
