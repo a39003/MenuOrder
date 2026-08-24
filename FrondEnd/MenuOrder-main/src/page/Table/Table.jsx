@@ -25,6 +25,7 @@ import { QRCodeCanvas } from "qrcode.react";
 import { API_URL } from "../../config";
 
 const Tabled = () => {
+  const navigate = useNavigate();
   const [rowSelected, setRowSelected] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOpenMoadl, setIsOpenModal] = useState(false);
@@ -65,7 +66,14 @@ const Tabled = () => {
           }),
         },
       );
-      const data = await res.json();
+      const responseText = await res.text();
+      const data = responseText ? JSON.parse(responseText) : {};
+      if (res.status === 401 || res.status === 403) {
+        localStorage.removeItem("token");
+        message.warning("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.");
+        navigate("/login", { replace: true });
+        return;
+      }
       if (data.tableId) {
         setStatus(true);
         setTableName("");
@@ -110,7 +118,16 @@ const Tabled = () => {
         setStatus(true);
         setIsModalOpenDelete(false);
       } else {
-        const errorData = await res.json();
+        const responseText = await res.text();
+        const errorData = responseText ? JSON.parse(responseText) : {};
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem("token");
+          message.warning(
+            "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+          );
+          navigate("/login", { replace: true });
+          return;
+        }
         message.error(errorData.message || "Xóa bàn thất bại");
       }
     } catch (error) {
@@ -131,8 +148,33 @@ const Tabled = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       })
-        .then((res) => res.json())
+        .then(async (res) => {
+          const responseText = await res.text();
+          let data = null;
+          if (responseText) {
+            try {
+              data = JSON.parse(responseText);
+            } catch {
+              throw new Error("Máy chủ trả về dữ liệu không hợp lệ");
+            }
+          }
+          if (res.status === 401 || res.status === 403) {
+            localStorage.removeItem("token");
+            message.warning(
+              "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.",
+            );
+            navigate("/login", { replace: true });
+            return null;
+          }
+          if (!res.ok) {
+            throw new Error(
+              data?.message || `Không thể tải danh sách bàn (${res.status})`,
+            );
+          }
+          return data;
+        })
         .then((data) => {
+          if (data === null) return;
           if (Array.isArray(data)) {
             setTables(data);
           } else {
@@ -145,7 +187,7 @@ const Tabled = () => {
         });
       setStatus(false);
     }
-  }, [status]);
+  }, [navigate, status]);
   console.log(table);
 
   const handleDetails = (record) => {
@@ -162,8 +204,6 @@ const Tabled = () => {
   const handleCancelDelete = () => {
     setIsModalOpenDelete(false);
   };
-
-  const navigate = useNavigate();
 
   const renderAction = (record) => {
     return (

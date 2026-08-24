@@ -12,7 +12,18 @@ const Login = () => {
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    if (localStorage.getItem("token")) navigate("/admin/order");
+    const token = localStorage.getItem("token");
+    if (!token) return;
+    try {
+      const payload = JSON.parse(atob(token.split(".")[1]));
+      if (payload.exp * 1000 > Date.now()) {
+        navigate("/admin/order");
+      } else {
+        localStorage.removeItem("token");
+      }
+    } catch {
+      localStorage.removeItem("token");
+    }
   }, [navigate]);
 
   const handleSubmitLogin = async (event) => {
