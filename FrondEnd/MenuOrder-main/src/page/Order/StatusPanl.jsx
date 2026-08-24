@@ -2,8 +2,10 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusButton } from "./style";
 import TableOrder from "./TableOrder";
 import { API_URL } from "../../config";
+import { useNavigate } from "react-router-dom";
 
 function StatusPanel() {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tableStatus, setTableStatus] = useState(
@@ -11,44 +13,62 @@ function StatusPanel() {
   );
   const [error, setError] = useState(null);
 
-  const fetchTables = useCallback(async ({ initial = false } = {}) => {
-    try {
-      if (initial) setLoading(true);
-      setError(null);
-      const token = localStorage.getItem("token");
+  const fetchTables = useCallback(
+    async ({ initial = false } = {}) => {
+      try {
+        if (initial) setLoading(true);
+        setError(null);
+        const token = localStorage.getItem("token");
 
-      if (!token) {
-        throw new Error(
-          "Authorization token không tồn tại. Vui lòng đăng nhập lại.",
-        );
+        if (!token) {
+          throw new Error(
+            "Authorization token không tồn tại. Vui lòng đăng nhập lại.",
+          );
+        }
+
+        const response = await fetch(`${API_URL}/admin/tables`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem("token");
+          navigate("/login", { replace: true });
+          return;
+        }
+
+        if (!response.ok) {
+          const responseText = await response.text();
+          let errorMessage = `Lỗi khi lấy dữ liệu (${response.status})`;
+          if (responseText) {
+            try {
+              errorMessage = JSON.parse(responseText)?.message || errorMessage;
+            } catch {
+              errorMessage = responseText;
+            }
+          }
+          throw new Error(errorMessage);
+        }
+
+        const result = await response.json();
+
+        if (!Array.isArray(result)) {
+          throw new Error("Dữ liệu trả về không hợp lệ.");
+        }
+
+        setData(result);
+      } catch (error) {
+        setError(error.message);
+        console.error("Lỗi khi lấy danh sách bàn:", error);
+      } finally {
+        if (initial) setLoading(false);
       }
-
-      const response = await fetch(`${API_URL}/admin/tables`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Lỗi khi lấy dữ liệu: ${response.statusText}`);
-      }
-
-      const result = await response.json();
-
-      if (!Array.isArray(result)) {
-        throw new Error("Dữ liệu trả về không hợp lệ.");
-      }
-
-      setData(result);
-    } catch (error) {
-      setError(error.message);
-      console.error("Lỗi khi lấy danh sách bàn:", error);
-    } finally {
-      if (initial) setLoading(false);
-    }
-  }, []);
+    },
+    [navigate],
+  );
 
   useEffect(() => {
     fetchTables({ initial: true });

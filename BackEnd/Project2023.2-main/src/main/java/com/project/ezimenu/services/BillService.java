@@ -76,8 +76,8 @@ public class BillService implements IBillService {
         response.setTableName(bill.getOrder().getTable().getTableName());
         response.setCustomerName(bill.getOrder().getCustomerName());
         response.setTotalAmount(bill.getTotalAmount());
-        response.setFoodAmount(bill.getFoodAmount());
-        response.setTableServiceFee(bill.getTableServiceFee());
+        response.setFoodAmount(getFoodAmount(bill));
+        response.setTableServiceFee(getTableServiceFee(bill));
         response.setPaidAt(bill.getBillDateTime());
         response.setTotalItems(bill.getBillItems().stream().mapToInt(BillItem::getBillItemQuantity).sum());
         response.setItems(bill.getBillItems().stream()
@@ -92,8 +92,8 @@ public class BillService implements IBillService {
         BillResponseDTO billResponseDTO = modelMapper.map(order.getBill(), BillResponseDTO.class);
         billResponseDTO.setCustomerName(order.getCustomerName());
         billResponseDTO.setTableName(order.getTable().getTableName());
-        billResponseDTO.setFoodAmount(order.getBill().getFoodAmount());
-        billResponseDTO.setTableServiceFee(order.getBill().getTableServiceFee());
+        billResponseDTO.setFoodAmount(getFoodAmount(order.getBill()));
+        billResponseDTO.setTableServiceFee(getTableServiceFee(order.getBill()));
         List<BillItemResponseDTO> billItemResponseDTOS = order.getBill().getBillItems().stream()
                 .map(billItem -> modelMapper.map(billItem, BillItemResponseDTO.class))
                 .collect(Collectors.toList());
@@ -157,5 +157,14 @@ public class BillService implements IBillService {
             totalAmount += item.getBillItemPrice() * item.getBillItemQuantity();
         }
         return totalAmount;
+    }
+
+    private long getTableServiceFee(Bill bill) {
+        return bill.getTableServiceFee() == null ? 0L : bill.getTableServiceFee();
+    }
+
+    private long getFoodAmount(Bill bill) {
+        if (bill.getFoodAmount() != null) return bill.getFoodAmount();
+        return Math.max(0L, bill.getTotalAmount() - getTableServiceFee(bill));
     }
 }

@@ -22,10 +22,10 @@ public class Bill {
     private long totalAmount;
 
     @Column(name = "foodAmount")
-    private long foodAmount;
+    private Long foodAmount = 0L;
 
     @Column(name = "tableServiceFee")
-    private long tableServiceFee;
+    private Long tableServiceFee = 0L;
 
     @Column(name = "billDateTime")
     private LocalDateTime billDateTime;
