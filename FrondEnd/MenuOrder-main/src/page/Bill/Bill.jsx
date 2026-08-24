@@ -397,7 +397,7 @@ const Bill = ({
           <div className="admin-payment-qr">
             <div>
               <h3>Quét mã để thanh toán</h3>
-              <p>VietinBank · {PAYMENT_ACCOUNT_NO}</p>
+              <p>VietinBank</p>
               <strong>{PAYMENT_ACCOUNT_NAME}</strong>
               <p>
                 Nội dung: <strong>{paymentContent}</strong>
