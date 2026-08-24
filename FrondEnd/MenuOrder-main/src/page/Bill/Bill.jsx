@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Table, Typography, Button, Modal, message } from "antd";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, PrinterOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import Foor from "../../costormer/Components/Foor/Foor";
 import { Conter } from "./style";
 import { convertToTime } from "../../costormer/Time/time";
-import { API_URL } from "../../config";
+import {
+  API_URL,
+  PAYMENT_ACCOUNT_NAME,
+  PAYMENT_ACCOUNT_NO,
+  PAYMENT_BANK,
+} from "../../config";
 
 const { Title } = Typography;
 
@@ -27,6 +32,22 @@ const Bill = ({
   const [deletingBill, setDeletingBill] = useState(false);
   const [acceptingPayment, setAcceptingPayment] = useState(false);
 
+  const paymentContent = `TLU BILL ${bill?.billId || orderId}`;
+  const paymentQrUrl = `https://img.vietqr.io/image/${PAYMENT_BANK}-${PAYMENT_ACCOUNT_NO}-compact2.png?amount=${Number(
+    bill?.totalAmount || 0,
+  )}&addInfo=${encodeURIComponent(paymentContent)}&accountName=${encodeURIComponent(
+    PAYMENT_ACCOUNT_NAME,
+  )}`;
+
+  const handlePrintBill = () => {
+    document.body.classList.add("printing-admin-bill");
+    const finishPrinting = () =>
+      document.body.classList.remove("printing-admin-bill");
+    window.addEventListener("afterprint", finishPrinting, { once: true });
+    window.print();
+    window.setTimeout(finishPrinting, 1000);
+  };
+
   const handleDeleteBill = async () => {
     if (deletingBill) return;
     setDeletingBill(true);
@@ -42,6 +63,7 @@ const Bill = ({
         message.success("Xóa bill thành công");
         setBill(null);
         onBillDeleted(); // Update parent component if needed
+        setIsOpen(false);
       } else {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to delete bill");
@@ -262,8 +284,10 @@ const Bill = ({
         onCancel={() => setIsOpen(false)}
         footer={null}
         centered
+        width={720}
       >
         <div
+          className="admin-bill-print"
           style={{
             background: "#DAD1D1",
             padding: "10px",
@@ -291,7 +315,7 @@ const Bill = ({
           </Typography.Text>
 
           <Table
-            dataSource={bill?.billItems || []}
+            dataSource={bill?.billItemResponseDTOS || []}
             columns={[
               {
                 title: "Tên món",
@@ -322,6 +346,7 @@ const Bill = ({
             pagination={false}
             bordered
             size="small"
+            rowKey={(record, index) => record.billItemId || index}
             summary={() => (
               <>
                 <Table.Summary.Row>
@@ -344,8 +369,32 @@ const Bill = ({
               </>
             )}
           />
+          <div className="admin-payment-qr">
+            <div>
+              <h3>Quét mã để thanh toán</h3>
+              <p>VietinBank · {PAYMENT_ACCOUNT_NO}</p>
+              <strong>{PAYMENT_ACCOUNT_NAME}</strong>
+              <p>
+                Nội dung: <strong>{paymentContent}</strong>
+              </p>
+            </div>
+            <img
+              src={paymentQrUrl}
+              alt={`QR thanh toán hóa đơn ${bill?.billId || orderId}`}
+            />
+          </div>
         </div>
-        <div style={{ textAlign: "center", marginTop: "10px" }}>
+        <div
+          className="admin-bill-actions"
+          style={{ textAlign: "center", marginTop: "10px" }}
+        >
+          <Button
+            size="large"
+            icon={<PrinterOutlined />}
+            onClick={handlePrintBill}
+          >
+            In / Lưu PDF
+          </Button>
           <Button
             type="primary"
             size="large"

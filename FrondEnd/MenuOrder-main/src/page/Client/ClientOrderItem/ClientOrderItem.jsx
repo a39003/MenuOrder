@@ -305,6 +305,13 @@ const ClientOrderItem = () => {
               {Number(bill?.totalAmount || 0).toLocaleString("vi-VN")}đ
             </strong>
           </div>
+          <div className="payment-note">
+            <WalletOutlined />
+            <span>
+              Quý khách vui lòng di chuyển qua quầy lễ tân để thanh toán hóa
+              đơn.
+            </span>
+          </div>
           <div className="receipt-time">
             Thời gian: {convertToTime(bill?.billDateTime)}
           </div>

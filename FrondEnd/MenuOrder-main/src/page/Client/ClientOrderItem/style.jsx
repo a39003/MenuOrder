@@ -303,6 +303,22 @@ export const ContainerModal = styled.div`
     color: #90786a;
     font-size: 12px;
   }
+  .payment-note {
+    margin-top: 12px;
+    padding: 13px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: 1px solid #f0d2bd;
+    border-radius: 13px;
+    color: #9f481e;
+    background: #fff1e7;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.5;
+    text-align: center;
+  }
 
   @media (max-width: 480px) {
     padding: 14px;

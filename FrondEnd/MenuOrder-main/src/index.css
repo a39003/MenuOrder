@@ -117,6 +117,67 @@ svg {
   overflow-x: hidden;
 }
 
+.admin-payment-qr {
+  margin-top: 14px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border: 1px solid #cdbfba;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.admin-payment-qr h3,
+.admin-payment-qr p {
+  margin: 3px 0;
+}
+
+.admin-payment-qr img {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
+@media (max-width: 560px) {
+  .admin-payment-qr {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media print {
+  body.printing-admin-bill * {
+    visibility: hidden !important;
+  }
+
+  body.printing-admin-bill .admin-bill-print,
+  body.printing-admin-bill .admin-bill-print * {
+    visibility: visible !important;
+  }
+
+  body.printing-admin-bill .admin-bill-print {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    padding: 20px !important;
+    color: #000;
+    background: #fff !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  body.printing-admin-bill .admin-payment-qr {
+    break-inside: avoid;
+  }
+
+  body.printing-admin-bill .ant-table-pagination {
+    display: none !important;
+  }
+}
+
 @media (max-width: 768px) {
   .admin-content {
     min-height: calc(100vh - 64px);
