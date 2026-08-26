@@ -107,7 +107,8 @@ const Dish = ({ dish }) => {
       const responseText = await response.text();
       const data = responseText ? JSON.parse(responseText) : {};
       if (!response.ok) {
-        throw new Error(data?.message || "Không thể lưu món ăn");
+        message.error(data?.message || `Không thể lưu món ăn (${response.status})`);
+        return;
       }
       if (data.dishId) {
         message.success("Thành công");
