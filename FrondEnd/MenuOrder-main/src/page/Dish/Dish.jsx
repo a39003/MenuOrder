@@ -88,7 +88,7 @@ const Dish = ({ dish }) => {
     formData.append("dishName", stateDish.dishName);
     formData.append("dishPrice", stateDish.dishPrice);
     formData.append("dishStatus", stateDish.dishStatus);
-    formData.append("menuId", stateDish.menuId);
+    formData.append("menuId", stateDish.menuId || rowSelected?.menuId || "");
     imageFiles.forEach((file) => formData.append("images", file));
 
     console.log(formData);
@@ -104,7 +104,11 @@ const Dish = ({ dish }) => {
           body: formData,
         },
       );
-      const data = await response.json();
+      const responseText = await response.text();
+      const data = responseText ? JSON.parse(responseText) : {};
+      if (!response.ok) {
+        throw new Error(data?.message || "Không thể lưu món ăn");
+      }
       if (data.dishId) {
         message.success("Thành công");
         setStatus(true);

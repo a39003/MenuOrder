@@ -13,6 +13,7 @@ import com.project.ezimenu.utils.Constants;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.transaction.Transactional;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ public class DishService implements IDishService {
     private CloudinaryService cloudinaryService;
     @Autowired
     private ModelMapper modelMapper;
+    @Transactional
     public Dish addDish(DishRequestDTO dishRequestDTO) throws NotFoundException, BadRequestException, IOException {
         if(dishRequestDTO.getDishName() == null
                 || "".equals(dishRequestDTO.getDishName())
@@ -69,6 +71,7 @@ public class DishService implements IDishService {
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
+    @Transactional
     public Dish updateDish(Long dishId, DishRequestDTO dishRequestDTO) throws NotFoundException, BadRequestException, IOException {
         if(dishRequestDTO.getDishName() == null
                 || "".equals(dishRequestDTO.getDishName())
