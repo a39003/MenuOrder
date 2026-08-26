@@ -20,9 +20,20 @@ public class CloudinaryService implements IUploadService {
     private Cloudinary cloudinary;
     @Override
     public String upload(byte[] bytes, String fileName, String folderName) throws IOException {
-        String publicId = "hustaurant/" + folderName + "/" + fileName;
-        Map<?,?> image = cloudinary.uploader().upload(bytes, ObjectUtils.asMap("public_id", publicId));
-        return (String) image.get("url");
+        // Không dùng nguyên tên file làm public_id vì tên có dấu, khoảng trắng
+        // hoặc trùng nhau có thể khiến Cloudinary từ chối/ghi đè ảnh cũ.
+        Map<?, ?> image = cloudinary.uploader().upload(
+                bytes,
+                ObjectUtils.asMap(
+                        "folder", "hustaurant/" + folderName,
+                        "resource_type", "image",
+                        "use_filename", false,
+                        "unique_filename", true,
+                        "overwrite", false
+                )
+        );
+        Object secureUrl = image.get("secure_url");
+        return secureUrl != null ? secureUrl.toString() : String.valueOf(image.get("url"));
     }
 
     public String[] uploadImages(MultipartFile[] images) throws IOException, ExecutionException, InterruptedException {
@@ -54,4 +65,3 @@ public class CloudinaryService implements IUploadService {
         cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
     }
 }
-
