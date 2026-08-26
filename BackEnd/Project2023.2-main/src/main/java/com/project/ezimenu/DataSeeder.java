@@ -24,8 +24,11 @@ public class DataSeeder implements CommandLineRunner {
         // ElementCollection. Tạo bảng lưu nhiều ảnh trước khi API món ăn chạy.
         jdbcTemplate.execute("""
                 CREATE TABLE IF NOT EXISTS dish_images (
+                    id BIGINT NOT NULL AUTO_INCREMENT,
                     dishId BIGINT NOT NULL,
-                    imageUrl VARCHAR(1000)
+                    imageUrl VARCHAR(1000),
+                    PRIMARY KEY (id),
+                    INDEX idx_dish_images_dish_id (dishId)
                 ) ENGINE=InnoDB
                 """);
 
