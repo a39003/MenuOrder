@@ -184,8 +184,15 @@ const Dish = ({ dish }) => {
 
   const handleDetails = (record) => {
     console.log(record);
+    setRowSelected(record);
     setIsOpenModal(true);
     setSateDish(record);
+    editForm.setFieldsValue({
+      dishName: record?.dishName,
+      dishPrice: record?.dishPrice,
+      menuId: Number(record?.menuId),
+      dishStatus: Number(record?.dishStatus),
+    });
     setImageFiles([]);
     const currentImages = record?.images?.length
       ? record.images
@@ -286,6 +293,16 @@ const Dish = ({ dish }) => {
   };
 
   const [form] = Form.useForm();
+  const [editForm] = Form.useForm();
+
+  const handleEditCancel = () => {
+    setIsOpenModal(false);
+    editForm.resetFields();
+    setRowSelected("");
+    setImageFiles([]);
+    setImagePreviews([]);
+    setExistingImages([]);
+  };
 
   const handleStatusChange = async (record, value) => {
     if (changingStatusId) return;
@@ -626,26 +643,20 @@ const Dish = ({ dish }) => {
         <Modald
           title="Chỉnh sửa món ăn"
           isOpen={isOpenMoadl}
-          onCancel={() => setIsOpenModal(false)}
+          onCancel={handleEditCancel}
           setStatus={setStatus}
           dishes={dishes}
           footer={null}
         >
           <Form
+            form={editForm}
             name="basic"
             labelCol={{ span: 7 }}
             wrapperCol={{ span: 16 }}
             style={{ maxWidth: 600 }}
-            initialValues={{
-              dishName: rowSelected.dishName,
-              dishPrice: rowSelected.dishPrice,
-              menuId: rowSelected?.menuId, // Giá trị mặc định cho trường "menuId",
-              dishStatus: rowSelected?.dishStatus,
-              thumbnail: "FALSE",
-            }}
             onFinish={onFinish}
             autoComplete="on"
-            key={dishes.dishId}
+            key={rowSelected?.dishId || "edit-dish"}
           >
             <Form.Item
               label="Tên món"
