@@ -74,6 +74,24 @@ public class JwtTokenValidator extends OncePerRequestFilter {
     @Autowired
     private UserService userService;
 
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
+        if (!"GET".equalsIgnoreCase(request.getMethod())) {
+            return false;
+        }
+
+        String path = request.getServletPath();
+        return path.equals("/menus")
+                || path.startsWith("/menus/")
+                || path.equals("/dishes")
+                || path.startsWith("/dishes/")
+                || path.matches("/(tables/)?\\d+/menus");
+    }
+
 
     @Override
     protected void doFilterInternal(

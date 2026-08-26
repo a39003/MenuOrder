@@ -101,18 +101,26 @@ const Menu = () => {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: "Bearer " + localStorage.getItem("token"),
         },
       })
-        .then((res) => res.json())
+        .then(async (res) => {
+          const text = await res.text();
+          const data = text ? JSON.parse(text) : [];
+          if (!res.ok) {
+            throw new Error(data?.message || "Không thể tải danh sách menu");
+          }
+          return data;
+        })
         .then((data) => {
           if (Array.isArray(data)) {
             setMenus(data);
           } else {
+            setMenus([]);
             message.error("Dữ liệu trả về không hợp lệ");
           }
         })
         .catch((error) => {
+          setMenus([]);
           message.error("Không thể tải danh sách menu");
           console.error(error);
         });
