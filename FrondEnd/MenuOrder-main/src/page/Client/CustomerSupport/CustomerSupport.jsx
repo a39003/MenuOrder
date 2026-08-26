@@ -66,7 +66,7 @@ const CustomerSupport = ({ tableId }) => {
         title={cooldown ? "Đã gửi yêu cầu hỗ trợ" : "Gọi nhân viên hỗ trợ"}
       >
         <BellOutlined />
-        <span>{cooldown ? "Đã gửi" : "Hỗ trợ"}</span>
+        <span className="support-label">{cooldown ? "Đã gửi" : "Hỗ trợ"}</span>
       </FloatingButton>
       <Modal
         title={`Yêu cầu hỗ trợ · ${tableName || "Bàn của bạn"}`}
@@ -119,7 +119,7 @@ const FloatingButton = styled.button`
     color: #fff;
     font-size: 20px;
   }
-  span {
+  .support-label {
     display: none;
   }
   &:disabled {
