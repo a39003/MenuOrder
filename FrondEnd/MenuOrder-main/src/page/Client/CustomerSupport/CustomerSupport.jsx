@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { CustomerServiceOutlined } from "@ant-design/icons";
+import { BellOutlined } from "@ant-design/icons";
 import { message, Modal } from "antd";
 import styled from "styled-components";
 import { API_URL } from "../../../config";
@@ -65,7 +65,7 @@ const CustomerSupport = ({ tableId }) => {
         aria-label="Gọi nhân viên hỗ trợ"
         title={cooldown ? "Đã gửi yêu cầu hỗ trợ" : "Gọi nhân viên hỗ trợ"}
       >
-        <CustomerServiceOutlined />
+        <BellOutlined />
         <span>{cooldown ? "Đã gửi" : "Hỗ trợ"}</span>
       </FloatingButton>
       <Modal
@@ -96,9 +96,9 @@ const CustomerSupport = ({ tableId }) => {
 
 const FloatingButton = styled.button`
   position: fixed;
-  right: max(88px, calc((100vw - 1120px) / 2 + 70px));
-  bottom: 31px;
-  z-index: 50;
+  right: 20px;
+  bottom: 92px;
+  z-index: 32;
   width: 44px;
   height: 44px;
   padding: 0;
@@ -127,8 +127,8 @@ const FloatingButton = styled.button`
     cursor: default;
   }
   @media (max-width: 520px) {
-    right: 82px;
-    bottom: max(23px, calc(env(safe-area-inset-bottom) + 7px));
+    right: 16px;
+    bottom: max(84px, calc(env(safe-area-inset-bottom) + 76px));
   }
 `;
 const ReasonGrid = styled.div`
