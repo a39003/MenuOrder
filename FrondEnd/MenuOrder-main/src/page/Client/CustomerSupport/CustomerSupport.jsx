@@ -96,9 +96,9 @@ const CustomerSupport = ({ tableId }) => {
 
 const FloatingButton = styled.button`
   position: fixed;
-  right: 20px;
-  bottom: 92px;
-  z-index: 28;
+  right: max(88px, calc((100vw - 1120px) / 2 + 70px));
+  bottom: 31px;
+  z-index: 50;
   width: 44px;
   height: 44px;
   padding: 0;
@@ -127,8 +127,8 @@ const FloatingButton = styled.button`
     cursor: default;
   }
   @media (max-width: 520px) {
-    right: 12px;
-    bottom: 86px;
+    right: 82px;
+    bottom: max(23px, calc(env(safe-area-inset-bottom) + 7px));
   }
 `;
 const ReasonGrid = styled.div`

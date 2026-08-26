@@ -19,4 +19,5 @@ public class DishRequestDTO {
     private Short dishStatus;
     private MultipartFile thumbnail;
     private List<MultipartFile> images;
+    private List<String> retainedImages;
 }

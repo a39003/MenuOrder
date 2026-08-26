@@ -289,6 +289,7 @@ const TableOrder = ({ table, onTableChanged }) => {
           {table?.totalDish > 0 && (
             <ListDish
               tableId={table?.tableId}
+              tableName={table?.tableName}
               handleUpdateOrderItemStatus={handleCreateBill}
             />
           )}

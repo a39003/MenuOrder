@@ -47,6 +47,7 @@ const Dish = ({ dish }) => {
 
   const [imageFiles, setImageFiles] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
 
   const [menus, setMenus] = useState([]);
   useEffect(() => {
@@ -90,6 +91,7 @@ const Dish = ({ dish }) => {
     formData.append("dishStatus", stateDish.dishStatus);
     formData.append("menuId", stateDish.menuId || rowSelected?.menuId || "");
     imageFiles.forEach((file) => formData.append("images", file));
+    existingImages.forEach((url) => formData.append("retainedImages", url));
 
     console.log(formData);
     try {
@@ -107,7 +109,9 @@ const Dish = ({ dish }) => {
       const responseText = await response.text();
       const data = responseText ? JSON.parse(responseText) : {};
       if (!response.ok) {
-        message.error(data?.message || `Không thể lưu món ăn (${response.status})`);
+        message.error(
+          data?.message || `Không thể lưu món ăn (${response.status})`,
+        );
         return;
       }
       if (data.dishId) {
@@ -123,6 +127,7 @@ const Dish = ({ dish }) => {
         form.resetFields();
         setImageFiles([]);
         setImagePreviews([]);
+        setExistingImages([]);
         setIsModalOpen(false);
         setIsOpenModal(false);
       }
@@ -182,13 +187,13 @@ const Dish = ({ dish }) => {
     setIsOpenModal(true);
     setSateDish(record);
     setImageFiles([]);
-    setImagePreviews(
-      record?.images?.length
-        ? record.images
-        : record?.thumbnail
-          ? [record.thumbnail]
-          : [],
-    );
+    const currentImages = record?.images?.length
+      ? record.images
+      : record?.thumbnail
+        ? [record.thumbnail]
+        : [];
+    setExistingImages(currentImages);
+    setImagePreviews(currentImages);
     // setRowSelected(record)
     console.log("rowSelected", rowSelected);
   };
@@ -232,6 +237,24 @@ const Dish = ({ dish }) => {
     setImagePreviews((current) => [...current, ...previews].slice(0, 6));
   };
 
+  const handleRemoveImage = (index) => {
+    if (index < existingImages.length) {
+      setExistingImages((current) =>
+        current.filter((_, itemIndex) => itemIndex !== index),
+      );
+    } else {
+      const fileIndex = index - existingImages.length;
+      setImageFiles((current) =>
+        current.filter((_, itemIndex) => itemIndex !== fileIndex),
+      );
+      const preview = imagePreviews[index];
+      if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
+    }
+    setImagePreviews((current) =>
+      current.filter((_, itemIndex) => itemIndex !== index),
+    );
+  };
+
   const handleOnchange = (e) => {
     setSateDish({
       ...stateDish,
@@ -259,6 +282,7 @@ const Dish = ({ dish }) => {
     console.log("....");
     setImageFiles([]);
     setImagePreviews([]);
+    setExistingImages([]);
   };
 
   const [form] = Form.useForm();
@@ -541,20 +565,45 @@ const Dish = ({ dish }) => {
 
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {imagePreviews.map((preview, index) => (
-                    <img
-                      key={preview}
-                      src={preview}
-                      alt={`Ảnh món ${index + 1}`}
-                      style={{
-                        width: 76,
-                        height: 76,
-                        objectFit: "cover",
-                        borderRadius: 10,
-                        marginTop: 8,
-                        border:
-                          index === 0 ? "2px solid #d96b2b" : "1px solid #ddd",
-                      }}
-                    />
+                    <div
+                      key={`${preview}-${index}`}
+                      style={{ position: "relative", marginTop: 8 }}
+                    >
+                      <img
+                        src={preview}
+                        alt={`Ảnh món ${index + 1}`}
+                        style={{
+                          width: 76,
+                          height: 76,
+                          objectFit: "cover",
+                          borderRadius: 10,
+                          border:
+                            index === 0
+                              ? "2px solid #d96b2b"
+                              : "1px solid #ddd",
+                        }}
+                      />
+                      <button
+                        type="button"
+                        aria-label="Xóa ảnh"
+                        title="Xóa ảnh"
+                        onClick={() => handleRemoveImage(index)}
+                        style={{
+                          position: "absolute",
+                          top: -7,
+                          right: -7,
+                          width: 24,
+                          height: 24,
+                          border: 0,
+                          borderRadius: "50%",
+                          color: "#fff",
+                          background: "#d4380d",
+                          cursor: "pointer",
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -679,20 +728,45 @@ const Dish = ({ dish }) => {
                 </Button>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   {imagePreviews.map((preview, index) => (
-                    <img
+                    <div
                       key={`${preview}-${index}`}
-                      src={preview}
-                      alt={`Ảnh món ${index + 1}`}
-                      style={{
-                        width: 76,
-                        height: 76,
-                        objectFit: "cover",
-                        borderRadius: 10,
-                        marginTop: 8,
-                        border:
-                          index === 0 ? "2px solid #d96b2b" : "1px solid #ddd",
-                      }}
-                    />
+                      style={{ position: "relative", marginTop: 8 }}
+                    >
+                      <img
+                        src={preview}
+                        alt={`Ảnh món ${index + 1}`}
+                        style={{
+                          width: 76,
+                          height: 76,
+                          objectFit: "cover",
+                          borderRadius: 10,
+                          border:
+                            index === 0
+                              ? "2px solid #d96b2b"
+                              : "1px solid #ddd",
+                        }}
+                      />
+                      <button
+                        type="button"
+                        aria-label="Xóa ảnh"
+                        title="Xóa ảnh"
+                        onClick={() => handleRemoveImage(index)}
+                        style={{
+                          position: "absolute",
+                          top: -7,
+                          right: -7,
+                          width: 24,
+                          height: 24,
+                          border: 0,
+                          borderRadius: "50%",
+                          color: "#fff",
+                          background: "#d4380d",
+                          cursor: "pointer",
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
                   ))}
                 </div>
               </div>

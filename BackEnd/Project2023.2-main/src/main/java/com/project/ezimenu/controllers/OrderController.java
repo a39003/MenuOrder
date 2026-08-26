@@ -66,7 +66,7 @@ public class OrderController {
         Message message = new Message();
         message.setText(currentDateTime.format(formatter) + ": " + "Bàn " + table.getTableName()  + " đã tạo order mới!");
         message.setTo("admin");
-        Notification notification = notificationService.addNotification(tableId, "Khách ở bàn " + tableId + " đã đặt món.");
+        Notification notification = notificationService.addNotification(tableId, "Khách ở bàn " + table.getTableName() + " đã đặt món.");
         messageController.sendToSpecificUser(message);
         return new ResponseEntity<>(newOrder, HttpStatus.CREATED);
     }

@@ -14,7 +14,7 @@ import {
 } from "./style";
 import { API_URL } from "../../config";
 
-const ListDish = ({ tableId }) => {
+const ListDish = ({ tableId, tableName }) => {
   const [visible, setVisible] = useState(false);
   const [orders, setOrders] = useState({ orderItemResponseDTO: [] });
   const [updatingItems, setUpdatingItems] = useState({});
@@ -252,7 +252,8 @@ const ListDish = ({ tableId }) => {
         <OrderModalHead>
           <div>
             <h3>
-              Bàn {tableId} · {orders.customerName || "Khách hàng"}
+              {tableName || `Bàn ${tableId}`} ·{" "}
+              {orders.customerName || "Khách hàng"}
             </h3>
             <span className="sub">
               Theo dõi và cập nhật món theo thời gian thực

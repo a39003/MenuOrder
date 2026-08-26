@@ -33,7 +33,7 @@ public class PaymentReminderScheduler {
             List<Table> tables = tableRepository.findAll();
             for (Table table : tables) {
                 if ("Đã thanh toán".equals(table.getTableStatus())) {
-                    String text = "Bàn " + table.getTableId() + " đã thanh toán, bạn có muốn chuyển về bàn trống không?";
+                    String text = "Bàn " + table.getTableName() + " đã thanh toán, bạn có muốn chuyển về bàn trống không?";
                     if(table.getNotifications() != null && !table.getNotifications().isEmpty()){
                         Notification notification = table.getNotifications().get(table.getNotifications().size() - 1);
                         if (text.equals(notification.getText())){

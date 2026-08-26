@@ -16,6 +16,7 @@ import {
   Titles,
 } from "./style";
 import { API_URL } from "../../../config";
+import CustomerSupport from "../CustomerSupport/CustomerSupport";
 
 const ClientTable = () => {
   const navigate = useNavigate();
@@ -173,6 +174,7 @@ const ClientTable = () => {
           Hotline: 0123 456 789
         </Footer>
       </Contents>
+      <CustomerSupport tableId={tableId} />
     </Page>
   );
 };

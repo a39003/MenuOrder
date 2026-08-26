@@ -87,6 +87,11 @@ public class DishService implements IDishService {
         Menu menu = menuRepository.findByMenuIdAndStatus(dishRequestDTO.getMenuId(), Constants.ENTITY_STATUS.ACTIVE)
                 .orElseThrow(() -> new NotFoundException("Không thể tìm thấy thực đơn có id: " + dishRequestDTO.getMenuId()));
         updatedDish.setMenu(menu);
+        List<String> retainedImages = dishRequestDTO.getRetainedImages();
+        if (retainedImages != null) {
+            updatedDish.setImages(new ArrayList<>(retainedImages.stream().limit(6).toList()));
+        }
+
         List<String> newImages = uploadImages(dishRequestDTO);
         if (!newImages.isEmpty()) {
             List<String> allImages = updatedDish.getImages() == null
@@ -99,6 +104,10 @@ public class DishService implements IDishService {
                     .forEach(allImages::add);
             updatedDish.setImages(allImages);
             if (!allImages.isEmpty()) updatedDish.setThumbnail(allImages.get(0));
+        }
+        if (newImages.isEmpty() && retainedImages != null) {
+            List<String> remaining = updatedDish.getImages();
+            updatedDish.setThumbnail(remaining == null || remaining.isEmpty() ? null : remaining.get(0));
         }
         updatedDish.setDishName(dishRequestDTO.getDishName());
         updatedDish.setDishPrice(dishRequestDTO.getDishPrice());
