@@ -80,6 +80,7 @@ package com.project.ezimenu.security;
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -135,6 +136,15 @@ public class SecurityConfiguration {
     @Bean
     public JwtTokenValidator jwtTokenValidator() {
         return new JwtTokenValidator();
+    }
+
+    @Bean
+    public FilterRegistrationBean<JwtTokenValidator> disableJwtServletRegistration(
+            JwtTokenValidator filter) {
+        FilterRegistrationBean<JwtTokenValidator> registration =
+                new FilterRegistrationBean<>(filter);
+        registration.setEnabled(false);
+        return registration;
     }
 
 
@@ -238,6 +248,7 @@ public class SecurityConfiguration {
                         //
                         .requestMatchers(
                                 HttpMethod.GET,
+                                "/menus",
                                 "/menus/**"
                         )
                         .permitAll()
@@ -264,6 +275,7 @@ public class SecurityConfiguration {
                         //
                         .requestMatchers(
                                 HttpMethod.GET,
+                                "/dishes",
                                 "/dishes/**"
                         )
                         .permitAll()

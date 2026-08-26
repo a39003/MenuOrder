@@ -54,16 +54,20 @@ const Dish = ({ dish }) => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
       },
     })
-      .then((res) => res.json())
+      .then(async (res) => {
+        const text = await res.text();
+        const data = text ? JSON.parse(text) : [];
+        if (!res.ok) throw new Error(data?.message || "Không thể tải menu");
+        return data;
+      })
       .then((data) => {
-        setMenus(data);
-        console.log(data);
+        setMenus(Array.isArray(data) ? data : []);
       })
       .catch((err) => {
-        console.log(err);
+        setMenus([]);
+        message.error(err.message || "Không thể tải danh sách menu");
       });
   }, []);
 
@@ -150,9 +154,18 @@ const Dish = ({ dish }) => {
   useEffect(() => {
     if (status) {
       fetch(`${API_URL}/dishes`)
-        .then((res) => res.json())
+        .then(async (res) => {
+          const text = await res.text();
+          const data = text ? JSON.parse(text) : [];
+          if (!res.ok) throw new Error(data?.message || "Không thể tải món ăn");
+          return data;
+        })
         .then((data) => {
-          setDishes(data);
+          setDishes(Array.isArray(data) ? data : []);
+        })
+        .catch((error) => {
+          setDishes([]);
+          message.error(error.message || "Không thể tải danh sách món ăn");
         });
       setStatus(false);
     }
