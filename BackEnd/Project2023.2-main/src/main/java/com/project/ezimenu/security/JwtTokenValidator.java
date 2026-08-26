@@ -85,7 +85,8 @@ public class JwtTokenValidator extends OncePerRequestFilter {
         }
 
         String path = request.getServletPath();
-        return path.equals("/menus")
+        return path.equals("/error")
+                || path.equals("/menus")
                 || path.startsWith("/menus/")
                 || path.equals("/dishes")
                 || path.startsWith("/dishes/")

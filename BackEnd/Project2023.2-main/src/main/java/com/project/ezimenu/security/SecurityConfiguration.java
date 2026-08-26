@@ -203,6 +203,11 @@ public class SecurityConfiguration {
                 // -------------------------------------------------
                 .authorizeHttpRequests(auth -> auth
 
+                        // Cho phép Spring trả lỗi gốc (ví dụ lỗi SQL/serialization)
+                        // thay vì biến mọi lỗi nội bộ thành 401 Unauthorized.
+                        .requestMatchers("/error")
+                        .permitAll()
+
 
                         // =================================================
                         // 1. AUTH
