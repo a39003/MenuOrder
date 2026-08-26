@@ -9,6 +9,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 @Component
 public class DataSeeder implements CommandLineRunner {
     @Autowired
@@ -18,19 +25,11 @@ public class DataSeeder implements CommandLineRunner {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public void run(String...args) {
-        // Một số database cloud không áp dụng đầy đủ ddl-auto khi thêm
-        // ElementCollection. Tạo bảng lưu nhiều ảnh trước khi API món ăn chạy.
-        jdbcTemplate.execute("""
-                CREATE TABLE IF NOT EXISTS dish_images (
-                    id BIGINT NOT NULL AUTO_INCREMENT,
-                    dishId BIGINT NOT NULL,
-                    imageUrl VARCHAR(1000),
-                    PRIMARY KEY (id),
-                    INDEX idx_dish_images_dish_id (dishId)
-                ) ENGINE=InnoDB
-                """);
+        migrateDishImagesToJson();
 
         String adminUsername = "admin@gmail.com";
         if (userRepository.findByUsername(adminUsername).isEmpty()) {
@@ -40,5 +39,33 @@ public class DataSeeder implements CommandLineRunner {
             adminUser.setRole(Role.ADMIN.toString());
             userRepository.save(adminUser);
         }
+    }
+
+    private void migrateDishImagesToJson() {
+        Integer tableExists = jdbcTemplate.queryForObject("""
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_schema = DATABASE() AND table_name = 'dish_images'
+                """, Integer.class);
+        if (tableExists == null || tableExists == 0) return;
+
+        Map<Long, List<String>> imagesByDish = new LinkedHashMap<>();
+        jdbcTemplate.query("SELECT dishId, imageUrl FROM dish_images", resultSet -> {
+            long dishId = resultSet.getLong("dishId");
+            String imageUrl = resultSet.getString("imageUrl");
+            if (imageUrl != null && !imageUrl.isBlank()) {
+                imagesByDish.computeIfAbsent(dishId, ignored -> new ArrayList<>()).add(imageUrl);
+            }
+        });
+
+        imagesByDish.forEach((dishId, images) -> {
+            try {
+                jdbcTemplate.update("""
+                        UPDATE dishes SET images = ?
+                        WHERE dishId = ? AND (images IS NULL OR images = '' OR images = '[]')
+                        """, objectMapper.writeValueAsString(images), dishId);
+            } catch (Exception exception) {
+                throw new IllegalStateException("Không thể chuyển dữ liệu ảnh của món " + dishId, exception);
+            }
+        });
     }
 }

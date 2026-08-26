@@ -2,6 +2,7 @@ package com.project.ezimenu.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.project.ezimenu.configurations.StringListConverter;
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -24,9 +25,8 @@ public class Dish {
     @Column(name = "thumbnail")
     private String thumbnail;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "dish_images", joinColumns = @JoinColumn(name = "dishId"))
-    @Column(name = "imageUrl", length = 1000)
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "images", columnDefinition = "TEXT")
     private List<String> images = new ArrayList<>();
 
     @Column(name = "dishPrice")
