@@ -45,7 +45,8 @@ const Dish = ({ dish }) => {
     thumbnail: null,
   });
 
-  const [thumbnailPreview, setThumbnailPreview] = useState(null);
+  const [imageFiles, setImageFiles] = useState([]);
+  const [imagePreviews, setImagePreviews] = useState([]);
 
   const [menus, setMenus] = useState([]);
   useEffect(() => {
@@ -84,13 +85,7 @@ const Dish = ({ dish }) => {
     formData.append("dishPrice", stateDish.dishPrice);
     formData.append("dishStatus", stateDish.dishStatus);
     formData.append("menuId", stateDish.menuId);
-    if (stateDish.thumbnail && rowSelected?.dishId == null) {
-      formData.append("thumbnail", stateDish.thumbnail);
-    } else {
-      if (thumbnailPreview) {
-        formData.append("thumbnail", stateDish.thumbnail);
-      }
-    }
+    imageFiles.forEach((file) => formData.append("images", file));
 
     console.log(formData);
     try {
@@ -117,7 +112,8 @@ const Dish = ({ dish }) => {
           thumbnail: null,
         });
         form.resetFields();
-        setThumbnailPreview(null);
+        setImageFiles([]);
+        setImagePreviews([]);
         setIsModalOpen(false);
         setIsOpenModal(false);
       }
@@ -167,6 +163,14 @@ const Dish = ({ dish }) => {
     console.log(record);
     setIsOpenModal(true);
     setSateDish(record);
+    setImageFiles([]);
+    setImagePreviews(
+      record?.images?.length
+        ? record.images
+        : record?.thumbnail
+          ? [record.thumbnail]
+          : [],
+    );
     // setRowSelected(record)
     console.log("rowSelected", rowSelected);
   };
@@ -198,12 +202,16 @@ const Dish = ({ dish }) => {
   };
 
   const handleOnchangeAvatar = (e) => {
-    const file = e.target.files[0];
+    const remaining = Math.max(0, 6 - imagePreviews.length);
+    const files = Array.from(e.target.files || []).slice(0, remaining);
+    if (!files.length) return;
     setSateDish({
       ...stateDish,
-      thumbnail: file,
+      thumbnail: files[0],
     });
-    setThumbnailPreview(URL.createObjectURL(file));
+    setImageFiles((current) => [...current, ...files].slice(0, 6));
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setImagePreviews((current) => [...current, ...previews].slice(0, 6));
   };
 
   const handleOnchange = (e) => {
@@ -231,7 +239,8 @@ const Dish = ({ dish }) => {
     });
     form.resetFields();
     console.log("....");
-    setThumbnailPreview(null);
+    setImageFiles([]);
+    setImagePreviews([]);
   };
 
   const [form] = Form.useForm();
@@ -273,7 +282,6 @@ const Dish = ({ dish }) => {
           thumbnail: null,
         });
         form.resetFields();
-        setThumbnailPreview(null);
         setIsOpenModal(false);
       }
     } catch (error) {
@@ -492,11 +500,7 @@ const Dish = ({ dish }) => {
               />
             </Form.Item>
 
-            <Form.Item
-              label="Image"
-              name="thumbnail"
-              rules={[{ required: true, message: "Thêm ảnh!" }]}
-            >
+            <Form.Item label="Hình ảnh (tối đa 6)">
               <div
                 style={{
                   display: "flex",
@@ -506,27 +510,35 @@ const Dish = ({ dish }) => {
               >
                 <Button variant="outlined" component="label">
                   <label style={{ display: "block" }}>
-                    Thêm ảnh
+                    Chọn nhiều ảnh
                     <input
                       style={{ display: "none" }}
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={handleOnchangeAvatar}
                     />
                   </label>
                 </Button>
 
-                {thumbnailPreview && (
-                  <img
-                    src={thumbnailPreview}
-                    alt="Thumbnail Preview"
-                    style={{
-                      width: "100px",
-                      height: "auto",
-                      marginTop: "8px",
-                    }}
-                  />
-                )}
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {imagePreviews.map((preview, index) => (
+                    <img
+                      key={preview}
+                      src={preview}
+                      alt={`Ảnh món ${index + 1}`}
+                      style={{
+                        width: 76,
+                        height: 76,
+                        objectFit: "cover",
+                        borderRadius: 10,
+                        marginTop: 8,
+                        border:
+                          index === 0 ? "2px solid #d96b2b" : "1px solid #ddd",
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
             </Form.Item>
 
@@ -627,11 +639,7 @@ const Dish = ({ dish }) => {
               <span></span>
             </Form.Item>
 
-            <Form.Item
-              label="Image"
-              name="thumbnail"
-              rules={[{ required: true, message: "Thêm ảnh!" }]}
-            >
+            <Form.Item label="Hình ảnh (tối đa 6)">
               <div
                 style={{
                   display: "flex",
@@ -641,29 +649,34 @@ const Dish = ({ dish }) => {
               >
                 <Button variant="outlined" component="label">
                   <label style={{ display: "block" }}>
-                    Thêm ảnh
+                    Thêm ảnh vào món
                     <input
                       style={{ display: "none" }}
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={handleOnchangeAvatar}
                     />
                   </label>
                 </Button>
-                {stateDish?.thumbnail && (
-                  <img
-                    component="img"
-                    src={
-                      thumbnailPreview ? thumbnailPreview : stateDish.thumbnail
-                    }
-                    alt="Thumbnail Preview"
-                    style={{
-                      width: "100px",
-                      height: "auto",
-                      marginTop: 2,
-                    }}
-                  />
-                )}
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  {imagePreviews.map((preview, index) => (
+                    <img
+                      key={`${preview}-${index}`}
+                      src={preview}
+                      alt={`Ảnh món ${index + 1}`}
+                      style={{
+                        width: 76,
+                        height: 76,
+                        objectFit: "cover",
+                        borderRadius: 10,
+                        marginTop: 8,
+                        border:
+                          index === 0 ? "2px solid #d96b2b" : "1px solid #ddd",
+                      }}
+                    />
+                  ))}
+                </div>
               </div>
             </Form.Item>
 

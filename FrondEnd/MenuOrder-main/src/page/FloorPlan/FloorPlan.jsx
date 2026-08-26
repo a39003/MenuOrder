@@ -4,7 +4,7 @@ import {
   CrownFilled,
   TeamOutlined,
 } from "@ant-design/icons";
-import { Empty, message, Spin } from "antd";
+import { Badge, Empty, message, Spin } from "antd";
 import { API_URL } from "../../config";
 import Notificatio from "../Order/Notificatio";
 import {
@@ -182,11 +182,16 @@ const FloorPlan = () => {
                     )}
                     <div className="table-actions">
                       <span>Yêu cầu hỗ trợ</span>
-                      <Notificatio
-                        tableId={table.tableId}
-                        tableName={table.tableName}
-                        setStatus={fetchTables}
-                      />
+                      <Badge
+                        count={table.notificationNumber || 0}
+                        overflowCount={99}
+                      >
+                        <Notificatio
+                          tableId={table.tableId}
+                          tableName={table.tableName}
+                          setStatus={fetchTables}
+                        />
+                      </Badge>
                     </div>
                   </TableCard>
                 );

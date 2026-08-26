@@ -2,6 +2,8 @@ package com.project.ezimenu.dtos.DishDTO;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class DishResponseDTO {
     private long dishId;
@@ -9,5 +11,6 @@ public class DishResponseDTO {
     private int dishPrice;
     private String dishStatus;
     private String thumbnail;
+    private List<String> images;
     private Long menuId;
 }

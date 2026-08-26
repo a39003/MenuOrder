@@ -378,6 +378,33 @@ export const ModalContent = styled.div`
     align-items: center;
     gap: 12px;
   }
+  .dish-gallery {
+    display: flex;
+    gap: 8px;
+    margin: -8px 0 17px;
+    padding: 3px 1px;
+    overflow-x: auto;
+  }
+  .dish-gallery button {
+    width: 62px;
+    height: 54px;
+    flex: 0 0 auto;
+    padding: 2px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+  }
+  .dish-gallery button.active {
+    border-color: #d96b2b;
+  }
+  .dish-gallery img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: 7px;
+  }
   .quantity-row button {
     width: 38px;
     height: 38px;

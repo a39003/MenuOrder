@@ -63,6 +63,7 @@ const CustomerSupport = ({ tableId }) => {
         onClick={() => setOpen(true)}
         disabled={cooldown || !tableId}
         aria-label="Gọi nhân viên hỗ trợ"
+        title={cooldown ? "Đã gửi yêu cầu hỗ trợ" : "Gọi nhân viên hỗ trợ"}
       >
         <CustomerServiceOutlined />
         <span>{cooldown ? "Đã gửi" : "Hỗ trợ"}</span>
@@ -98,11 +99,12 @@ const FloatingButton = styled.button`
   right: 20px;
   bottom: 92px;
   z-index: 28;
-  height: 48px;
-  padding: 0 17px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   border: 0;
   border-radius: 15px;
   color: #fff;
@@ -117,6 +119,9 @@ const FloatingButton = styled.button`
     color: #fff;
     font-size: 20px;
   }
+  span {
+    display: none;
+  }
   &:disabled {
     background: #9e8d83;
     cursor: default;
@@ -124,9 +129,6 @@ const FloatingButton = styled.button`
   @media (max-width: 520px) {
     right: 12px;
     bottom: 86px;
-    min-width: 108px;
-    padding: 0 14px;
-    justify-content: center;
   }
 `;
 const ReasonGrid = styled.div`

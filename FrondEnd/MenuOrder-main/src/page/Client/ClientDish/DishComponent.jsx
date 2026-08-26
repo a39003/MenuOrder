@@ -20,11 +20,17 @@ const DishComponent = ({ dish, orderId, handleAddToCart }) => {
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const gallery =
+    Array.isArray(dish.images) && dish.images.length
+      ? dish.images
+      : [dish.thumbnail].filter(Boolean);
+  const [activeImage, setActiveImage] = useState(gallery[0]);
   const isAvailable = Number(dish.dishStatus) === 1;
 
   const handleOrderClick = () => {
     setValues({ dishId: dish.dishId, dishQuantity: 1, dishNote: "" });
     setError(null);
+    setActiveImage(gallery[0]);
     setIsModalVisible(true);
   };
 
@@ -105,9 +111,24 @@ const DishComponent = ({ dish, orderId, handleAddToCart }) => {
         <ModalContent>
           <img
             className="dish-modal-image"
-            src={dish.thumbnail}
+            src={activeImage || dish.thumbnail}
             alt={dish.dishName}
           />
+          {gallery.length > 1 && (
+            <div className="dish-gallery" aria-label="Các ảnh của món ăn">
+              {gallery.map((image, index) => (
+                <button
+                  type="button"
+                  key={`${image}-${index}`}
+                  className={activeImage === image ? "active" : ""}
+                  onClick={() => setActiveImage(image)}
+                  aria-label={`Xem ảnh ${index + 1} của ${dish.dishName}`}
+                >
+                  <img src={image} alt="" />
+                </button>
+              ))}
+            </div>
+          )}
           <Form form={form} layout="vertical">
             <Form.Item label="Số lượng" required>
               <div className="quantity-row">

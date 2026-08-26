@@ -160,18 +160,49 @@ const TableOrder = ({ table, onTableChanged }) => {
         },
       );
 
-      if (response.ok) {
-        const data = await response.json();
-        message.success(data.message || "Tạo bill thành công");
+      const responseText = await response.text();
+      let data = null;
+      if (responseText) {
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          data = null;
+        }
+      }
+
+      if (response.ok && data?.billId) {
+        message.success("Tạo bill thành công");
         setBill(data);
         setIsBillCreated(true);
         setIsBillDialogOpen(true);
         localStorage.setItem(`bill-${order.orderId}`, JSON.stringify(data));
       } else {
-        message.error("Có món ăn chưa ra");
+        const existingBillResponse = await fetch(
+          `${BASE_URL}/orders/${order.orderId}/bill`,
+        );
+        if (existingBillResponse.ok) {
+          const existingBill = await existingBillResponse.json();
+          if (existingBill?.billId) {
+            message.success("Tạo bill thành công");
+            setBill(existingBill);
+            setIsBillCreated(true);
+            setIsBillDialogOpen(true);
+            localStorage.setItem(
+              `bill-${order.orderId}`,
+              JSON.stringify(existingBill),
+            );
+            return;
+          }
+        }
+        message.error(
+          data?.message ||
+            (response.status === 400
+              ? "Không thể tạo bill vì vẫn còn món chưa ra"
+              : `Không thể tạo bill (${response.status})`),
+        );
       }
     } catch (error) {
-      message.error("Lỗi tạo hóa đơn:", error);
+      message.error(error?.message || "Không thể kết nối máy chủ để tạo bill");
     } finally {
       setCreatingBill(false);
     }
