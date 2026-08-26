@@ -16,7 +16,6 @@ const CustomerSupport = ({ tableId }) => {
   const [open, setOpen] = useState(false);
   const [sending, setSending] = useState(false);
   const [selected, setSelected] = useState(reasons[0]);
-  const [cooldown, setCooldown] = useState(false);
   const [tableName, setTableName] = useState(
     sessionStorage.getItem(`table-name-${tableId}`) || "",
   );
@@ -34,7 +33,7 @@ const CustomerSupport = ({ tableId }) => {
   }, [tableId]);
 
   const sendRequest = async () => {
-    if (sending || cooldown) return;
+    if (sending) return;
     setSending(true);
     try {
       const response = await fetch(
@@ -48,8 +47,6 @@ const CustomerSupport = ({ tableId }) => {
       if (!response.ok) throw new Error();
       message.success("Đã gửi yêu cầu. Nhân viên sẽ tới hỗ trợ bạn.");
       setOpen(false);
-      setCooldown(true);
-      window.setTimeout(() => setCooldown(false), 10000);
     } catch {
       message.error("Không thể gửi yêu cầu hỗ trợ");
     } finally {
@@ -61,12 +58,12 @@ const CustomerSupport = ({ tableId }) => {
     <>
       <FloatingButton
         onClick={() => setOpen(true)}
-        disabled={cooldown || !tableId}
+        disabled={sending || !tableId}
         aria-label="Gọi nhân viên hỗ trợ"
-        title={cooldown ? "Đã gửi yêu cầu hỗ trợ" : "Gọi nhân viên hỗ trợ"}
+        title={sending ? "Đang gửi yêu cầu hỗ trợ" : "Gọi nhân viên hỗ trợ"}
       >
         <BellOutlined />
-        <span className="support-label">{cooldown ? "Đã gửi" : "Hỗ trợ"}</span>
+        <span className="support-label">{sending ? "Đang gửi" : "Hỗ trợ"}</span>
       </FloatingButton>
       <Modal
         title={`Yêu cầu hỗ trợ · ${tableName || "Bàn của bạn"}`}
