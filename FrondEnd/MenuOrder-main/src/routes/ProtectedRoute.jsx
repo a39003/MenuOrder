@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { message } from "antd";
-import { getAccessToken, hasAnyRole } from "../services/auth";
+import { getAccessToken, getCurrentUser, hasAnyRole } from "../services/auth";
 
 const ProtectedRoute = ({ roles = [], children }) => {
   const navigate = useNavigate();
@@ -17,7 +17,10 @@ const ProtectedRoute = ({ roles = [], children }) => {
   }, [location.pathname, navigate]);
 
   if (!getAccessToken()) return <Navigate to="/login" replace state={{ from: location.pathname }} />;
-  if (!hasAnyRole(roles)) return <Navigate to="/admin/order" replace />;
+  if (!hasAnyRole(roles)) {
+    const home = getCurrentUser()?.role === "BEP" ? "/admin/kitchen" : "/admin/order";
+    return <Navigate to={home} replace />;
+  }
   return children;
 };
 

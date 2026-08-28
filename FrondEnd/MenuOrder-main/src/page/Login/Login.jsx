@@ -6,25 +6,27 @@ import logo from "../../config/Logo TL.png";
 import * as message from "../../costormer/Components/message/Message";
 import { LoginCar, LoginContainer, LoginPage, LoginVisual } from "./style";
 import { API_URL } from "../../config";
-import { clearSession, getAccessToken, getCurrentUser, saveSession } from "../../services/auth";
+import { clearSession, getAccessToken, getCurrentUser, refreshSession, saveSession } from "../../services/auth";
 
 const Login = () => {
   const [values, setValues] = useState({ username: "", password: "" });
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    const token = getAccessToken();
-    if (!token) return;
-    try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      if (payload.exp * 1000 > Date.now()) {
-        navigate(getCurrentUser()?.role === "BEP" ? "/admin/kitchen" : "/admin/order");
-      } else {
+    let active = true;
+    const restoreSession = async () => {
+      const token = getAccessToken();
+      if (!token) return;
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        if (payload.exp * 1000 <= Date.now()) await refreshSession();
+        if (active) navigate(getCurrentUser()?.role === "BEP" ? "/admin/kitchen" : "/admin/order");
+      } catch {
         clearSession();
       }
-    } catch {
-      clearSession();
-    }
+    };
+    restoreSession();
+    return () => { active = false; };
   }, [navigate]);
 
   const handleSubmitLogin = async (event) => {

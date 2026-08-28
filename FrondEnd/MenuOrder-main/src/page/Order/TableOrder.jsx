@@ -15,11 +15,12 @@ import {
 } from "./style";
 import Bill from "../Bill/Bill";
 import { API_URL } from "../../config";
-import { apiFetch } from "../../services/auth";
+import { apiFetch, getCurrentUser } from "../../services/auth";
 
 const BASE_URL = API_URL;
 
 const TableOrder = ({ table, onTableChanged }) => {
+  const canManageBill = ["ADMIN", "THU_NGAN"].includes(getCurrentUser()?.role);
   const [order, setOrder] = useState(null);
   const [bill, setBill] = useState(null);
   const [isBillCreated, setIsBillCreated] = useState(false);
@@ -254,7 +255,7 @@ const TableOrder = ({ table, onTableChanged }) => {
               setStatus={onTableChanged}
             />
           </Badge>
-          {table?.tableStatus === "Đang yêu cầu thanh toán" && (
+          {table?.tableStatus === "Đang yêu cầu thanh toán" && canManageBill && (
             <div style={{ display: "flex" }}>
               <Button
                 onClick={handleCreateBill}

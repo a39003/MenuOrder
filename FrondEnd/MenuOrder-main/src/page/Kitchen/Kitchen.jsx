@@ -15,7 +15,7 @@ const normalizeStatus = (status) => status === "Đang ra món" ? "Đang chọn" 
 const Kitchen = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [updating, setUpdating] = useState(null);
+  const [updating, setUpdating] = useState(() => new Set());
   const [updatedAt, setUpdatedAt] = useState(null);
   const pendingStatuses = useRef(new Map());
 
@@ -63,8 +63,8 @@ const Kitchen = () => {
   ])), [items]);
 
   const changeStatus = async (item, nextStatus) => {
-    if (!nextStatus || updating) return;
-    setUpdating(item.orderItemId);
+    if (!nextStatus || updating.has(item.orderItemId)) return;
+    setUpdating((current) => new Set(current).add(item.orderItemId));
     pendingStatuses.current.set(item.orderItemId, {
       status: nextStatus,
       expiresAt: Date.now() + 30000,
@@ -85,7 +85,11 @@ const Kitchen = () => {
       await loadKitchen(true);
       message.error(error.message);
     } finally {
-      setUpdating(null);
+      setUpdating((current) => {
+        const next = new Set(current);
+        next.delete(item.orderItemId);
+        return next;
+      });
     }
   };
 
@@ -108,8 +112,8 @@ const Kitchen = () => {
           <div className="ticket-top"><span className="table">{item.tableName || "Chưa rõ bàn"}</span><span className="time">{elapsed(item.orderTime)}</span></div>
           <h3><span className="qty">{item.dishQuantity}×</span> {item.dishName}</h3>
           <div className="note">{item.dishNote || "Không có ghi chú"}</div>
-          <button disabled={!lane.next || updating === item.orderItemId} onClick={() => changeStatus(item, lane.next)}>
-            {updating === item.orderItemId ? "Đang cập nhật..." : lane.action}
+          <button disabled={!lane.next || updating.has(item.orderItemId)} onClick={() => changeStatus(item, lane.next)}>
+            {updating.has(item.orderItemId) ? "Đang cập nhật..." : lane.action}
           </button>
         </KitchenTicket>)}
       </KitchenLane>)}</KitchenBoard>}

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Button, Empty, Modal, Spin, Table, message } from "antd";
 import {
   EyeOutlined,
+  FileExcelOutlined,
   LoadingOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
@@ -17,6 +18,11 @@ const firstDay = () => {
   date.setDate(1);
   return date.toISOString().slice(0, 10);
 };
+
+const excelText = (value) => String(value ?? "")
+  .replace(/&/g, "&amp;")
+  .replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;");
 
 const PaidBills = () => {
   const [bills, setBills] = useState([]);
@@ -63,6 +69,33 @@ const PaidBills = () => {
     () => bills.filter((bill) => bill.tableType === "VIP").length,
     [bills],
   );
+  const exportExcel = () => {
+    if (!bills.length) return message.warning("Không có hóa đơn để xuất");
+    const paymentLabel = {
+      TIEN_MAT: "Tiền mặt",
+      CHUYEN_KHOAN: "Chuyển khoản / QR",
+      THE: "Thẻ",
+    };
+    const headers = ["Mã bill", "Mã đơn", "Khách hàng", "Tên bàn", "Loại bàn", "Tầng", "Tiền món", "Thu bàn", "Tổng tiền", "Phương thức", "Mã giao dịch", "Trạng thái", "Thời gian"];
+    const rows = bills.map((bill) => [
+      bill.billId, bill.orderId, bill.customerName || "Khách hàng", bill.tableName,
+      bill.tableType || "THƯỜNG", bill.floorNumber || 1, bill.foodAmount || 0,
+      bill.tableServiceFee || 0, bill.totalAmount || 0,
+      paymentLabel[bill.paymentMethod] || "Chưa ghi nhận", bill.transactionCode || "",
+      bill.paymentStatus || "Đã thanh toán", formatDate(bill.paidAt),
+    ]);
+    const xmlRows = [headers, ...rows].map((row) => `<Row>${row.map((cell) =>
+      `<Cell><Data ss:Type="${typeof cell === "number" ? "Number" : "String"}">${excelText(cell)}</Data></Cell>`
+    ).join("")}</Row>`).join("");
+    const workbook = `<?xml version="1.0"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Lich su hoa don"><Table>${xmlRows}</Table></Worksheet></Workbook>`;
+    const url = URL.createObjectURL(new Blob([workbook], { type: "application/vnd.ms-excel;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `lich-su-hoa-don-${query.from || "tat-ca"}-${query.to || today}.xls`;
+    link.click();
+    URL.revokeObjectURL(url);
+    message.success("Đã xuất file Excel");
+  };
   const columns = [
     {
       title: "Mã bill",
@@ -199,6 +232,9 @@ const PaidBills = () => {
         >
           {loading ? <LoadingOutlined spin /> : <SearchOutlined />}{" "}
           {loading ? "Đang tìm..." : "Tìm kiếm"}
+        </button>
+        <button onClick={exportExcel} disabled={loading || !bills.length}>
+          <FileExcelOutlined /> Xuất Excel
         </button>
       </Filters>
       <Card>

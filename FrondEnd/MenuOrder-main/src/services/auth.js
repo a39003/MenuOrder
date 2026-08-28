@@ -60,6 +60,17 @@ export const refreshSession = async () => {
         saveSession(data);
         return data.accessToken || data.jwt;
       })
+      .catch(async (error) => {
+        // Một tab khác có thể vừa refresh và xoay token trước tab hiện tại.
+        // Chờ localStorage đồng bộ rồi dùng phiên mới thay vì đăng xuất nhầm.
+        await new Promise((resolve) => window.setTimeout(resolve, 250));
+        const latestRefreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
+        const latestAccessToken = getAccessToken();
+        if (latestRefreshToken && latestRefreshToken !== refreshToken && latestAccessToken) {
+          return latestAccessToken;
+        }
+        throw error;
+      })
       .finally(() => {
         refreshRequest = null;
       });

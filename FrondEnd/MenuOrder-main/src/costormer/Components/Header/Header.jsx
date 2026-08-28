@@ -28,6 +28,12 @@ const Header = () => {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const role = getCurrentUser()?.role;
+  const roleLabel = {
+    ADMIN: "Quản lý",
+    NHAN_VIEN: "Nhân viên phục vụ",
+    THU_NGAN: "Nhân viên thu ngân",
+    BEP: "Nhân viên bếp",
+  }[role] || "Nhân viên";
   const allowed = (...roles) => roles.includes(role);
   const confirmLogout = () => {
     setMenuOpen(false);
@@ -57,9 +63,9 @@ const Header = () => {
       {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/admin/dashboard")}>
         <BarChartOutlined /> Tổng quan
       </WrapperContentPopup>}
-      <WrapperContentPopup onClick={() => goTo("/admin/order")}>
+      {!allowed("BEP") && <WrapperContentPopup onClick={() => goTo("/admin/order")}>
         <FileDoneOutlined /> Đơn hàng
-      </WrapperContentPopup>
+      </WrapperContentPopup>}
       {allowed("ADMIN", "BEP") && <WrapperContentPopup onClick={() => goTo("/admin/kitchen")}>
         <CoffeeOutlined /> Khu vực bếp
       </WrapperContentPopup>}
@@ -88,11 +94,11 @@ const Header = () => {
   );
   return (
     <WrapperHeader>
-      <Brand onClick={() => navigate("/admin/order")}>
+      <Brand onClick={() => navigate(allowed("BEP") ? "/admin/kitchen" : "/admin/order")}>
         <div>TL</div>
         <section>
           <strong>TLU Quán</strong>
-          <span>Admin workspace</span>
+          <span>{roleLabel}</span>
         </section>
       </Brand>
       <DesktopNav>
@@ -103,13 +109,13 @@ const Header = () => {
           <CoffeeOutlined />
           <span>Khu vực bếp</span>
         </button>}
-        <button
+        {!allowed("BEP") && <button
           className={location.pathname === "/admin/order" ? "active" : ""}
           onClick={() => navigate("/admin/order")}
         >
           <FileDoneOutlined />
           <span>Đơn hàng</span>
-        </button>
+        </button>}
         {allowed("ADMIN", "NHAN_VIEN", "THU_NGAN") && <button
           className={location.pathname === "/admin/floor-plan" ? "active" : ""}
           onClick={() => navigate("/admin/floor-plan")}

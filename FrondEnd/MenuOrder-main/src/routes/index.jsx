@@ -34,7 +34,7 @@ export const routes = [
     page: Order,
     isShowHeader: true,
     protected: true,
-    roles: ["ADMIN", "NHAN_VIEN", "THU_NGAN", "BEP"],
+    roles: ["ADMIN", "NHAN_VIEN", "THU_NGAN"],
   },
   {
     path: "/admin/dish",
