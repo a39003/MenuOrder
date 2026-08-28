@@ -20,4 +20,8 @@ public class DishRequestDTO {
     private MultipartFile thumbnail;
     private List<MultipartFile> images;
     private List<String> retainedImages;
+    private String description;
+    private String ingredients;
+    private Integer spiceLevel;
+    private Boolean featured;
 }

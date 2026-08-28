@@ -86,6 +86,9 @@ public class BillService implements IBillService {
         response.setFoodAmount(getFoodAmount(bill));
         response.setTableServiceFee(getTableServiceFee(bill));
         response.setPaidAt(bill.getBillDateTime());
+        response.setPaymentMethod(bill.getPaymentMethod());
+        response.setTransactionCode(bill.getTransactionCode());
+        response.setPaymentStatus(bill.getPaymentStatus());
         response.setTotalItems(bill.getBillItems().stream().mapToInt(BillItem::getBillItemQuantity).sum());
         response.setItems(bill.getBillItems().stream()
                 .map(item -> modelMapper.map(item, BillItemResponseDTO.class))

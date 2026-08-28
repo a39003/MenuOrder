@@ -13,8 +13,8 @@ import PaidBills from "../page/PaidBills/PaidBills";
 import FloorPlan from "../page/FloorPlan/FloorPlan";
 
 export const routes = [
-  { path: "/admin/floor-plan", page: FloorPlan, isShowHeader: true },
-  { path: "/admin/dashboard", page: Dashboard, isShowHeader: true },
+  { path: "/admin/floor-plan", page: FloorPlan, isShowHeader: true, protected: true, roles: ["ADMIN", "NHAN_VIEN", "THU_NGAN"] },
+  { path: "/admin/dashboard", page: Dashboard, isShowHeader: true, protected: true, roles: ["ADMIN"] },
   {
     path: "/login",
     page: Login,
@@ -24,33 +24,45 @@ export const routes = [
     path: "/admin/table",
     page: Table,
     isShowHeader: true,
+    protected: true,
+    roles: ["ADMIN", "NHAN_VIEN", "THU_NGAN"],
   },
   {
     path: "/admin/order",
     page: Order,
     isShowHeader: true,
+    protected: true,
+    roles: ["ADMIN", "NHAN_VIEN", "THU_NGAN", "BEP"],
   },
   {
     path: "/admin/dish",
     page: Dish,
     isShowHeader: true,
+    protected: true,
+    roles: ["ADMIN", "BEP"],
   },
   {
     path: "/admin/menu",
     page: Menu,
     isShowHeader: true,
+    protected: true,
+    roles: ["ADMIN"],
   },
   {
     path: "/account",
     page: Account,
     isShowHeader: true,
+    protected: true,
+    roles: ["ADMIN"],
   },
   {
     path: "/admin/bill",
     page: PaidBills,
     isShowHeader: true,
+    protected: true,
+    roles: ["ADMIN", "THU_NGAN"],
   },
-  { path: "/admin/bills", page: PaidBills, isShowHeader: true },
+  { path: "/admin/bills", page: PaidBills, isShowHeader: true, protected: true, roles: ["ADMIN", "THU_NGAN"] },
   {
     path: "/tables/:tableId",
     page: ClientTable,

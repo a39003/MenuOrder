@@ -25,6 +25,8 @@ public class UserService implements UserDetailsService {
     private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private RefreshTokenService refreshTokenService;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
@@ -33,6 +35,7 @@ public class UserService implements UserDetailsService {
                 .withUsername(username)
                 .password(user.getPassword())
                 .roles(user.getRole())
+                .disabled(!user.isEnabled())
                 .build();
     }
     public AuthResponseDTO signIn(AuthRequestDTO authRequestDTO) throws BadCredentialsException, BadRequestException {
@@ -44,6 +47,11 @@ public class UserService implements UserDetailsService {
         String accessToken = jwtTokenProvider.generateToken(authentication);
         authResponseDTO.setStatus(true);
         authResponseDTO.setJwt(accessToken);
+        authResponseDTO.setAccessToken(accessToken);
+        User user = userRepository.findByUsername(username).orElseThrow();
+        authResponseDTO.setRefreshToken(refreshTokenService.create(user));
+        authResponseDTO.setUser(new AuthResponseDTO.UserSessionDTO(
+                user.getUserId(), user.getUsername(), user.getFullName(), user.getRole()));
         return authResponseDTO;
     }
     private Authentication authenticate(String username, String password) throws BadRequestException {

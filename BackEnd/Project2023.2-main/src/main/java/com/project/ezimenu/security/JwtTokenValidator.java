@@ -73,6 +73,8 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -118,17 +120,10 @@ public class JwtTokenValidator extends OncePerRequestFilter {
 
             try {
 
-                SecretKey key = Keys.hmacShaKeyFor(
-                        JwtConstant.SECRET_KEY.getBytes()
-                );
-
-
-                Claims claims = Jwts
-                        .parserBuilder()
-                        .setSigningKey(key)
-                        .build()
-                        .parseClaimsJws(jwt)
-                        .getBody();
+                Claims claims = jwtTokenProvider.parse(jwt);
+                if (!"access".equals(claims.get("type"))) {
+                    throw new IllegalArgumentException("Sai loại token");
+                }
 
 
                 String username = String.valueOf(

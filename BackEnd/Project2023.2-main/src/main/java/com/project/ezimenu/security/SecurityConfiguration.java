@@ -216,6 +216,9 @@ public class SecurityConfiguration {
                         .requestMatchers("/auth/**")
                         .permitAll()
 
+                        .requestMatchers(HttpMethod.GET, "/settings/payment")
+                        .permitAll()
+
 
                         // =================================================
                         // 2. CUSTOMER - TABLE
@@ -313,9 +316,28 @@ public class SecurityConfiguration {
 
                         // TẤT CẢ API /admin/** bắt buộc ADMIN
                         //
-                                .requestMatchers(
-                                        "/admin/**"
-                                )
+                                .requestMatchers("/admin/users/**")
+                                .hasRole("ADMIN")
+
+                                .requestMatchers(HttpMethod.GET, "/admin/dashboard/**")
+                                .hasRole("ADMIN")
+
+                                .requestMatchers("/admin/dishes/**")
+                                .hasAnyRole("ADMIN", "BEP")
+
+                                .requestMatchers("/admin/orders/**")
+                                .hasAnyRole("ADMIN", "NHAN_VIEN", "THU_NGAN", "BEP")
+
+                                .requestMatchers("/admin/tables/**")
+                                .hasAnyRole("ADMIN", "NHAN_VIEN", "THU_NGAN")
+
+                                .requestMatchers("/admin/bills/**")
+                                .hasAnyRole("ADMIN", "THU_NGAN")
+
+                                .requestMatchers("/admin/menus/**")
+                                .hasRole("ADMIN")
+
+                                .requestMatchers("/admin/**")
                                 .hasRole("ADMIN")
 
 

@@ -20,6 +20,9 @@ public class PaidBillResponseDTO {
     private long foodAmount;
     private long tableServiceFee;
     private LocalDateTime paidAt;
+    private String paymentMethod;
+    private String transactionCode;
+    private String paymentStatus;
     private int totalItems;
     private List<BillItemResponseDTO> items;
 }

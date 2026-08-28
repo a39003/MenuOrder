@@ -18,11 +18,14 @@ import {
   WrapperHeader,
   WrapperMenu,
 } from "./style";
+import { getCurrentUser } from "../../../services/auth";
 
 const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const role = getCurrentUser()?.role;
+  const allowed = (...roles) => roles.includes(role);
   const goTo = (path) => {
     setMenuOpen(false);
     navigate(path);
@@ -34,27 +37,30 @@ const Header = () => {
 
   const content = (
     <div>
-      <WrapperContentPopup onClick={() => goTo("/admin/dashboard")}>
+      {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/admin/dashboard")}>
         <BarChartOutlined /> Tổng quan
-      </WrapperContentPopup>
+      </WrapperContentPopup>}
       <WrapperContentPopup onClick={() => goTo("/admin/order")}>
         <FileDoneOutlined /> Đơn hàng
       </WrapperContentPopup>
-      <WrapperContentPopup onClick={() => goTo("/admin/bills")}>
+      {allowed("ADMIN", "BEP") && <WrapperContentPopup onClick={() => goTo("/admin/dish")}>
+        <ProfileOutlined /> Trạng thái món ăn
+      </WrapperContentPopup>}
+      {allowed("ADMIN", "THU_NGAN") && <WrapperContentPopup onClick={() => goTo("/admin/bills")}>
         <FileTextOutlined /> Lịch sử hóa đơn
-      </WrapperContentPopup>
-      <WrapperContentPopup onClick={() => goTo("/admin/table")}>
+      </WrapperContentPopup>}
+      {allowed("ADMIN", "NHAN_VIEN", "THU_NGAN") && <WrapperContentPopup onClick={() => goTo("/admin/table")}>
         <ApartmentOutlined /> Quản lý bàn
-      </WrapperContentPopup>
-      <WrapperContentPopup onClick={() => goTo("/admin/floor-plan")}>
+      </WrapperContentPopup>}
+      {allowed("ADMIN", "NHAN_VIEN", "THU_NGAN") && <WrapperContentPopup onClick={() => goTo("/admin/floor-plan")}>
         <GatewayOutlined /> Sơ đồ bàn
-      </WrapperContentPopup>
-      <WrapperContentPopup onClick={() => goTo("/admin/menu")}>
+      </WrapperContentPopup>}
+      {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/admin/menu")}>
         <ProfileOutlined /> Quản lý Menu
-      </WrapperContentPopup>
-      <WrapperContentPopup onClick={() => goTo("/account")}>
+      </WrapperContentPopup>}
+      {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/account")}>
         <UserOutlined /> Tài khoản
-      </WrapperContentPopup>
+      </WrapperContentPopup>}
     </div>
   );
   return (
@@ -74,13 +80,13 @@ const Header = () => {
           <FileDoneOutlined />
           <span>Đơn hàng</span>
         </button>
-        <button
+        {allowed("ADMIN", "NHAN_VIEN", "THU_NGAN") && <button
           className={location.pathname === "/admin/floor-plan" ? "active" : ""}
           onClick={() => navigate("/admin/floor-plan")}
         >
           <GatewayOutlined />
           <span>Sơ đồ bàn</span>
-        </button>
+        </button>}
       </DesktopNav>
       <Popover
         content={content}

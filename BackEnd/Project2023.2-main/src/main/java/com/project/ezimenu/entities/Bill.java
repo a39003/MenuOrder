@@ -39,6 +39,15 @@ public class Bill {
     @Column(name = "capacitySnapshot")
     private Integer capacitySnapshot;
 
+    @Column(name = "payment_method")
+    private String paymentMethod;
+
+    @Column(name = "transaction_code")
+    private String transactionCode;
+
+    @Column(name = "payment_status")
+    private String paymentStatus;
+
     @Column(name = "billDateTime")
     private LocalDateTime billDateTime;
 

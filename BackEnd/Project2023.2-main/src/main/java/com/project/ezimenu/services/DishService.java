@@ -55,6 +55,7 @@ public class DishService implements IDishService {
         newDish.setDishStatus(dishRequestDTO.getDishStatus());
         newDish.setThumbnail(thumbnail);
         newDish.setImages(images);
+        applyDetails(newDish, dishRequestDTO);
         newDish.setStatus(Constants.ENTITY_STATUS.ACTIVE);
         menu.getDishes().add(newDish);
         return dishRepository.save(newDish);
@@ -112,6 +113,7 @@ public class DishService implements IDishService {
         updatedDish.setDishName(dishRequestDTO.getDishName());
         updatedDish.setDishPrice(dishRequestDTO.getDishPrice());
         updatedDish.setDishStatus(dishRequestDTO.getDishStatus());
+        applyDetails(updatedDish, dishRequestDTO);
 
         return dishRepository.save(updatedDish);
     }
@@ -132,6 +134,13 @@ public class DishService implements IDishService {
             urls.add(cloudinaryService.upload(file.getBytes(), file.getOriginalFilename(), "dish-images"));
         }
         return urls;
+    }
+
+    private void applyDetails(Dish dish, DishRequestDTO request) {
+        dish.setDescription(request.getDescription());
+        dish.setIngredients(request.getIngredients());
+        dish.setSpiceLevel(Math.max(0, Math.min(request.getSpiceLevel() == null ? 0 : request.getSpiceLevel(), 3)));
+        dish.setFeatured(Boolean.TRUE.equals(request.getFeatured()));
     }
 
     private DishResponseDTO toResponse(Dish dish) {

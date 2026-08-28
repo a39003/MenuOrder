@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { Table, Typography, Button, Modal, message } from "antd";
+import { Table, Typography, Button, Input, Modal, Select, message } from "antd";
 import { ArrowLeftOutlined, PrinterOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import Foor from "../../costormer/Components/Foor/Foor";
 import { Conter } from "./style";
 import { convertToTime } from "../../costormer/Time/time";
-import {
-  API_URL,
-  PAYMENT_ACCOUNT_NAME,
-  PAYMENT_ACCOUNT_NO,
-  PAYMENT_BANK,
-} from "../../config";
+import { API_URL, PAYMENT_CONFIG_URL } from "../../config";
+import { apiFetch } from "../../services/auth";
 
 const { Title } = Typography;
 
@@ -31,13 +27,27 @@ const Bill = ({
   const navigate = useNavigate();
   const [deletingBill, setDeletingBill] = useState(false);
   const [acceptingPayment, setAcceptingPayment] = useState(false);
+  const [paymentConfig, setPaymentConfig] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("CHUYEN_KHOAN");
+  const [transactionCode, setTransactionCode] = useState("");
+
+  useEffect(() => {
+    if (!isOpen) return;
+    apiFetch(PAYMENT_CONFIG_URL)
+      .then(async (response) => {
+        const data = await response.json();
+        if (!response.ok) throw new Error(data?.message || "Không tải được cấu hình thanh toán");
+        setPaymentConfig(data);
+      })
+      .catch((error) => message.error(error.message));
+  }, [isOpen]);
 
   const paymentContent = `TLU BILL ${bill?.billId || orderId}`;
-  const paymentQrUrl = `https://img.vietqr.io/image/${PAYMENT_BANK}-${PAYMENT_ACCOUNT_NO}-compact2.png?amount=${Number(
+  const paymentQrUrl = paymentConfig ? `https://img.vietqr.io/image/${paymentConfig.bankCode}-${paymentConfig.accountNumber}-compact2.png?amount=${Number(
     bill?.totalAmount || 0,
   )}&addInfo=${encodeURIComponent(paymentContent)}&accountName=${encodeURIComponent(
-    PAYMENT_ACCOUNT_NAME,
-  )}`;
+    paymentConfig.accountName,
+  )}` : "";
 
   const handlePrintBill = () => {
     document.body.classList.add("printing-admin-bill");
@@ -90,6 +100,7 @@ const Bill = ({
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          body: JSON.stringify({ paymentMethod, transactionCode: transactionCode.trim() || null }),
         },
       );
 
@@ -397,8 +408,9 @@ const Bill = ({
           <div className="admin-payment-qr">
             <div>
               <h3>Quét mã để thanh toán</h3>
-              <p>VietinBank</p>
-              <strong>{PAYMENT_ACCOUNT_NAME}</strong>
+              <p>{paymentConfig?.bankName || "Đang tải thông tin ngân hàng..."}</p>
+              <strong>{paymentConfig?.accountName || ""}</strong>
+              {paymentConfig?.accountNumber && <p>STK: <strong>{paymentConfig.accountNumber}</strong></p>}
               <p>
                 Nội dung: <strong>{paymentContent}</strong>
               </p>
@@ -407,6 +419,15 @@ const Bill = ({
               src={paymentQrUrl}
               alt={`QR thanh toán hóa đơn ${bill?.billId || orderId}`}
             />
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }}>
+            <Select value={paymentMethod} onChange={setPaymentMethod} options={[
+              { value: "CHUYEN_KHOAN", label: "Chuyển khoản / QR" },
+              { value: "TIEN_MAT", label: "Tiền mặt" },
+              { value: "THE", label: "Thẻ" },
+            ]} />
+            <Input value={transactionCode} onChange={(event) => setTransactionCode(event.target.value)}
+              placeholder="Mã giao dịch (nếu có)" />
           </div>
         </div>
         <div className="admin-bill-actions" style={{ marginTop: "16px" }}>

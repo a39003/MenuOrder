@@ -25,4 +25,10 @@ public class User {
 
     @Column(name = "role")
     private String role;
+
+    @Column(name = "full_name")
+    private String fullName;
+
+    @Column(name = "enabled", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private boolean enabled = true;
 }

@@ -2,12 +2,15 @@ package com.project.ezimenu.controllers;
 
 import com.project.ezimenu.dtos.TableDTO.TableRequestDTO;
 import com.project.ezimenu.dtos.TableDTO.TableResponseDTO;
+import com.project.ezimenu.dtos.BillDTO.PaymentConfirmDTO;
+import com.project.ezimenu.entities.Bill;
 import com.project.ezimenu.entities.Message;
 import com.project.ezimenu.entities.Table;
 import com.project.ezimenu.exceptions.BadRequestException;
 import com.project.ezimenu.exceptions.NotFoundException;
 import com.project.ezimenu.services.NotificationService;
 import com.project.ezimenu.services.TableService;
+import com.project.ezimenu.repositories.BillRepository;
 import com.project.ezimenu.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,6 +29,8 @@ public class TableController {
     private NotificationService notificationService;
     @Autowired
     private MessageController messageController;
+    @Autowired
+    private BillRepository billRepository;
 
     @RequestMapping(path = "/admin/tables", method = RequestMethod.GET)
     public ResponseEntity<?> getAllTables() throws NotFoundException {
@@ -87,8 +92,19 @@ public class TableController {
 
 
     @RequestMapping(path = "/admin/tables/{tableId}/payment/accept", method = RequestMethod.POST)
-    public ResponseEntity<?> acceptPaymentRequest(@PathVariable Long tableId) throws NotFoundException{
+    public ResponseEntity<?> acceptPaymentRequest(@PathVariable Long tableId,
+                                                   @RequestBody(required = false) PaymentConfirmDTO payment) throws NotFoundException{
         Table table = tableService.updateTableStatus(tableId, "Đã thanh toán");
+        if (table.getOrders() != null && !table.getOrders().isEmpty()) {
+            Bill bill = table.getOrders().get(table.getOrders().size() - 1).getBill();
+            if (bill != null) {
+                bill.setPaymentMethod(payment == null || payment.getPaymentMethod() == null
+                        ? "TIEN_MAT" : payment.getPaymentMethod());
+                bill.setTransactionCode(payment == null ? null : payment.getTransactionCode());
+                bill.setPaymentStatus("DA_THANH_TOAN");
+                billRepository.save(bill);
+            }
+        }
         return ResponseEntity.ok(table);
     }
 

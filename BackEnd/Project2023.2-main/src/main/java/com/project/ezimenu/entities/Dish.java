@@ -29,6 +29,18 @@ public class Dish {
     @Column(name = "images", columnDefinition = "TEXT")
     private List<String> images = new ArrayList<>();
 
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "ingredients", columnDefinition = "TEXT")
+    private String ingredients;
+
+    @Column(name = "spice_level")
+    private Integer spiceLevel = 0;
+
+    @Column(name = "featured")
+    private Boolean featured = false;
+
     @Column(name = "dishPrice")
     private int dishPrice;
 

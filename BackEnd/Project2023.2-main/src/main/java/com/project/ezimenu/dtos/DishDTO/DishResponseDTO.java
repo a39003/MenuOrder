@@ -13,4 +13,8 @@ public class DishResponseDTO {
     private String thumbnail;
     private List<String> images;
     private Long menuId;
+    private String description;
+    private String ingredients;
+    private Integer spiceLevel;
+    private Boolean featured;
 }

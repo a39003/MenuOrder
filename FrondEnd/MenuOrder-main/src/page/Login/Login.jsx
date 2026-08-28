@@ -6,23 +6,24 @@ import logo from "../../config/Logo TL.png";
 import * as message from "../../costormer/Components/message/Message";
 import { LoginCar, LoginContainer, LoginPage, LoginVisual } from "./style";
 import { API_URL } from "../../config";
+import { clearSession, getAccessToken, saveSession } from "../../services/auth";
 
 const Login = () => {
   const [values, setValues] = useState({ username: "", password: "" });
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = getAccessToken();
     if (!token) return;
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       if (payload.exp * 1000 > Date.now()) {
         navigate("/admin/order");
       } else {
-        localStorage.removeItem("token");
+        clearSession();
       }
     } catch {
-      localStorage.removeItem("token");
+      clearSession();
     }
   }, [navigate]);
 
@@ -52,7 +53,7 @@ const Login = () => {
       if (res.ok) {
         if (!data?.jwt)
           throw new Error("Máy chủ không trả về token đăng nhập.");
-        localStorage.setItem("token", data.jwt);
+        saveSession(data);
         message.success("Đăng nhập thành công");
         navigate("/admin/order");
       } else {

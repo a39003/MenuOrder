@@ -3,12 +3,16 @@ export const MainContent = styled.main`
   min-height: calc(100vh - 72px);
   padding: 52px 24px;
   display: grid;
-  place-items: start center;
+  align-items: start;
+  justify-items: center;
+  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+  gap: 28px;
   background: #fffaf4;
 
   @media (max-width: 768px) {
     min-height: calc(100vh - 64px);
     padding: 30px 16px;
+    grid-template-columns: 1fr;
   }
 `;
 export const ProfileContainer = styled.section`

@@ -7,12 +7,6 @@ services:
     envVars:
       - key: REACT_APP_API_URL
         value: https://menuorder-1.onrender.com
-      - key: REACT_APP_PAYMENT_BANK
-        value: vietinbank
-      - key: REACT_APP_PAYMENT_ACCOUNT_NO
-        value: "109871960133"
-      - key: REACT_APP_PAYMENT_ACCOUNT_NAME
-        value: PHAM DUC ANH
     routes:
       - type: rewrite
         source: /*

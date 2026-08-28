@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import { routes } from "./routes";
 import Default from "./costormer/Components/Default/Default";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 function App() {
   return (
@@ -16,15 +17,16 @@ function App() {
           {routes.map((route) => {
             const Page = route.page;
             const Layout = route.isShowHeader ? Default : Fragment;
+            const content = (
+              <Layout>
+                <Page />
+              </Layout>
+            );
             return (
               <Route
                 key={route.path}
                 path={route.path}
-                element={
-                  <Layout>
-                    <Page />
-                  </Layout>
-                }
+                element={route.protected ? <ProtectedRoute roles={route.roles}>{content}</ProtectedRoute> : content}
               />
             );
           })}
