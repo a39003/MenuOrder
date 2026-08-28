@@ -3,6 +3,7 @@ import { Avatar, Button, Form, Input, Modal, Select, Space, Switch, Table, Tag, 
 import { EditOutlined, LogoutOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
 import { MainContent, ProfileContainer } from "./style";
 import { apiFetch, getCurrentUser, logout } from "../../services/auth";
+import { useNavigate } from "react-router-dom";
 
 const roles = [
   { value: "ADMIN", label: "Quản trị viên" },
@@ -12,6 +13,7 @@ const roles = [
 ];
 
 const Account = () => {
+  const navigate = useNavigate();
   const currentUser = getCurrentUser();
   const isAdmin = currentUser?.role === "ADMIN";
   const [users, setUsers] = useState([]);
@@ -66,9 +68,19 @@ const Account = () => {
     }
   };
 
-  const handleLogout = async () => {
-    await logout();
-    window.location.href = "/login";
+  const handleLogout = () => {
+    Modal.confirm({
+      title: "Đăng xuất",
+      content: "Bạn có chắc muốn đăng xuất khỏi hệ thống?",
+      okText: "Đồng ý đăng xuất",
+      cancelText: "Ở lại",
+      centered: true,
+      okButtonProps: { danger: true },
+      onOk: async () => {
+        await logout();
+        navigate("/login", { replace: true });
+      },
+    });
   };
 
   const columns = [

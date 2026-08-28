@@ -334,6 +334,15 @@ public class SecurityConfiguration {
                                 .requestMatchers("/admin/notifications/**")
                                 .hasAnyRole("ADMIN", "NHAN_VIEN", "THU_NGAN", "BEP")
 
+                                .requestMatchers(HttpMethod.POST, "/admin/tables")
+                                .hasRole("ADMIN")
+
+                                .requestMatchers(HttpMethod.PUT, "/admin/tables/*")
+                                .hasRole("ADMIN")
+
+                                .requestMatchers(HttpMethod.DELETE, "/admin/tables/*")
+                                .hasRole("ADMIN")
+
                                 .requestMatchers("/admin/tables/**")
                                 .hasAnyRole("ADMIN", "NHAN_VIEN", "THU_NGAN")
 

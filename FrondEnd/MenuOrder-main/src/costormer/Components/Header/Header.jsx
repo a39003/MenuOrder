@@ -75,7 +75,7 @@ const Header = () => {
       {allowed("ADMIN", "THU_NGAN") && <WrapperContentPopup onClick={() => goTo("/admin/bills")}>
         <FileTextOutlined /> Lịch sử hóa đơn
       </WrapperContentPopup>}
-      {allowed("ADMIN", "NHAN_VIEN", "THU_NGAN") && <WrapperContentPopup onClick={() => goTo("/admin/table")}>
+      {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/admin/table")}>
         <ApartmentOutlined /> Quản lý bàn
       </WrapperContentPopup>}
       {allowed("ADMIN", "NHAN_VIEN", "THU_NGAN") && <WrapperContentPopup onClick={() => goTo("/admin/floor-plan")}>
@@ -87,9 +87,9 @@ const Header = () => {
       {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/account")}>
         <UserOutlined /> Tài khoản
       </WrapperContentPopup>}
-      <WrapperContentPopup onClick={confirmLogout}>
+      {!allowed("ADMIN") && <WrapperContentPopup onClick={confirmLogout}>
         <LogoutOutlined /> Đăng xuất
-      </WrapperContentPopup>
+      </WrapperContentPopup>}
     </div>
   );
   return (
