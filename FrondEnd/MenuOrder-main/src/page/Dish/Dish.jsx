@@ -401,6 +401,26 @@ const Dish = ({ dish }) => {
       key: "dishName",
     },
     {
+      title: "Mô tả",
+      dataIndex: "description",
+      key: "description",
+      render: (value) => (
+        <span title={value || ""} style={{ display: "block", maxWidth: 220, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "#755f52" }}>
+          {value || "Chưa có mô tả"}
+        </span>
+      ),
+    },
+    {
+      title: "Nguyên liệu",
+      dataIndex: "ingredients",
+      key: "ingredients",
+      render: (value) => (
+        <span title={value || ""} style={{ display: "block", maxWidth: 220, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", color: "#755f52" }}>
+          {value || "Chưa cập nhật"}
+        </span>
+      ),
+    },
+    {
       title: "Danh mục",
       key: "menuTitle",
       render: (_, record) => {

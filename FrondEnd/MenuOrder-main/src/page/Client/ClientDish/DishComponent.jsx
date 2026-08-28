@@ -1,5 +1,5 @@
 import { Button, Form, Input, message, Modal } from "antd";
-import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { FireFilled, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import React, { useState } from "react";
 import {
   DishBottom,
@@ -77,9 +77,16 @@ const DishComponent = ({ dish, orderId, handleAddToCart }) => {
           <span>{isAvailable ? "Sẵn sàng" : "Hết món"}</span>
         </DishImage>
         <DishInfo>
-          <h3>{dish.dishName}</h3>
+          <div className="dish-name-row">
+            <h3>{dish.dishName}</h3>
+            {dish.featured && (
+              <span className="best-seller">
+                <FireFilled /> Bán chạy
+              </span>
+            )}
+          </div>
           <p>
-            {dish.dishDescription ||
+            {dish.description || dish.dishDescription ||
               "Món ngon được chuẩn bị tươi mới mỗi ngày."}
           </p>
           <DishBottom>
@@ -109,6 +116,9 @@ const DishComponent = ({ dish, orderId, handleAddToCart }) => {
         okButtonProps={{ style: { background: "#d96b2b" } }}
       >
         <ModalContent>
+          {dish.featured && (
+            <div className="modal-best-seller"><FireFilled /> Bán chạy</div>
+          )}
           <img
             className="dish-modal-image"
             src={activeImage || dish.thumbnail}
@@ -128,6 +138,10 @@ const DishComponent = ({ dish, orderId, handleAddToCart }) => {
                 </button>
               ))}
             </div>
+          )}
+          {dish.description && <p className="dish-description">{dish.description}</p>}
+          {dish.ingredients && (
+            <p className="dish-ingredients"><strong>Nguyên liệu:</strong> {dish.ingredients}</p>
           )}
           <Form form={form} layout="vertical">
             <Form.Item label="Số lượng" required>

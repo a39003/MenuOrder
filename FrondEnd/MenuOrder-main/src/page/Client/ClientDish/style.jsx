@@ -277,9 +277,32 @@ export const DishInfo = styled.div`
   display: flex;
   flex-direction: column;
   h3 {
-    margin: 0 0 5px;
+    margin: 0;
     font-size: 16px;
     line-height: 1.35;
+  }
+  .dish-name-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 5px;
+  }
+  .best-seller {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 7px;
+    border-radius: 999px;
+    color: #c54d17;
+    background: #fff0df;
+    font-size: 9px;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+  .best-seller .anticon {
+    color: #f06b24;
+    filter: drop-shadow(0 2px 3px rgba(240, 107, 36, 0.28));
   }
   p {
     margin: 0;
@@ -366,6 +389,29 @@ export const Cart = styled.button`
 `;
 
 export const ModalContent = styled.div`
+  position: relative;
+  .modal-best-seller {
+    position: absolute;
+    z-index: 2;
+    top: 12px;
+    left: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(135deg, #f47a2f, #ca4717);
+    font-size: 11px;
+    font-weight: 900;
+    box-shadow: 0 6px 16px rgba(202, 71, 23, 0.25);
+  }
+  .dish-description,
+  .dish-ingredients {
+    margin: 0 0 10px;
+    color: #80695c;
+    line-height: 1.55;
+  }
   .dish-modal-image {
     width: 100%;
     height: 220px;
