@@ -350,7 +350,7 @@ public class SecurityConfiguration {
                                 .hasAnyRole("ADMIN", "THU_NGAN")
 
                                 .requestMatchers("/admin/menus/**")
-                                .hasRole("ADMIN")
+                                .hasAnyRole("ADMIN", "BEP")
 
                                 .requestMatchers("/admin/**")
                                 .hasRole("ADMIN")

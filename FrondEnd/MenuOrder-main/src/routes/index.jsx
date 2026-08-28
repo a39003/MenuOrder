@@ -48,7 +48,7 @@ export const routes = [
     page: Menu,
     isShowHeader: true,
     protected: true,
-    roles: ["ADMIN"],
+    roles: ["ADMIN", "BEP"],
   },
   {
     path: "/account",

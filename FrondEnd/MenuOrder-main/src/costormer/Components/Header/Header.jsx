@@ -70,7 +70,7 @@ const Header = () => {
         <CoffeeOutlined /> Khu vực bếp
       </WrapperContentPopup>}
       {allowed("ADMIN", "BEP") && <WrapperContentPopup onClick={() => goTo("/admin/dish")}>
-        <ProfileOutlined /> Trạng thái món ăn
+        <ProfileOutlined /> Quản lý món ăn
       </WrapperContentPopup>}
       {allowed("ADMIN", "THU_NGAN") && <WrapperContentPopup onClick={() => goTo("/admin/bills")}>
         <FileTextOutlined /> Lịch sử hóa đơn
@@ -81,7 +81,7 @@ const Header = () => {
       {allowed("ADMIN", "NHAN_VIEN", "THU_NGAN") && <WrapperContentPopup onClick={() => goTo("/admin/floor-plan")}>
         <GatewayOutlined /> Sơ đồ bàn
       </WrapperContentPopup>}
-      {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/admin/menu")}>
+      {allowed("ADMIN", "BEP") && <WrapperContentPopup onClick={() => goTo("/admin/menu")}>
         <ProfileOutlined /> Quản lý Menu
       </WrapperContentPopup>}
       {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/account")}>
