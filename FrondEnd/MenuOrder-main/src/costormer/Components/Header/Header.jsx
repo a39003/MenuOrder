@@ -9,6 +9,8 @@ import {
   UnorderedListOutlined,
   UserOutlined,
   GatewayOutlined,
+  LogoutOutlined,
+  CoffeeOutlined,
 } from "@ant-design/icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -19,6 +21,7 @@ import {
   WrapperMenu,
 } from "./style";
 import { getCurrentUser } from "../../../services/auth";
+import { logout } from "../../../services/auth";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -26,6 +29,11 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const role = getCurrentUser()?.role;
   const allowed = (...roles) => roles.includes(role);
+  const handleLogout = async () => {
+    setMenuOpen(false);
+    await logout();
+    navigate("/login", { replace: true });
+  };
   const goTo = (path) => {
     setMenuOpen(false);
     navigate(path);
@@ -43,6 +51,9 @@ const Header = () => {
       <WrapperContentPopup onClick={() => goTo("/admin/order")}>
         <FileDoneOutlined /> Đơn hàng
       </WrapperContentPopup>
+      {allowed("ADMIN", "BEP") && <WrapperContentPopup onClick={() => goTo("/admin/kitchen")}>
+        <CoffeeOutlined /> Khu vực bếp
+      </WrapperContentPopup>}
       {allowed("ADMIN", "BEP") && <WrapperContentPopup onClick={() => goTo("/admin/dish")}>
         <ProfileOutlined /> Trạng thái món ăn
       </WrapperContentPopup>}
@@ -58,9 +69,12 @@ const Header = () => {
       {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/admin/menu")}>
         <ProfileOutlined /> Quản lý Menu
       </WrapperContentPopup>}
-      {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/account")}>
+      <WrapperContentPopup onClick={() => goTo("/account")}>
         <UserOutlined /> Tài khoản
-      </WrapperContentPopup>}
+      </WrapperContentPopup>
+      <WrapperContentPopup onClick={handleLogout}>
+        <LogoutOutlined /> Đăng xuất
+      </WrapperContentPopup>
     </div>
   );
   return (
@@ -73,6 +87,13 @@ const Header = () => {
         </section>
       </Brand>
       <DesktopNav>
+        {allowed("BEP") && <button
+          className={location.pathname === "/admin/kitchen" ? "active" : ""}
+          onClick={() => navigate("/admin/kitchen")}
+        >
+          <CoffeeOutlined />
+          <span>Khu vực bếp</span>
+        </button>}
         <button
           className={location.pathname === "/admin/order" ? "active" : ""}
           onClick={() => navigate("/admin/order")}

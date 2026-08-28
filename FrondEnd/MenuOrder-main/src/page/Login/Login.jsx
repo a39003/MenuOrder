@@ -6,7 +6,7 @@ import logo from "../../config/Logo TL.png";
 import * as message from "../../costormer/Components/message/Message";
 import { LoginCar, LoginContainer, LoginPage, LoginVisual } from "./style";
 import { API_URL } from "../../config";
-import { clearSession, getAccessToken, saveSession } from "../../services/auth";
+import { clearSession, getAccessToken, getCurrentUser, saveSession } from "../../services/auth";
 
 const Login = () => {
   const [values, setValues] = useState({ username: "", password: "" });
@@ -18,7 +18,7 @@ const Login = () => {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));
       if (payload.exp * 1000 > Date.now()) {
-        navigate("/admin/order");
+        navigate(getCurrentUser()?.role === "BEP" ? "/admin/kitchen" : "/admin/order");
       } else {
         clearSession();
       }
@@ -55,7 +55,7 @@ const Login = () => {
           throw new Error("Máy chủ không trả về token đăng nhập.");
         saveSession(data);
         message.success("Đăng nhập thành công");
-        navigate("/admin/order");
+        navigate(data?.user?.role === "BEP" ? "/admin/kitchen" : "/admin/order");
       } else {
         message.error(data?.message || "Tài khoản hoặc mật khẩu không đúng");
       }
