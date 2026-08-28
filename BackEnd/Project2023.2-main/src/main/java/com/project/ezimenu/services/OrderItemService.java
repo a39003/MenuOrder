@@ -14,6 +14,8 @@ import com.project.ezimenu.services.interfaces.IOrderItemService;
 import com.project.ezimenu.utils.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 public class OrderItemService implements IOrderItemService {
     @Autowired
     private OrderRepository orderRepository;
@@ -69,14 +71,16 @@ public class OrderItemService implements IOrderItemService {
         orderItemRepository.save(orderItem);
         return order;
     }
-    public OrderItem updateOrderItemStatus(Long orderId, Long orderItemId) throws NotFoundException {
+    public OrderItem updateOrderItemStatus(Long orderId, Long orderItemId, String requestedStatus) throws NotFoundException {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new NotFoundException("Không thể tìm thấy đơn hàng với id: " + orderId));
         OrderItem orderItem = order.getOrderItems().stream()
                 .filter(item -> item.getOrderItemId() == orderItemId)
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Không thể tìm thấy món ăn đặt hàng với id: " + orderItemId + " trong đơn hàng!"));
-        if(orderItem.getDishStatus().equals("Đang ra món")){
+        if (requestedStatus != null && List.of("Đang chọn", "Đang chế biến", "Chờ phục vụ", "Đã ra món").contains(requestedStatus)) {
+            orderItem.setDishStatus(requestedStatus);
+        } else if(orderItem.getDishStatus().equals("Đang ra món") || orderItem.getDishStatus().equals("Chờ phục vụ")){
             orderItem.setDishStatus("Đã ra món");
         } else {
             orderItem.setDishStatus("Đang ra món");

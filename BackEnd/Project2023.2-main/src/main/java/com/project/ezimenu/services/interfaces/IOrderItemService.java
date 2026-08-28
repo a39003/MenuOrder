@@ -10,7 +10,7 @@ public interface IOrderItemService {
     OrderItem addOrderItem(Long orderId, OrderItemRequestDTO orderItemRequestDTO) throws NotFoundException, BadRequestException;
     Order updateOrderItem(Long orderId, Long orderItemId, OrderItemRequestDTO orderItemRequestDTO) throws NotFoundException, BadRequestException;
     Order updateOrderItemForAdmin(Long orderId, Long orderItemId, OrderItemRequestDTO orderItemRequestDTO) throws NotFoundException;
-    OrderItem updateOrderItemStatus(Long orderId, Long orderItemId) throws NotFoundException;
+    OrderItem updateOrderItemStatus(Long orderId, Long orderItemId, String requestedStatus) throws NotFoundException;
     Order deleteOrderItem(Long orderId, Long orderItemId) throws NotFoundException, BadRequestException;
     OrderItem getOrderItemById(Long orderItemId) throws NotFoundException;
 }

@@ -58,9 +58,11 @@ public class OrderItemController {
     }
     @RequestMapping(path = "admin/orders/{orderId}/items/{orderItemId}/status", method = RequestMethod.PUT)
     public ResponseEntity<?> updateOrderItemStatus(@PathVariable Long orderId,
-                                                   @PathVariable Long orderItemId)
+                                                   @PathVariable Long orderItemId,
+                                                   @RequestBody(required = false) OrderItemRequestDTO request)
             throws NotFoundException {
-        OrderItem updatedOrderItem = orderItemService.updateOrderItemStatus(orderId, orderItemId);
+        OrderItem updatedOrderItem = orderItemService.updateOrderItemStatus(
+                orderId, orderItemId, request == null ? null : request.getDishStatus());
         orderStatusQueue.offer(updatedOrderItem.getDishStatus());
         return new ResponseEntity<>(updatedOrderItem, HttpStatus.OK);
     }

@@ -55,7 +55,7 @@ export const routes = [
     page: Account,
     isShowHeader: true,
     protected: true,
-    roles: ["ADMIN", "NHAN_VIEN", "THU_NGAN", "BEP"],
+    roles: ["ADMIN"],
   },
   {
     path: "/admin/bill",

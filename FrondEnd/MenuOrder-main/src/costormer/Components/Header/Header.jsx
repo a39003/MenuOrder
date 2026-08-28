@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Popover } from "antd";
+import { Modal, Popover } from "antd";
 import {
   ApartmentOutlined,
   BarChartOutlined,
@@ -29,10 +29,19 @@ const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const role = getCurrentUser()?.role;
   const allowed = (...roles) => roles.includes(role);
-  const handleLogout = async () => {
+  const confirmLogout = () => {
     setMenuOpen(false);
-    await logout();
-    navigate("/login", { replace: true });
+    Modal.confirm({
+      title: "Đăng xuất",
+      content: "Bạn có chắc muốn đăng xuất khỏi hệ thống?",
+      okText: "Đồng ý",
+      cancelText: "Ở lại",
+      centered: true,
+      onOk: async () => {
+        await logout();
+        navigate("/login", { replace: true });
+      },
+    });
   };
   const goTo = (path) => {
     setMenuOpen(false);
@@ -69,10 +78,10 @@ const Header = () => {
       {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/admin/menu")}>
         <ProfileOutlined /> Quản lý Menu
       </WrapperContentPopup>}
-      <WrapperContentPopup onClick={() => goTo("/account")}>
+      {allowed("ADMIN") && <WrapperContentPopup onClick={() => goTo("/account")}>
         <UserOutlined /> Tài khoản
-      </WrapperContentPopup>
-      <WrapperContentPopup onClick={handleLogout}>
+      </WrapperContentPopup>}
+      <WrapperContentPopup onClick={confirmLogout}>
         <LogoutOutlined /> Đăng xuất
       </WrapperContentPopup>
     </div>
