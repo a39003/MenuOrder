@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { message, Spin } from "antd";
 import { apiFetch } from "../../services/auth";
 import { KitchenBoard, KitchenLane, KitchenPage, KitchenTicket } from "./style";
@@ -10,30 +10,39 @@ const lanes = [
   { key: "Đã ra món", title: "Đã phục vụ", next: null, action: "Hoàn tất" },
 ];
 
-const normalizeStatus = (status) => status === "Đang ra món" ? "Đang chế biến" : status;
+const normalizeStatus = (status) => status === "Đang ra món" ? "Đang chọn" : status;
 
 const Kitchen = () => {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(null);
   const [updatedAt, setUpdatedAt] = useState(null);
+  const pendingStatuses = useRef(new Map());
 
   const loadKitchen = useCallback(async (silent = false) => {
     if (!silent) setLoading(true);
     try {
-      const response = await apiFetch("/admin/orders?page=0&size=100");
+      const response = await apiFetch("/admin/orders?page=0&size=30");
       const data = await response.json();
       if (!response.ok) throw new Error(data?.message || "Không tải được danh sách món của bếp");
       const orders = Array.isArray(data?.orderResponseDTOList) ? data.orderResponseDTOList : [];
       const activeOrders = orders.filter((order) => !["Đã thanh toán", "Đã hủy"].includes(order.orderStatus));
-      setItems(activeOrders.flatMap((order) => (order.orderItemResponseDTO || []).map((item) => ({
-        ...item,
-        dishStatus: normalizeStatus(item.dishStatus),
-        orderId: order.orderId,
-        tableName: order.tableName,
-        customerName: order.customerName,
-        orderTime: order.orderTime,
-      }))));
+      const nextItems = activeOrders.flatMap((order) => (order.orderItemResponseDTO || []).map((item) => {
+        const serverStatus = normalizeStatus(item.dishStatus);
+        const pending = pendingStatuses.current.get(item.orderItemId);
+        if (pending && (pending.status === serverStatus || Date.now() > pending.expiresAt)) {
+          pendingStatuses.current.delete(item.orderItemId);
+        }
+        return {
+          ...item,
+          dishStatus: pending && Date.now() <= pending.expiresAt ? pending.status : serverStatus,
+          orderId: order.orderId,
+          tableName: order.tableName,
+          customerName: order.customerName,
+          orderTime: order.orderTime,
+        };
+      }));
+      setItems(nextItems);
       setUpdatedAt(new Date());
     } catch (error) {
       if (!silent) message.error(error.message);
@@ -44,7 +53,7 @@ const Kitchen = () => {
 
   useEffect(() => {
     loadKitchen();
-    const timer = setInterval(() => loadKitchen(true), 8000);
+    const timer = setInterval(() => loadKitchen(true), 15000);
     return () => clearInterval(timer);
   }, [loadKitchen]);
 
@@ -56,6 +65,12 @@ const Kitchen = () => {
   const changeStatus = async (item, nextStatus) => {
     if (!nextStatus || updating) return;
     setUpdating(item.orderItemId);
+    pendingStatuses.current.set(item.orderItemId, {
+      status: nextStatus,
+      expiresAt: Date.now() + 30000,
+    });
+    setItems((current) => current.map((entry) => entry.orderItemId === item.orderItemId
+      ? { ...entry, dishStatus: nextStatus } : entry));
     try {
       const response = await apiFetch(`/admin/orders/${item.orderId}/items/${item.orderItemId}/status`, {
         method: "PUT",
@@ -64,10 +79,10 @@ const Kitchen = () => {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data?.message || "Không thể cập nhật món");
-      setItems((current) => current.map((entry) => entry.orderItemId === item.orderItemId
-        ? { ...entry, dishStatus: nextStatus } : entry));
       message.success(`${item.dishName}: ${nextStatus}`);
     } catch (error) {
+      pendingStatuses.current.delete(item.orderItemId);
+      await loadKitchen(true);
       message.error(error.message);
     } finally {
       setUpdating(null);

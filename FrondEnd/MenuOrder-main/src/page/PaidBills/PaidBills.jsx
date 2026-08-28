@@ -6,7 +6,7 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { Card, Filters, Head, Overview, Page, Receipt, Summary } from "./style";
-import { API_URL } from "../../config";
+import { apiFetch } from "../../services/auth";
 
 const money = (value) => `${Number(value || 0).toLocaleString("vi-VN")} đ`;
 const formatDate = (value) =>
@@ -34,9 +34,7 @@ const PaidBills = () => {
     Object.entries(query).forEach(
       ([key, value]) => value && params.set(key, value),
     );
-    fetch(`${API_URL}/admin/bills?${params}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    })
+    apiFetch(`/admin/bills?${params}`)
       .then(async (response) => {
         if (!response.ok)
           throw new Error(
@@ -101,6 +99,15 @@ const PaidBills = () => {
       title: "Thời gian",
       dataIndex: "paidAt",
       render: (value) => <span className="date">{formatDate(value)}</span>,
+    },
+    {
+      title: "Thanh toán",
+      dataIndex: "paymentMethod",
+      render: (value) => ({
+        TIEN_MAT: "Tiền mặt",
+        CHUYEN_KHOAN: "Chuyển khoản",
+        THE: "Thẻ",
+      }[value] || "Chưa ghi nhận"),
     },
     { title: "Số món", dataIndex: "totalItems", align: "center" },
     {
@@ -276,6 +283,22 @@ const PaidBills = () => {
                   Thu bàn {selected.tableType === "VIP" ? "VIP" : "thường"}
                 </span>
                 <strong>{money(selected.tableServiceFee)}</strong>
+              </div>
+              <div>
+                <span>Phương thức thanh toán</span>
+                <strong>{{
+                  TIEN_MAT: "Tiền mặt",
+                  CHUYEN_KHOAN: "Chuyển khoản / QR",
+                  THE: "Thẻ",
+                }[selected.paymentMethod] || "Chưa ghi nhận"}</strong>
+              </div>
+              {selected.transactionCode && <div>
+                <span>Mã giao dịch</span>
+                <strong>{selected.transactionCode}</strong>
+              </div>}
+              <div>
+                <span>Trạng thái</span>
+                <strong>{selected.paymentStatus || "Đã thanh toán"}</strong>
               </div>
             </div>
             <div className="total">

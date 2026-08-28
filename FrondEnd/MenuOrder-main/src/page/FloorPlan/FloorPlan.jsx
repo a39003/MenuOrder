@@ -5,7 +5,7 @@ import {
   TeamOutlined,
 } from "@ant-design/icons";
 import { Badge, Empty, message, Spin } from "antd";
-import { API_URL } from "../../config";
+import { apiFetch } from "../../services/auth";
 import Notificatio from "../Order/Notificatio";
 import {
   FloorBoard,
@@ -31,11 +31,7 @@ const FloorPlan = () => {
 
   const fetchTables = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/admin/tables`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await apiFetch("/admin/tables");
       if (!response.ok) throw new Error();
       const data = await response.json();
       setTables(Array.isArray(data) ? data : []);

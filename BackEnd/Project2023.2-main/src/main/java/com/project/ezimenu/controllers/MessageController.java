@@ -14,6 +14,7 @@ public class MessageController {
     @MessageMapping("/private")
     public void sendToSpecificUser(@Payload Message notification){
         System.out.println(notification.toString());
-        simpMessagingTemplate.convertAndSendToUser("admin", "/specific", notification);
+        // Broadcast cho toàn bộ nhân viên đang mở màn hình, không gắn cứng vào tài khoản admin.
+        simpMessagingTemplate.convertAndSend("/topic/staff-notifications", notification);
     }
 }

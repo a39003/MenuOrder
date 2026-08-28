@@ -15,6 +15,7 @@ import {
 } from "./style";
 import Bill from "../Bill/Bill";
 import { API_URL } from "../../config";
+import { apiFetch } from "../../services/auth";
 
 const BASE_URL = API_URL;
 
@@ -33,13 +34,12 @@ const TableOrder = ({ table, onTableChanged }) => {
 
     // Fetch Order Details
     try {
-      const orderResponse = await fetch(
-        `${BASE_URL}/orders/tables/${table.tableId}`,
+      const orderResponse = await apiFetch(
+        `/orders/tables/${table.tableId}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         },
       );
@@ -120,13 +120,12 @@ const TableOrder = ({ table, onTableChanged }) => {
     if (emptyingTable) return;
     setEmptyingTable(true);
     try {
-      const response = await fetch(
-        `${BASE_URL}/admin/tables/${table?.tableId}/status`,
+      const response = await apiFetch(
+        `/admin/tables/${table?.tableId}/status`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         },
       );
@@ -149,13 +148,12 @@ const TableOrder = ({ table, onTableChanged }) => {
     if (creatingBill) return;
     setCreatingBill(true);
     try {
-      const response = await fetch(
-        `${BASE_URL}/admin/orders/${order.orderId}/bill`,
+      const response = await apiFetch(
+        `/admin/orders/${order.orderId}/bill`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         },
       );

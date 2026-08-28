@@ -32,7 +32,7 @@ const Bill = ({
   const [transactionCode, setTransactionCode] = useState("");
 
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || paymentMethod !== "CHUYEN_KHOAN" || paymentConfig) return;
     apiFetch(PAYMENT_CONFIG_URL)
       .then(async (response) => {
         const data = await response.json();
@@ -40,7 +40,7 @@ const Bill = ({
         setPaymentConfig(data);
       })
       .catch((error) => message.error(error.message));
-  }, [isOpen]);
+  }, [isOpen, paymentMethod, paymentConfig]);
 
   const paymentContent = `TLU BILL ${bill?.billId || orderId}`;
   const paymentQrUrl = paymentConfig ? `https://img.vietqr.io/image/${paymentConfig.bankCode}-${paymentConfig.accountNumber}-compact2.png?amount=${Number(
@@ -62,12 +62,9 @@ const Bill = ({
     if (deletingBill) return;
     setDeletingBill(true);
     try {
-      const response = await fetch(`${API_URL}/admin/orders/${orderId}/bill`, {
+      const response = await apiFetch(`/admin/orders/${orderId}/bill`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        headers: { "Content-Type": "application/json" },
       });
       if (response.ok) {
         message.success("Xóa bill thành công");
@@ -92,15 +89,13 @@ const Bill = ({
   const fetchOrderDetails = async () => {
     if (!table?.tableId) return;
     try {
-      const response = await fetch(
-        `${API_URL}/orders/tables/${table.tableId}`,
+      const response = await apiFetch(
+        `/orders/tables/${table.tableId}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          body: JSON.stringify({ paymentMethod, transactionCode: transactionCode.trim() || null }),
         },
       );
 
@@ -167,13 +162,12 @@ const Bill = ({
   // Make table empty and update table status
   const handleMakeTableEmpty = async () => {
     try {
-      const response = await fetch(
-        `${API_URL}/admin/tables/${tableId}/status`,
+      const response = await apiFetch(
+        `/admin/tables/${tableId}/status`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         },
       );
@@ -194,22 +188,25 @@ const Bill = ({
     if (acceptingPayment) return;
     setAcceptingPayment(true);
     try {
-      const response = await fetch(
-        `${API_URL}/admin/tables/${tableId}/payment/accept`,
+      const response = await apiFetch(
+        `/admin/tables/${tableId}/payment/accept`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          body: JSON.stringify({
+            paymentMethod,
+            transactionCode: paymentMethod === "TIEN_MAT" ? null : transactionCode.trim() || null,
+          }),
         },
       );
       if (response.ok) {
         message.success("Xác nhận thanh toán thành công");
         await handleMakeTableEmpty();
-        window.location.reload();
-
         setIsOpen(false);
+        setBill(null);
+        onBillDeleted?.();
       } else {
         const successData = await response.json();
         throw new Error(successData.message || "Failed to accept payment");
@@ -405,7 +402,19 @@ const Bill = ({
               </>
             )}
           />
-          <div className="admin-payment-qr">
+          <div className="admin-payment-method" style={{ display: "grid", gridTemplateColumns: paymentMethod === "TIEN_MAT" ? "1fr" : "1fr 1fr", gap: 10, marginTop: 12 }}>
+            <Select value={paymentMethod} onChange={(value) => {
+              setPaymentMethod(value);
+              if (value === "TIEN_MAT") setTransactionCode("");
+            }} options={[
+              { value: "CHUYEN_KHOAN", label: "Chuyển khoản / QR" },
+              { value: "TIEN_MAT", label: "Tiền mặt" },
+              { value: "THE", label: "Thẻ" },
+            ]} />
+            {paymentMethod !== "TIEN_MAT" && <Input value={transactionCode} onChange={(event) => setTransactionCode(event.target.value)}
+              placeholder="Mã giao dịch (nếu có)" />}
+          </div>
+          {paymentMethod === "CHUYEN_KHOAN" && <div className="admin-payment-qr">
             <div>
               <h3>Quét mã để thanh toán</h3>
               <p>{paymentConfig?.bankName || "Đang tải thông tin ngân hàng..."}</p>
@@ -419,16 +428,10 @@ const Bill = ({
               src={paymentQrUrl}
               alt={`QR thanh toán hóa đơn ${bill?.billId || orderId}`}
             />
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginTop: 12 }}>
-            <Select value={paymentMethod} onChange={setPaymentMethod} options={[
-              { value: "CHUYEN_KHOAN", label: "Chuyển khoản / QR" },
-              { value: "TIEN_MAT", label: "Tiền mặt" },
-              { value: "THE", label: "Thẻ" },
-            ]} />
-            <Input value={transactionCode} onChange={(event) => setTransactionCode(event.target.value)}
-              placeholder="Mã giao dịch (nếu có)" />
-          </div>
+          </div>}
+          {paymentMethod === "TIEN_MAT" && <div style={{ marginTop: 12, padding: "13px 16px", borderRadius: 12, background: "#fff", textAlign: "center", fontWeight: 700 }}>
+            Thanh toán tiền mặt tại quầy — không cần quét mã QR
+          </div>}
         </div>
         <div className="admin-bill-actions" style={{ marginTop: "16px" }}>
           <Button

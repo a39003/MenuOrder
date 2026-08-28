@@ -1,11 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusButton } from "./style";
 import TableOrder from "./TableOrder";
-import { API_URL } from "../../config";
-import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../../services/auth";
 
 function StatusPanel() {
-  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tableStatus, setTableStatus] = useState(
@@ -18,27 +16,10 @@ function StatusPanel() {
       try {
         if (initial) setLoading(true);
         setError(null);
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          throw new Error(
-            "Authorization token không tồn tại. Vui lòng đăng nhập lại.",
-          );
-        }
-
-        const response = await fetch(`${API_URL}/admin/tables`, {
+        const response = await apiFetch("/admin/tables", {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { "Content-Type": "application/json" },
         });
-
-        if (response.status === 401 || response.status === 403) {
-          localStorage.removeItem("token");
-          navigate("/login", { replace: true });
-          return;
-        }
 
         if (!response.ok) {
           const responseText = await response.text();
@@ -67,7 +48,7 @@ function StatusPanel() {
         if (initial) setLoading(false);
       }
     },
-    [navigate],
+    [],
   );
 
   useEffect(() => {

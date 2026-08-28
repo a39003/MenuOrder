@@ -7,7 +7,7 @@ import {
 } from "@ant-design/icons";
 import { convertToTime } from "../../costormer/Time/time";
 import { AdminIconButton, NotificationItem, NotificationList } from "./style";
-import { API_URL } from "../../config";
+import { apiFetch } from "../../services/auth";
 
 const Notificatio = ({ tableId, tableName, setStatus = () => {} }) => {
   const [open, setOpen] = useState(false);
@@ -16,11 +16,8 @@ const Notificatio = ({ tableId, tableName, setStatus = () => {} }) => {
   useEffect(() => {
     if (!tableId || !open) return;
     setLoading(true);
-    fetch(`${API_URL}/admin/notifications/tables/${tableId}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
+    apiFetch(`/admin/notifications/tables/${tableId}`, {
+      headers: { "Content-Type": "application/json" },
     })
       .then((res) => res.json())
       .then((data) => setNotifications(Array.isArray(data) ? data : []))
@@ -31,13 +28,11 @@ const Notificatio = ({ tableId, tableName, setStatus = () => {} }) => {
     if (loading) return;
     setLoading(true);
     try {
-      await fetch(`${API_URL}/admin/notifications/tables/${tableId}`, {
+      const response = await apiFetch(`/admin/notifications/tables/${tableId}`, {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        headers: { "Content-Type": "application/json" },
       });
+      if (!response.ok) throw new Error("Không thể xử lý thông báo");
       setNotifications([]);
       setStatus(true);
       setOpen(false);
