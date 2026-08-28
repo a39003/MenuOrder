@@ -15,7 +15,7 @@ import {
   SearchOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Form, Input, InputNumber, message, Select, Table } from "antd";
+import { Button, Checkbox, Form, Input, message, Select, Table } from "antd";
 import Foor from "../../costormer/Components/Foor/Foor";
 import InpuComponent from "../../costormer/Components/InputComponent/InputComponent";
 import { useNavigate } from "react-router-dom";
@@ -46,7 +46,6 @@ const Dish = ({ dish }) => {
     thumbnail: null,
     description: "",
     ingredients: "",
-    spiceLevel: 0,
     featured: false,
   });
 
@@ -97,7 +96,6 @@ const Dish = ({ dish }) => {
     formData.append("menuId", stateDish.menuId || rowSelected?.menuId || "");
     formData.append("description", stateDish.description || "");
     formData.append("ingredients", stateDish.ingredients || "");
-    formData.append("spiceLevel", stateDish.spiceLevel || 0);
     formData.append("featured", Boolean(stateDish.featured));
     imageFiles.forEach((file) => formData.append("images", file));
     existingImages.forEach((url) => formData.append("retainedImages", url));
@@ -134,7 +132,6 @@ const Dish = ({ dish }) => {
           thumbnail: null,
           description: "",
           ingredients: "",
-          spiceLevel: 0,
           featured: false,
         });
         form.resetFields();
@@ -207,7 +204,6 @@ const Dish = ({ dish }) => {
       dishStatus: Number(record?.dishStatus),
       description: record?.description || "",
       ingredients: record?.ingredients || "",
-      spiceLevel: Number(record?.spiceLevel || 0),
       featured: Boolean(record?.featured),
     });
     setImageFiles([]);
@@ -316,7 +312,6 @@ const Dish = ({ dish }) => {
       menuId: 0,
       description: "",
       ingredients: "",
-      spiceLevel: 0,
       featured: false,
     });
     form.resetFields();
@@ -348,7 +343,6 @@ const Dish = ({ dish }) => {
     formData.append("menuId", record.menuId);
     formData.append("description", record.description || "");
     formData.append("ingredients", record.ingredients || "");
-    formData.append("spiceLevel", record.spiceLevel || 0);
     formData.append("featured", Boolean(record.featured));
     if (record.thumbnail && record?.dishId == null) {
       formData.append("thumbnail", record.thumbnail);
@@ -603,9 +597,6 @@ const Dish = ({ dish }) => {
             <Form.Item label="Nguyên liệu" name="ingredients">
               <Input.TextArea rows={2} placeholder="Ví dụ: cá hồi, tiêu, chanh..." onChange={(e) => setSateDish({ ...stateDish, ingredients: e.target.value })} />
             </Form.Item>
-            <Form.Item label="Mức cay" name="spiceLevel">
-              <InputNumber min={0} max={3} style={{ width: "100%" }} onChange={(value) => setSateDish({ ...stateDish, spiceLevel: value })} />
-            </Form.Item>
             <Form.Item name="featured" valuePropName="checked" wrapperCol={{ offset: 7, span: 16 }}>
               <Checkbox onChange={(e) => setSateDish({ ...stateDish, featured: e.target.checked })}>Món nổi bật</Checkbox>
             </Form.Item>
@@ -777,9 +768,6 @@ const Dish = ({ dish }) => {
             </Form.Item>
             <Form.Item label="Nguyên liệu" name="ingredients">
               <Input.TextArea rows={2} onChange={(e) => setSateDish({ ...stateDish, ingredients: e.target.value })} />
-            </Form.Item>
-            <Form.Item label="Mức cay" name="spiceLevel">
-              <InputNumber min={0} max={3} style={{ width: "100%" }} onChange={(value) => setSateDish({ ...stateDish, spiceLevel: value })} />
             </Form.Item>
             <Form.Item name="featured" valuePropName="checked" wrapperCol={{ offset: 7, span: 16 }}>
               <Checkbox onChange={(e) => setSateDish({ ...stateDish, featured: e.target.checked })}>Món nổi bật</Checkbox>
