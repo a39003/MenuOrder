@@ -13,5 +13,5 @@ jobs:
     steps:
       - name: Ping menuorder-1.onrender.com
         run: |
-          STATUS=$(curl -s -o /dev/null -w '%{http_code}' https://menuorder-1.onrender.com/)
+          STATUS=$(curl -k -s -o /dev/null -w '%{http_code}' --max-time 15 --retry 2 https://menuorder-1.onrender.com/ || echo "ERR_CURL")
           echo "Pong at $(date -u +%Y-%m-%dT%H:%M:%SZ) -- Status: $STATUS"
